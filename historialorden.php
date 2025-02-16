@@ -1,4 +1,17 @@
 <?php
+    $patente=$_GET["num"];
+    $verbtn=$_GET["ver"];
+
+    if ($verbtn=="S") 
+    {
+      $verbtn="&nbsp;&nbsp;&nbsp;<a href='#' onclick='vermovimientostareasvsempledos()'>
+               <img src='./assets/img/volver.png' alt='Volver'></a>";
+    }
+    else 
+    {
+      $verbtn=""; 
+    }
+
     echo "
     <section class='section dashboard'>
       <div class='row'>
@@ -70,7 +83,7 @@
           <!-- Recent Activity -->
           <div class='card'>
             <div class='card-body'>
-              <h5 class='card-title'>Historial Mantenimieto</h5>
+              <h5 class='card-title'>Historial Mantenimieto". $verbtn ."</h5>
 
               <div class='activity'>
 

@@ -120,7 +120,7 @@
               document.getElementById("lsinfo").innerHTML=this.responseText;
             }
           };
-          xmlhttp.open('GET', 'historialorden.php?num='+num, false);
+          xmlhttp.open('GET', 'historialorden.php?num='+num+'&ver=N', false);
           xmlhttp.send();
         }
       }

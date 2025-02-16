@@ -70,7 +70,6 @@
           if (strlen($info)>0)
           {//VIENE CON DATOS DE QUE CORRESPONDEN A TODOS LOS ELEMENTOS DE UN ACORDEON
             $lsdatos=$lsdatos."".$encabezado."".$info."</div></div></div>";
-            //$i=$i+1;
             $item=1;
             $encabezado="";
             $info="";
@@ -158,7 +157,7 @@
           }
 
           $encabezado=$encabezado."<a href='#' onclick='nodisponible(".$numorden.")'>
-                                    <img src='assets/img/tarea_cambio_der.png' alt='Cambiar estado tarea'>
+                                    <img src='assets/img/tarea_cambio_izq.png' alt='Cambiar estado tarea'>
                                   </a>
                                 </button>
                               </h2>
