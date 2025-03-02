@@ -76,6 +76,25 @@ CREATE TABLE `disciplinas` (
 
 insert  into `disciplinas`(`iddisciplina`,`disciplina`,`observacion`,`accion`,`idempleadoaccion`,`fechaaccion`) values (1,'Esp. Hidráulica','Esp. Hidráulica','M',1,'2024-12-16 15:44:17'),(2,'Mecánico Gral.','Mecánico Gral.','M',1,'2025-01-21 10:55:33'),(3,'Supervisor','Supervisor Taller','N',1,'2025-02-01 12:56:03'),(4,'Electricista','Electicista Automotor','N',1,'2025-02-01 12:56:03'),(5,'Esp. Refrigeración','Especialista en A.C.','M',1,'2025-01-21 10:32:27'),(6,'Esp. Neumáticos','Esp. Neumáticos','M',1,'2025-01-21 10:52:04'),(11,'prueba disci modi','observacion disci nuevo','B',1,'2024-12-16 15:45:49'),(12,'prueba disci nuevo','observacion disci nuevo','B',1,'2024-12-16 15:45:34'),(23,'acuarela','va con rojo y ahora azul','B',1,'2025-01-21 10:55:10'),(24,'rtertewt','etrtertewt','B',1,'2025-01-21 10:54:44'),(25,'rtetewrt','etewt','B',1,'2025-01-21 10:54:50'),(26,'trwer','wrwe','B',1,'2025-01-21 10:54:55'),(27,'wrewr','werrewr','B',1,'2025-01-21 10:54:15'),(28,'dddd','ddeee','B',1,'2025-01-21 10:55:22'),(29,'acuarela','va con celeste','B',1,'2025-01-21 10:55:16'),(30,'rojo','no rosa','B',1,'2025-01-21 10:54:36'),(31,'borrame y limpito','yaaaa cambiadito','B',1,'2025-02-10 21:54:30');
 
+/*Table structure for table `historialafectadostareas` */
+
+DROP TABLE IF EXISTS `historialafectadostareas`;
+
+CREATE TABLE `historialafectadostareas` (
+  `idhistorial` int(11) NOT NULL AUTO_INCREMENT,
+  `numorden` varchar(30) DEFAULT NULL,
+  `idtarea` int(11) DEFAULT NULL,
+  `estado` varchar(1) DEFAULT 'P',
+  `idempleado` int(11) DEFAULT NULL,
+  `observacion` varchar(100) DEFAULT NULL,
+  `fechaobs` datetime DEFAULT NULL,
+  `accion` varchar(1) DEFAULT 'N',
+  `fechaaccion` datetime DEFAULT NULL,
+  PRIMARY KEY (`idhistorial`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+
+/*Data for the table `historialafectadostareas` */
+
 /*Table structure for table `numeroorden` */
 
 DROP TABLE IF EXISTS `numeroorden`;

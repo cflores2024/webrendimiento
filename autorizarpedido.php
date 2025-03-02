@@ -38,10 +38,6 @@
   <!--link href="https://fonts.gstatic.com" rel="preconnect"-->
   <link href="assets/font/Open_Sans.css" rel="stylesheet">
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
   <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -55,112 +51,35 @@
   <link href="assets/css/style.css" rel="stylesheet">
 
   <!-- =======================================================
-  * LAS ORDENES PUEDEN TOMAR LOS SIGUIENTES ESTADOS
-  * D => DISPONIBLES PARA SER TOMADA POR ALGÚN MECANICO
-  * S => ESTADO QUE INDICA LA ORDEN FUE RECUPERADA E INGRESADA AL SISTEMA DESDE ORACLE PERO NO ESTA DISPONIBLE
-  * F => ORDEN FINALIZADA Y CERRADA YA QUE TODAS SUS TAREAS ESTAN TERMINADAS
-  * P => ORDEN QUE SE ESTA ATENDIENDO SUS RESPECTIVAS TAREAS
-  ------------------------------------------------------------------------------------------------
   POR OTRO LADO LAS TAREAS PUEDEN TENER LOS SIGUIENTES ESTADOS
   * D => DISPONIBLES PARA SU ATENCION
   * P => EN PROCESO SE ESTA ATENDIENDO
   * F => TAREA TERMINADA
   ======================================================== -->
   <script>
-    function disponible(num)
+   
+    function vermovimientostareasvsempledos(ver) 
     {
-      var desc=document.getElementById("txttitulo" + num).value;
-
-      //alert("Se cambia estado orden " + num + " a disponible y con el titulo "+ desc);
-
-      organizartareas(num,'D',desc);
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById("lsinfo").innerHTML=this.responseText;
+        }
+      };
+      xmlhttp.open('GET', 'solicitudes.php?ver='+ver, false);
+      xmlhttp.send();
     }
 
-    function nodisponible(num)
-    {
-      //alert("Sa cambia estado orden " + num + " a no disponible!!!");
-
-      organizartareas(num,'S','');
-    }
-
-    function vertabla(num)
-    {
-      //alert("Se muestra historial de la orden " + num);
-
-      if (num<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            //alert ('numero orden='+num);
-            document.getElementById("tbldetalleorden").innerHTML=this.responseText;
-          }
-        };
-        xmlhttp.open('GET', 'vertablatareas.php?num='+num, false);
-        xmlhttp.send();
-      }
-    }
-  
     function deshabilitaRetroceso()
     {
       window.location.hash="no-back-button";
       window.location.hash="Again-No-back-button" //chrome
       window.onhashchange=function(){window.location.hash="";}
     }
-
-    function verorden() {
-      var num=document.getElementById('txtnumorden').value;
-     
-      if (num<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            //alert ('numero orden='+num);
-            document.getElementById("lsinfo").innerHTML=this.responseText;
-          }
-        };
-        xmlhttp.open('GET', 'detalleorden.php?num='+num, false);
-        xmlhttp.send();
-      }
-    }
-
-      function verhistorial() {
-        var num=document.getElementById('txtnumpatente').value;
-      
-        if (num<=0) {
-          return;
-        } else {
-          var xmlhttp = new XMLHttpRequest();
-          xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-              //alert ('numero patente='+num);
-              document.getElementById("lsinfo").innerHTML=this.responseText;
-            }
-          };
-          xmlhttp.open('GET', 'historialorden.php?num='+num+'&ver=N', false);
-          xmlhttp.send();
-        }
-      }
-
-      function organizartareas(orden,estado,titulo) {
-          var xmlhttp = new XMLHttpRequest();
-          xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-              //alert("Se envia la orden numero=>"+orden+" y se lo pasa al estado de =>"+estado+", con el titulo "+titulo);
-              document.getElementById("lsinfo").innerHTML=this.responseText;
-            }
-          };
-          xmlhttp.open('GET', 'organizarorden.php?orden='+orden+'&estado='+estado+'&titulo='+titulo, false);
-          xmlhttp.send();
-      }
-
   </script>
 </head>
 
-<body>
+<body onload="vermovimientostareasvsempledos(1)">
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -244,59 +163,19 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Personal</h1>
+      <h1>Autorizar Acceso Ordenes</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
-          <li class="breadcrumb-item"><a href="buscadorordenes.php">Buscador ordenes</a></li>
-          <li class="breadcrumb-item active">CRUD Ordenes</li>
+          <li class="breadcrumb-item"><a href="autorizarpedido.php">Autorizar acceso</a></li>
+          <li class="breadcrumb-item active">Autorizar</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
 
-    <section class="section">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body">
-                      <h5 class="card-title">Buscador Ordenes de Trabajos</h5>
-                      <p>Permite realizar todas las operaciones correspondiete a Leer una ORDEN DE TRABAJO.</p>
-                        <div class="text-center">  
-                          <!-- General Form Elements -->
-                            <form action="">
-                              <div class="row mb-3">
-                                <label for="txtorden" class="col-sm-2 col-form-label">N° Patente</label>
-                                <div class="col-sm-10">
-                                    <input name="txtnumpatente" type="text" class="form-control" id="txtnumpatente" value="">
-                                </div>
-                              </div>
-                              <div class="row mb-3">
-                                <label for="txtorden" class="col-sm-2 col-form-label">N° Orden</label>
-                                <div class="col-sm-10">
-                                    <input name="txtnumorden" type="text" class="form-control" id="txtnumorden" value="">
-                                </div>
-                              </div>
-                                                      
-                              <div class="row mb-3">
-                                  <div class="col-sm-10">
-                                      <input type="button" id="btnBusOrden" class="btn btn-primary" value="Ver Orden" onclick="verorden()">
-                                      &nbsp;&nbsp;&nbsp;&nbsp;
-                                      <input type="button" id="btnGestionar" class="btn btn-primary" value="Gestionar Ordenes" onclick="organizartareas(0,'')">
-                                      &nbsp;&nbsp;&nbsp;&nbsp;
-                                      <input type="button" id="btnHistorial" class="btn btn-primary" value="Ver Historial Patente" onclick="verhistorial()">
-                                  </div>
-                              </div>
-                            </form>
-                           
-                          <!-- End General Form Elements -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    
     <span id="lsinfo"></span>
+              
 
   </main><!-- End #main -->
 

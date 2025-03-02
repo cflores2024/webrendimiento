@@ -28,6 +28,11 @@ echo "
 
         echo "
                 <li>
+                  <a href='avancestareas.php'>
+                    <i class='bi bi-circle'></i><span>Metrica Tareas</span>
+                  </a>
+                </li>
+                <li>
                   <a href='buscadorpersonal.php'>
                     <i class='bi bi-circle'></i><span>CRUD Personal</span>
                   </a>
@@ -50,6 +55,11 @@ echo "
                 <li>
                   <a href='atenderordenes.php'>
                     <i class='bi bi-circle'></i><span>Atender Ordenes</span>
+                  </a>
+                </li>
+                <li>
+                  <a href='autorizarpedido.php'>
+                    <i class='bi bi-circle'></i><span>Autorizar Acceso Orden</span>
                   </a>
                 </li>
                 

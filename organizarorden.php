@@ -11,36 +11,77 @@
     $accion="...";
     $numorden=$_GET['orden'];
     $estado=$_GET['estado'];
+    $titulo=$_GET['titulo'];
     $msn="";
 
     if ($numorden>0)
-    {//SE CAMBIA DE ESTADO DE LA ORDEN SELECCIONADA A DISPONIBLE PARA QUE ALGUN MECANICO TRATE ALGUNA DE SUS TAREAS
+    {//SE CAMBIA DE ESTADO DE LA ORDEN SELECCIONADA A DISPONIBLE PARA QUE ALGUN MECANICO TRATE ALGUNA 
+     //DE SUS TAREAS
   
       $accion="M";
       $fechaaccion=date("Y-m-d H:i:s"); 
-     //BORRAR HORARIO DE CLASE
-      $sql="UPDATE numeroorden SET estado=?,accion=?,idempleadoaccion=?,fechaaccion=?
+      //BORRAR HORARIO DE CLASE
+      $sql="UPDATE numeroorden SET tituloorden=?,estado=?,accion=?,idempleadoaccion=?,fechaaccion=?
             WHERE numorden=?;";
 
       $con=conectar();
       $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-      mysqli_stmt_bind_param($sentencia,'sssss',$estado,$accion,$id,$fechaaccion,$numorden);
-      $resp=mysqli_stmt_execute($sentencia);
+      mysqli_stmt_bind_param($sentencia,'ssssss',$titulo,$estado,$accion,$id,$fechaaccion,$numorden);
+      $resp2=mysqli_stmt_execute($sentencia);
       
       desconectar($con);
         
-      if ($resp)  
+      if ($resp2)  
       {
-        $msn="";
+        $sql="UPDATE detalleorden SET estado=?,accion=?,idempleadoaccion=?,fechaaccion=?
+              WHERE numeroorden=?;";
+
+        $con=conectar();
+        $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+        mysqli_stmt_bind_param($sentencia,'sssss',$estado,$accion,$id,$fechaaccion,$numorden);
+        $resp=mysqli_stmt_execute($sentencia);
+        
+        desconectar($con);
+
+        if ($resp)  
+        {
+          $accion="B";
+          $sql="UPDATE autorizaraccorden SET accion=?,idempleadoaccion=?,fechaaccion=?
+                WHERE numorden=?;";
+
+          $con=conectar();
+          $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+          mysqli_stmt_bind_param($sentencia,'ssss',$accion,$id,$fechaaccion,$numorden);
+          $resp=mysqli_stmt_execute($sentencia);
+          
+          desconectar($con);
+
+          if ($resp)  
+          {
+              $msn="";
+          }
+          else
+          {
+            $msn="Error!!!. La orden no pudo ser cambiada de estado a DISPONIBLE. Intente de nuevo.";
+          }
+        }
+        else
+        {
+          $msn="Error!!!. La orden no pudo ser cambiada de estado a DISPONIBLE. Intente de nuevo.";
+        } 
       }
       else
       {
-        $msn="Error!!!. La orden no pudo ser cambiada de estado a DISPONIBLE. Intente de nuevo.";
+        $msn="Error!!!. La accion de actualizar la orden a disponible dio error. Intente de nuevo.";
       } 
     }
-
+    else
+    {
+      $msn="Error!!!. La orden no pudo ser cambiada de estado a DISPONIBLE. Intente de nuevo.";
+    } 
+  
     //SE TRATAN TODAS LAS ORDENES A VER COMO NO DISPONIBLES
-    $sql = "SELECT b.`iddetalleorden`,a.`matricula`,b.`numeroorden`,a.`estado`,a.`historial`,c.`idtarea`,c.`descripciontarea`
+    $sql = "SELECT b.`iddetalleorden`,a.`patente`,b.`numeroorden`,a.`estado`,a.`historial`,c.`idtarea`,c.`descripciontarea`
             FROM numeroorden a INNER JOIN detalleorden b ON (a.`numorden`=b.`numeroorden` AND b.`accion`!='B')
                                INNER JOIN tareas c ON (c.`idtarea`=b.`idtarea` AND c.`accion`!='B')
             WHERE a.`estado`='S'
@@ -76,7 +117,7 @@
           }
 
           $numorden=$row['numeroorden'];
-          $matricula=$row['matricula'];
+          $matricula=$row['patente'];
           $encabezado="<div class='accordion-item'>
                         <h2 class='accordion-header' id='flush-heading".$numorden."'>
                           <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapse".$numorden."' aria-expanded='false' aria-controls='flush-collapse".$numorden."'>
@@ -84,17 +125,50 @@
           
           if ($row['historial']=="S") 
           {//LA ORDEN PRESENTA UN HISTORIAL
-            $encabezado=$encabezado."<a href='#' onclick='historial(\"$matricula\")'>
+           /* $encabezado=$encabezado."<a href='#' onclick='historial(\"$matricula\")'>
                                       <img src='assets/img/tarea_historia.png' alt='La orden ya presenta un historial'>
                                     </a>";
+                                    */
           }
 
-          $encabezado=$encabezado."<a href='#' onclick='disponible(".$numorden.")'>
+                
+          
+          $poup="
+                  <div class='modal fade' id='".$numorden."' tabindex='-1'>
+                    <div class='modal-dialog modal-dialog-centered'>
+                      <div class='modal-content'>
+                        <div class='modal-header'>
+                          <h5 class='modal-title'>Titulo Descripción</h5>
+                          <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                        </div>
+                        <div class='modal-body'>
+                              <form>
+                                <div class='row mb-3'>
+                                  <label for='txttitulo' class='col-md-4 col-lg-3 col-form-label'>Titulo orden:</label>
+                                  <div class='col-md-8 col-lg-9'>
+                                    <input name='txttitulo' type='text' class='form-control' id='txttitulo".$numorden."' placeholder='Ingrese un titulo para esta orden' value=''>
+                                  </div>
+                                </div>
+                              </form>
+                        </div>
+                        <div class='modal-footer'>
+                          <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
+                          <button type='button' class='btn btn-primary' data-bs-dismiss='modal' onclick='disponible(".$numorden.")'>Aceptar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ";
+                
+          $encabezado=$encabezado."<a href='#' data-bs-toggle='modal' data-bs-target='#".$numorden."'>
+                                  <!--a href='#' onclick='disponible(".$numorden.",'')'-->
                                     <img src='assets/img/tarea_cambio_der.png' alt='Cambiar estado tarea'>
                                   </a>
                                 </button>
+
                               </h2>
-                            ";
+                            ". $poup;
+
           $info="<div id='flush-collapse".$numorden."' class='accordion-collapse collapse' aria-labelledby='flush-heading".$numorden."' data-bs-parent='#accordionFlush".$numorden."'>
                   <div class='accordion-body'>
                   <p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
@@ -108,7 +182,7 @@
     desconectar($con);
 
     //SE BUSCAN Y TRATAN TODAS LAS ORDENES A VER COMO DISPONIBLES
-    $sql = "SELECT b.`iddetalleorden`,a.`matricula`,b.`numeroorden`,a.`estado`,a.`historial`,c.`idtarea`,c.`descripciontarea`
+    $sql = "SELECT b.`iddetalleorden`,a.`patente`,b.`numeroorden`,a.`estado`,a.`historial`,c.`idtarea`,c.`descripciontarea`
             FROM numeroorden a INNER JOIN detalleorden b ON (a.`numorden`=b.`numeroorden` AND b.`accion`!='B')
                                 INNER JOIN tareas c ON (c.`idtarea`=b.`idtarea` AND c.`accion`!='B')
             WHERE a.`estado`='D'
@@ -124,6 +198,7 @@
     $numorden="";
     $item=1;
     $matricula="";
+    $poup="";
   
     while($row = mysqli_fetch_array($result))
     {
@@ -143,7 +218,7 @@
           }
 
           $numorden=$row['numeroorden'];
-          $matricula=$row['matricula'];
+          $matricula=$row['patente'];
           $encabezado="<div class='accordion-item'>
                         <h2 class='accordion-header' id='flush-heading".$numorden."'>
                           <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapse".$numorden."' aria-expanded='false' aria-controls='flush-collapse".$numorden."'>
@@ -151,9 +226,11 @@
           
           if ($row['historial']=="S") 
           {//LA ORDEN PRESENTA UN HISTORIAL
+            /*
             $encabezado=$encabezado."<a href='#' onclick='historial(\"$matricula\")'>
                                       <img src='assets/img/tarea_historia.png' alt='La orden ya presenta un historial'>
                                     </a>";
+                                    */
           }
 
           $encabezado=$encabezado."<a href='#' onclick='nodisponible(".$numorden.")'>
@@ -172,7 +249,8 @@
     }
 
     $lsdatosdisp=$lsdatos."".$encabezado."".$info."</div></div></div>";
-                
+          
+    
     desconectar($con);
 
     echo "
@@ -208,13 +286,11 @@
                 </div>
 
               </div>
-            </div>
-          </section>
-    ";
+            </div>". $poup ."</section>";
 }
 else
 {
-  //  header('Location: index.php');
-  //  exit;
+    header('Location: index.php');
+    exit;
 }   
 ?>
