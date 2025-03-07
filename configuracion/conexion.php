@@ -1,23 +1,27 @@
 <?php
 
+$server="localhost";
+$usu="root";
+$pass="123456a$";
+$base="dbrendimiento";
+
 function conectar()
     {
-        $server="localhost";
-        $usu="root";
-        $pass="123456a$";
-        $base="dbrendimiento";
+        global $server,$usu,$pass,$base,$cnx;
 
-        set_error_handler(function()//Manejador de excepciones
+        try 
         {
-            throw new Exception("Error");
-        });
+            //$cnx = mysqli_connect($server, $usu, $pass, $base);
+            $cnx = new mysqli($server, $usu, $pass, $base);
 
-        try {
-            $cnx = mysqli_connect($server, $usu, $pass, $base);
+            if ($cnx->connect_error) 
+            {
+                die('Connect Error (' . $cnx->connect_errno . ') ' . $cnx->connect_error);
+            }
         }
         catch(Exception $err)
         {
-            $cnx=false;
+            $cnx=null;
         }
 
         return $cnx;
@@ -25,21 +29,33 @@ function conectar()
 
     function desconectar($cnx)
     {
-        set_error_handler(function()//Manejador de excepciones
+        try 
         {
-            throw new Exception("Error");
-        });
-
-        try {
-                $estado=mysqli_close($cnx);  
+            //$estado=mysqli_close($cnx); 
+            $cnx->close();
+            $estado=true; 
         }
         catch(Exception $err)
         {
-                $estado=false;
+            $estado=false;
         }
 
         return $estado;
     }
+/*
+    function ejecutarsqlselect($sql)
+    {
+        global $cnx;
 
+        $cnx=conectar();
 
+        $result = $cnx->query($sql);
+
+        if (!$result) {
+            die('Invalid query: ' . $cnx->error);
+        }
+        
+        return $result;
+    }
+        */
 ?>

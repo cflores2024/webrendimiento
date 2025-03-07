@@ -1,6 +1,6 @@
 <?php
 
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
   session_start();
@@ -64,10 +64,23 @@
                         $contid=0;
                         $resp=false;
 
-                        $result = mysqli_query($con,$sql);
-                        while($row = mysqli_fetch_array($result))
+                        $result = $cnx->query($sql);
+
+                        if (!$result) 
                         {
-                            $contid=$row["id"];
+                          die('Invalid query: ' . $cnx->error);
+                        }
+
+                        if (!$result) 
+                        {
+                          die('Invalid query: ' . $mysqli->error);
+                        }
+                        else
+                        {
+                          while($row = mysqli_fetch_array($result))
+                          {
+                              $contid=$row["id"];
+                          }
                         }
 
                         desconectar($con);   
@@ -118,13 +131,26 @@
       }
       $con=conectar();
 
-      $result = mysqli_query($con,$sql);
-      while($row = mysqli_fetch_array($result))
+      $result = $cnx->query($sql);
+
+      if (!$result) 
       {
-        $txttarea=$row['descripciontarea'];
-        $txttiempo=$row['tiempotarea'];
+        die('Invalid query: ' . $cnx->error);
       }
 
+      if (!$result) 
+      {
+        die('Invalid query: ' . $mysqli->error);
+      }
+      else
+      {
+        while($row = mysqli_fetch_array($result))
+        {
+          $txttarea=$row['descripciontarea'];
+          $txttiempo=$row['tiempotarea'];
+        }
+      }
+      
       desconectar($con);   
     }
   }

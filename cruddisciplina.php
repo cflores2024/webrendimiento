@@ -1,6 +1,5 @@
 <?php
-
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
   session_start();
@@ -66,10 +65,23 @@
                         $contid=0;
                         $resp=false;
 
-                        $result = mysqli_query($con,$sql);
-                        while($row = mysqli_fetch_array($result))
+                        $result = $cnx->query($sql);
+
+                        if (!$result) 
                         {
-                            $contid=$row["id"];
+                          die('Invalid query: ' . $cnx->error);
+                        }
+
+                        if (!$result) 
+                        {
+                          die('Invalid query: ' . $mysqli->error);
+                        }
+                        else
+                        {
+                          while($row = mysqli_fetch_array($result))
+                          {
+                              $contid=$row["id"];
+                          }
                         }
 
                         desconectar($con);   
@@ -120,11 +132,24 @@
       }
       $con=conectar();
 
-      $result = mysqli_query($con,$sql);
-      while($row = mysqli_fetch_array($result))
+       $result = $cnx->query($sql);
+
+      if (!$result) 
       {
-        $txtdisciplina=$row['disciplina'];
-        $txtobservacion=$row["observacion"];
+        die('Invalid query: ' . $cnx->error);
+      }
+
+      if (!$result) 
+      {
+        die('Invalid query: ' . $mysqli->error);
+      }
+      else
+      {
+        while($row = mysqli_fetch_array($result))
+        {
+          $txtdisciplina=$row['disciplina'];
+          $txtobservacion=$row["observacion"];
+        }
       }
 
       desconectar($con);   
@@ -166,14 +191,6 @@
 
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
 
 </head>
 

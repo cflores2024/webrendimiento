@@ -78,13 +78,6 @@ echo "
       }
       
 echo "
-     <li class='nav-item'>
-        <a class='nav-link collapsed' href='validaringreso.php'>
-          <i class='bi bi-box-arrow-in-right'></i>
-          <span>Validar Ingreso</span>
-        </a>
-      </li><!-- End Login Page Nav -->
-
       <li class='nav-item'>
         <a class='nav-link collapsed' href='contactenos.php'>
           <i class='bi bi-envelope'></i>

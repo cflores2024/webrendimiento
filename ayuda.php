@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
   session_start();
@@ -53,20 +53,13 @@
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
   <script>
     function deshabilitaRetroceso()
     {
       window.location.hash="no-back-button";
       window.location.hash="Again-No-back-button" //chrome
       window.onhashchange=function(){window.location.hash="";}
-  }
+    }
   </script>
 </head>
 

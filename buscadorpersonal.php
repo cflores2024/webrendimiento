@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
 
   session_start();
   
@@ -50,13 +50,6 @@
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
   <script>
     function deshabilitaRetroceso()
     {
@@ -156,7 +149,6 @@
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
           <li class="breadcrumb-item"><a href="buscadorpersonal.php">Buscador personal</a></li>
-          <li class="breadcrumb-item active">CRUD Personal</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -184,9 +176,20 @@
 
     $con=conectar();
 
-    $result = mysqli_query($con,$sql);
+    $result = $cnx->query($sql);
+
+    if (!$result) 
+    {
+      die('Invalid query: ' . $cnx->error);
+    }
+
+    if (!$result) 
+    {
+      die('Invalid query: ' . $mysqli->error);
+    }
+    else
+    {
 ?>
-    
           <table class="table datatable">
             <thead>
               <tr>
@@ -204,24 +207,24 @@
             <tbody>
           
 <?php
-    while($row = mysqli_fetch_array($result))
-    {
-      $situacion= $row['aptoingreso']=='N'? "Rechazado": "Aprobado";
-      echo "
-            <tr>
-              <td>".$row['nrosocio']."</td>
-              <td>".$row['usuario']."</td>
-              <td>".$row['tel']."</td>
-              <td>".$row['domicilio']."</td>
-              <td>". $situacion ."</td>
-              <td><a href='crudpersonal.php?idpersona=".$row['idpersona']."&accion=M'><img src='./assets/img/buscar.png' alt='Ver registro' srcset=''></a></td>
-              <td><a href='crudpersonal.php?idpersona=".$row['idpersona']."&accion=B'><img src='./assets/img/eliminar.png' alt='Eliminar registro' srcset=''></a></td>
-            </tr>
-          ";
+      while($row = mysqli_fetch_array($result))
+      {
+        $situacion= $row['aptoingreso']=='N'? "Rechazado": "Aprobado";
+        echo "
+              <tr>
+                <td>".$row['nrosocio']."</td>
+                <td>".$row['usuario']."</td>
+                <td>".$row['tel']."</td>
+                <td>".$row['domicilio']."</td>
+                <td>". $situacion ."</td>
+                <td><a href='crudpersonal.php?idpersona=".$row['idpersona']."&accion=M'><img src='./assets/img/buscar.png' alt='Ver registro' srcset=''></a></td>
+                <td><a href='crudpersonal.php?idpersona=".$row['idpersona']."&accion=B'><img src='./assets/img/eliminar.png' alt='Eliminar registro' srcset=''></a></td>
+              </tr>
+            ";
+      }
     }
 
     desconectar($con);
-
 ?>
     
             </tbody>

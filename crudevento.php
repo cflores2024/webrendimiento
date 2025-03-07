@@ -1,5 +1,5 @@
 <?php
-        include "/configuracion/conexion.php";
+        include "configuracion/conexion.php";
         date_default_timezone_set("America/Argentina/Tucuman");
 
         session_start(); 
@@ -43,11 +43,24 @@
                                                 WHERE accion!='B' AND evento='". $evento ."' AND idempleadoaccion=". $id ." AND fechaaccion='". $fechaaccion ."';";
                                        
                                         $con=conectar();
-                                        $result = mysqli_query($con,$sql);
-                                        $elemento="";
-                                        while($row = mysqli_fetch_array($result))
+                                        $result = $cnx->query($sql);
+
+                                        if (!$result) 
                                         {
-                                                $elemento=$row['idevento'];
+                                        die('Invalid query: ' . $cnx->error);
+                                        }
+
+                                        if (!$result) 
+                                        {
+                                        die('Invalid query: ' . $mysqli->error);
+                                        }
+                                        else
+                                        {
+                                                $elemento="";
+                                                while($row = mysqli_fetch_array($result))
+                                                {
+                                                        $elemento=$row['idevento'];
+                                                }
                                         }
                                         desconectar($con);
                                

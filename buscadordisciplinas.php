@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
 
   session_start();
   
@@ -50,13 +50,6 @@
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
   <script>
     function deshabilitaRetroceso()
     {
@@ -156,7 +149,6 @@
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
           <li class="breadcrumb-item"><a href="buscadordisciplinas.php">Buscador especialidades</a></li>
-          <li class="breadcrumb-item active">CRUD Especialidades</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -184,7 +176,19 @@
 
                   $con=conectar();
 
-                  $result = mysqli_query($con,$sql);
+                  $result = $cnx->query($sql);
+
+                  if (!$result) 
+                  {
+                    die('Invalid query: ' . $cnx->error);
+                  }
+
+                  if (!$result) 
+                  {
+                    die('Invalid query: ' . $mysqli->error);
+                  }
+                  else
+                  {
               ?>
     
               <table class="table datatable">
@@ -213,10 +217,11 @@
                               <td><a href='cruddisciplina.php?iddisciplina=".$row['iddisciplina']."&accion=B'><img src='./assets/img/eliminar.png' alt='Eliminar registro' srcset=''></a></td>
                             </tr>
                           ";
-                          $fil=$fil+1;
+                      $fil=$fil+1;
                     }
-
-                    desconectar($con);
+                  }
+                    
+                  desconectar($con);
 
                 ?>
         

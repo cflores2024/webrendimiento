@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
   session_start();
@@ -45,13 +45,25 @@
        
         $con=conectar();
 
-        $result = mysqli_query($con,$sql);
+        $result = $cnx->query($sql);
 
-        while($row = mysqli_fetch_array($result))
+        if (!$result) 
         {
-          $idtarea=$row['idlistadotarea'];
+          die('Invalid query: ' . $cnx->error);
         }
 
+        if (!$result) 
+        {
+          die('Invalid query: ' . $mysqli->error);
+        }
+        else
+        {
+          while($row = mysqli_fetch_array($result))
+          {
+            $idtarea=$row['idlistadotarea'];
+          }
+        }
+        
         desconectar($con);
          
         if ($resp)  

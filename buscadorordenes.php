@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
 
   session_start();
   
@@ -54,18 +54,6 @@
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- =======================================================
-  * LAS ORDENES PUEDEN TOMAR LOS SIGUIENTES ESTADOS
-  * D => DISPONIBLES PARA SER TOMADA POR ALGÚN MECANICO
-  * S => ESTADO QUE INDICA LA ORDEN FUE RECUPERADA E INGRESADA AL SISTEMA DESDE ORACLE PERO NO ESTA DISPONIBLE
-  * F => ORDEN FINALIZADA Y CERRADA YA QUE TODAS SUS TAREAS ESTAN TERMINADAS
-  * P => ORDEN QUE SE ESTA ATENDIENDO SUS RESPECTIVAS TAREAS
-  ------------------------------------------------------------------------------------------------
-  POR OTRO LADO LAS TAREAS PUEDEN TENER LOS SIGUIENTES ESTADOS
-  * D => DISPONIBLES PARA SU ATENCION
-  * P => EN PROCESO SE ESTA ATENDIENDO
-  * F => TAREA TERMINADA
-  ======================================================== -->
   <script>
     function disponible(num)
     {
@@ -127,35 +115,35 @@
       }
     }
 
-      function verhistorial() {
-        var num=document.getElementById('txtnumpatente').value;
-      
-        if (num<=0) {
-          return;
-        } else {
-          var xmlhttp = new XMLHttpRequest();
-          xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-              //alert ('numero patente='+num);
-              document.getElementById("lsinfo").innerHTML=this.responseText;
-            }
-          };
-          xmlhttp.open('GET', 'historialorden.php?num='+num+'&ver=N', false);
-          xmlhttp.send();
-        }
+    function verhistorial() {
+      var num=document.getElementById('txtnumpatente').value;
+    
+      if (num<=0) {
+        return;
+      } else {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ('numero patente='+num);
+            document.getElementById("lsinfo").innerHTML=this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'historialorden.php?num='+num+'&ver=N', false);
+        xmlhttp.send();
       }
+    }
 
-      function organizartareas(orden,estado,titulo) {
-          var xmlhttp = new XMLHttpRequest();
-          xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-              //alert("Se envia la orden numero=>"+orden+" y se lo pasa al estado de =>"+estado+", con el titulo "+titulo);
-              document.getElementById("lsinfo").innerHTML=this.responseText;
-            }
-          };
-          xmlhttp.open('GET', 'organizarorden.php?orden='+orden+'&estado='+estado+'&titulo='+titulo, false);
-          xmlhttp.send();
-      }
+    function organizartareas(orden,estado,titulo) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert("Se envia la orden numero=>"+orden+" y se lo pasa al estado de =>"+estado+", con el titulo "+titulo);
+            document.getElementById("lsinfo").innerHTML=this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'organizarorden.php?orden='+orden+'&estado='+estado+'&titulo='+titulo, false);
+        xmlhttp.send();
+    }
 
   </script>
 </head>
@@ -244,12 +232,11 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Personal</h1>
+      <h1>Ordenes</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
           <li class="breadcrumb-item"><a href="buscadorordenes.php">Buscador ordenes</a></li>
-          <li class="breadcrumb-item active">CRUD Ordenes</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->

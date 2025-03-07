@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-    include "/configuracion/conexion.php";
+    include "configuracion/conexion.php";
 
     $id="";
     $lsfotos="";
@@ -38,43 +38,55 @@
 
     $con=conectar();
 
-    $result = mysqli_query($con,$sql);
-    
-    while($row = mysqli_fetch_array($result))
+    $result = $cnx->query($sql);
+
+    if (!$result) 
     {
-        $orden=$row['numorden'];
-        $titulo=$row['tituloorden'];
-        $persona=$row['empleado'];
-        $estado=$row['estado'];
-        $faccion=$row['fechaaccion'];
-       
-        $filas=$filas."
-                        <tr>
-                            <th scope='row'><a href='#'>#".$orden."</a></th>
-                            <td>".$titulo."</td>
-                            <td>". $faccion ."</td>
-                            <td>". $persona ."</td>";
-    
-        if ($estado=="P")
-        {
-            $filas=$filas."
-                            <td>
-                                <a href='#' title='No autoriza acceso'>
-                                <img src='assets/img/usu_dele.png' srcset=''>
-                                </a>
-                            </td></tr>";
-        }
-        else
-        {
-            $filas=$filas."
-                            <td>
-                                <a href='#' title='Autoriza acceso'>
-                                    <img src='assets/img/usu_autoriza.png' srcset=''>
-                                </a>
-                            </td></tr>";
-        }
+        die('Invalid query: ' . $cnx->error);
     }
 
+    if (!$result) 
+    {
+        die('Invalid query: ' . $mysqli->error);
+    }
+    else
+    {
+        while($row = mysqli_fetch_array($result))
+        {
+            $orden=$row['numorden'];
+            $titulo=$row['tituloorden'];
+            $persona=$row['empleado'];
+            $estado=$row['estado'];
+            $faccion=$row['fechaaccion'];
+        
+            $filas=$filas."
+                            <tr>
+                                <th scope='row'><a href='#'>#".$orden."</a></th>
+                                <td>".$titulo."</td>
+                                <td>". $faccion ."</td>
+                                <td>". $persona ."</td>";
+        
+            if ($estado=="P")
+            {
+                $filas=$filas."
+                                <td>
+                                    <a href='#' title='No autoriza acceso'>
+                                    <img src='assets/img/usu_dele.png' srcset=''>
+                                    </a>
+                                </td></tr>";
+            }
+            else
+            {
+                $filas=$filas."
+                                <td>
+                                    <a href='#' title='Autoriza acceso'>
+                                        <img src='assets/img/usu_autoriza.png' srcset=''>
+                                    </a>
+                                </td></tr>";
+            }
+        }
+    }
+    
     desconectar($con);
 
     echo "<section class='section'>

@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
   session_start();
@@ -27,7 +27,6 @@
       $fechaaccion=date("Y-m-d H:i:s"); 
     
       //ALTA DEL NUEVO SOCIO
-      
       $sql="INSERT INTO disciplinas (disciplina,observacion,accion,idempleadoaccion,fechaaccion)
             VALUES (?,?,?,?,?);";
 
@@ -44,25 +43,36 @@
         $sql = "SELECT a.`iddisciplina` FROM disciplinas a WHERE `accion`!='B' AND a.disciplina='".$txtdisciplina."';";
        
         $con=conectar();
+        
+        $result = $cnx->query($sql);
 
-        $result = mysqli_query($con,$sql);
-
-        while($row = mysqli_fetch_array($result))
+        if (!$result) 
         {
-          $iddisciplina=$row['iddisciplina'];
+          die('Invalid query: ' . $cnx->error);
         }
 
-        desconectar($con);
-         
-        if ($resp)  
+        if (!$result) 
         {
-          $accion="OK";
+          die('Invalid query: ' . $mysqli->error);
         }
         else
         {
-          $accion="ERROR";
+          while($row = mysqli_fetch_array($result))
+          {
+            $iddisciplina=$row['iddisciplina'];
+          }
+
+          desconectar($con);
+          
+          if ($resp)  
+          {
+            $accion="OK";
+          }
+          else
+          {
+            $accion="ERROR";
+          }
         }
-        
       }
     }
   }
@@ -104,13 +114,6 @@
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
 </head>
 
 <body>

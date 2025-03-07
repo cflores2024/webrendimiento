@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
   session_start();
@@ -89,96 +89,109 @@
 
     $con=conectar();
 
-    $result = mysqli_query($con,$sql);
+    $result = $cnx->query($sql);
 
-    $encabezado="";
-    $info="";
-    $lsdatos="";
-    $numorden="";
-    $item=1;
-    $matricula="";
-    $lsdatosnodisp="";
-    $lsdatosdisp="";
-  
-    while($row = mysqli_fetch_array($result))
+    if (!$result) 
     {
-        if ($numorden==$row['numeroorden'])
-        {
-          $info=$info."<p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
-        }
-        else
-        {
-          if (strlen($info)>0)
-          {//VIENE CON DATOS DE QUE CORRESPONDEN A TODOS LOS ELEMENTOS DE UN ACORDEON
-            $lsdatos=$lsdatos."".$encabezado."".$info."</div></div></div>";
-            $item=1;
-            $encabezado="";
-            $info="";
-          }
+      die('Invalid query: ' . $cnx->error);
+    }
 
-          $numorden=$row['numeroorden'];
-          $matricula=$row['patente'];
-          $encabezado="<div class='accordion-item'>
-                        <h2 class='accordion-header' id='flush-heading".$numorden."'>
-                          <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapse".$numorden."' aria-expanded='false' aria-controls='flush-collapse".$numorden."'>
-                            Orden de trabajo #".$numorden."&nbsp;&nbsp;&nbsp;&nbsp;";
-          
-          if ($row['historial']=="S") 
-          {//LA ORDEN PRESENTA UN HISTORIAL
-           /* $encabezado=$encabezado."<a href='#' onclick='historial(\"$matricula\")'>
-                                      <img src='assets/img/tarea_historia.png' alt='La orden ya presenta un historial'>
-                                    </a>";
-                                    */
-          }
+    if (!$result) 
+    {
+      die('Invalid query: ' . $mysqli->error);
+    }
+    else
+    {
 
-                
-          
-          $poup="
-                  <div class='modal fade' id='".$numorden."' tabindex='-1'>
-                    <div class='modal-dialog modal-dialog-centered'>
-                      <div class='modal-content'>
-                        <div class='modal-header'>
-                          <h5 class='modal-title'>Titulo Descripción</h5>
-                          <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-                        </div>
-                        <div class='modal-body'>
-                              <form>
-                                <div class='row mb-3'>
-                                  <label for='txttitulo' class='col-md-4 col-lg-3 col-form-label'>Titulo orden:</label>
-                                  <div class='col-md-8 col-lg-9'>
-                                    <input name='txttitulo' type='text' class='form-control' id='txttitulo".$numorden."' placeholder='Ingrese un titulo para esta orden' value=''>
+      $encabezado="";
+      $info="";
+      $lsdatos="";
+      $numorden="";
+      $item=1;
+      $matricula="";
+      $lsdatosnodisp="";
+      $lsdatosdisp="";
+    
+      while($row = mysqli_fetch_array($result))
+      {
+          if ($numorden==$row['numeroorden'])
+          {
+            $info=$info."<p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
+          }
+          else
+          {
+            if (strlen($info)>0)
+            {//VIENE CON DATOS DE QUE CORRESPONDEN A TODOS LOS ELEMENTOS DE UN ACORDEON
+              $lsdatos=$lsdatos."".$encabezado."".$info."</div></div></div>";
+              $item=1;
+              $encabezado="";
+              $info="";
+            }
+
+            $numorden=$row['numeroorden'];
+            $matricula=$row['patente'];
+            $encabezado="<div class='accordion-item'>
+                          <h2 class='accordion-header' id='flush-heading".$numorden."'>
+                            <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapse".$numorden."' aria-expanded='false' aria-controls='flush-collapse".$numorden."'>
+                              Orden de trabajo #".$numorden."&nbsp;&nbsp;&nbsp;&nbsp;";
+            
+            if ($row['historial']=="S") 
+            {//LA ORDEN PRESENTA UN HISTORIAL
+            /* $encabezado=$encabezado."<a href='#' onclick='historial(\"$matricula\")'>
+                                        <img src='assets/img/tarea_historia.png' alt='La orden ya presenta un historial'>
+                                      </a>";
+                                      */
+            }
+
+                  
+            
+            $poup="
+                    <div class='modal fade' id='".$numorden."' tabindex='-1'>
+                      <div class='modal-dialog modal-dialog-centered'>
+                        <div class='modal-content'>
+                          <div class='modal-header'>
+                            <h5 class='modal-title'>Titulo Descripción</h5>
+                            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                          </div>
+                          <div class='modal-body'>
+                                <form>
+                                  <div class='row mb-3'>
+                                    <label for='txttitulo' class='col-md-4 col-lg-3 col-form-label'>Titulo orden:</label>
+                                    <div class='col-md-8 col-lg-9'>
+                                      <input name='txttitulo' type='text' class='form-control' id='txttitulo".$numorden."' placeholder='Ingrese un titulo para esta orden' value=''>
+                                    </div>
                                   </div>
-                                </div>
-                              </form>
-                        </div>
-                        <div class='modal-footer'>
-                          <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
-                          <button type='button' class='btn btn-primary' data-bs-dismiss='modal' onclick='disponible(".$numorden.")'>Aceptar</button>
+                                </form>
+                          </div>
+                          <div class='modal-footer'>
+                            <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
+                            <button type='button' class='btn btn-primary' data-bs-dismiss='modal' onclick='disponible(".$numorden.")'>Aceptar</button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ";
-                
-          $encabezado=$encabezado."<a href='#' data-bs-toggle='modal' data-bs-target='#".$numorden."'>
-                                  <!--a href='#' onclick='disponible(".$numorden.",'')'-->
-                                    <img src='assets/img/tarea_cambio_der.png' alt='Cambiar estado tarea'>
-                                  </a>
-                                </button>
+                  ";
+                  
+            $encabezado=$encabezado."<a href='#' data-bs-toggle='modal' data-bs-target='#".$numorden."'>
+                                    <!--a href='#' onclick='disponible(".$numorden.",'')'-->
+                                      <img src='assets/img/tarea_cambio_der.png' alt='Cambiar estado tarea'>
+                                    </a>
+                                  </button>
 
-                              </h2>
-                            ". $poup;
+                                </h2>
+                              ". $poup;
 
-          $info="<div id='flush-collapse".$numorden."' class='accordion-collapse collapse' aria-labelledby='flush-heading".$numorden."' data-bs-parent='#accordionFlush".$numorden."'>
-                  <div class='accordion-body'>
-                  <p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
-        }
+            $info="<div id='flush-collapse".$numorden."' class='accordion-collapse collapse' aria-labelledby='flush-heading".$numorden."' data-bs-parent='#accordionFlush".$numorden."'>
+                    <div class='accordion-body'>
+                    <p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
+          }
 
-        $item=$item+1;
+          $item=$item+1;
+      }
+
+      $lsdatosnodisp=$lsdatos."".$encabezado."".$info."</div></div></div>";
     }
 
-    $lsdatosnodisp=$lsdatos."".$encabezado."".$info."</div></div></div>";
-                
     desconectar($con);
 
     //SE BUSCAN Y TRATAN TODAS LAS ORDENES A VER COMO DISPONIBLES
@@ -190,66 +203,77 @@
 
     $con=conectar();
 
-    $result = mysqli_query($con,$sql);
+    $result = $cnx->query($sql);
 
-    $encabezado="";
-    $info="";
-    $lsdatos="";
-    $numorden="";
-    $item=1;
-    $matricula="";
-    $poup="";
-  
-    while($row = mysqli_fetch_array($result))
+    if (!$result) 
     {
-        if ($numorden==$row['numeroorden'])
-        {
-          $info=$info."<p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
-        }
-        else
-        {
-          if (strlen($info)>0)
-          {//VIENE CON DATOS DE QUE CORRESPONDEN A TODOS LOS ELEMENTOS DE UN ACORDEON
-            $lsdatos=$lsdatos."".$encabezado."".$info."</div></div></div>";
-            //$i=$i+1;
-            $item=1;
-            $encabezado="";
-            $info="";
-          }
-
-          $numorden=$row['numeroorden'];
-          $matricula=$row['patente'];
-          $encabezado="<div class='accordion-item'>
-                        <h2 class='accordion-header' id='flush-heading".$numorden."'>
-                          <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapse".$numorden."' aria-expanded='false' aria-controls='flush-collapse".$numorden."'>
-                            Orden de trabajo #".$numorden."&nbsp;&nbsp;&nbsp;&nbsp;";
-          
-          if ($row['historial']=="S") 
-          {//LA ORDEN PRESENTA UN HISTORIAL
-            /*
-            $encabezado=$encabezado."<a href='#' onclick='historial(\"$matricula\")'>
-                                      <img src='assets/img/tarea_historia.png' alt='La orden ya presenta un historial'>
-                                    </a>";
-                                    */
-          }
-
-          $encabezado=$encabezado."<a href='#' onclick='nodisponible(".$numorden.")'>
-                                    <img src='assets/img/tarea_cambio_izq.png' alt='Cambiar estado tarea'>
-                                  </a>
-                                </button>
-                              </h2>
-                            ";
-
-          $info="<div id='flush-collapse".$numorden."' class='accordion-collapse collapse' aria-labelledby='flush-heading".$numorden."' data-bs-parent='#accordionFlush".$numorden."'>
-                  <div class='accordion-body'>
-                  <p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
-        }
-
-        $item=$item+1;
+      die('Invalid query: ' . $cnx->error);
     }
 
-    $lsdatosdisp=$lsdatos."".$encabezado."".$info."</div></div></div>";
-          
+    if (!$result) 
+    {
+      die('Invalid query: ' . $mysqli->error);
+    }
+    else
+    {
+      $encabezado="";
+      $info="";
+      $lsdatos="";
+      $numorden="";
+      $item=1;
+      $matricula="";
+      $poup="";
+    
+      while($row = mysqli_fetch_array($result))
+      {
+          if ($numorden==$row['numeroorden'])
+          {
+            $info=$info."<p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
+          }
+          else
+          {
+            if (strlen($info)>0)
+            {//VIENE CON DATOS DE QUE CORRESPONDEN A TODOS LOS ELEMENTOS DE UN ACORDEON
+              $lsdatos=$lsdatos."".$encabezado."".$info."</div></div></div>";
+              //$i=$i+1;
+              $item=1;
+              $encabezado="";
+              $info="";
+            }
+
+            $numorden=$row['numeroorden'];
+            $matricula=$row['patente'];
+            $encabezado="<div class='accordion-item'>
+                          <h2 class='accordion-header' id='flush-heading".$numorden."'>
+                            <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapse".$numorden."' aria-expanded='false' aria-controls='flush-collapse".$numorden."'>
+                              Orden de trabajo #".$numorden."&nbsp;&nbsp;&nbsp;&nbsp;";
+            
+            if ($row['historial']=="S") 
+            {//LA ORDEN PRESENTA UN HISTORIAL
+              /*
+              $encabezado=$encabezado."<a href='#' onclick='historial(\"$matricula\")'>
+                                        <img src='assets/img/tarea_historia.png' alt='La orden ya presenta un historial'>
+                                      </a>";
+                                      */
+            }
+
+            $encabezado=$encabezado."<a href='#' onclick='nodisponible(".$numorden.")'>
+                                      <img src='assets/img/tarea_cambio_izq.png' alt='Cambiar estado tarea'>
+                                    </a>
+                                  </button>
+                                </h2>
+                              ";
+
+            $info="<div id='flush-collapse".$numorden."' class='accordion-collapse collapse' aria-labelledby='flush-heading".$numorden."' data-bs-parent='#accordionFlush".$numorden."'>
+                    <div class='accordion-body'>
+                    <p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
+          }
+
+          $item=$item+1;
+      }
+
+      $lsdatosdisp=$lsdatos."".$encabezado."".$info."</div></div></div>";
+    }    
     
     desconectar($con);
 

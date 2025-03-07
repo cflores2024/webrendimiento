@@ -1,6 +1,6 @@
 <?php
    
-    include "/configuracion/conexion.php";
+    include "configuracion/conexion.php";
   
     $numorden=$_GET['num'];
 
@@ -12,68 +12,80 @@
 
         $con=conectar();
 
-        $result = mysqli_query($con,$sql);
+        $result = $cnx->query($sql);
 
-        $info="";
-
-        while($row = mysqli_fetch_array($result))
+        if (!$result) 
         {
-            $info= "
-                <section class='section'>
-                    <div class='row'>
-                        <div class='col-lg-6'>
-                            <div class='card'>
-                            <div class='card-body'>
-                                <h5 class='card-title'>Datos Cliente</h5>
-                                <!-- General Form Elements -->
-                                <form>
-                                <div class='row mb-3'>
-                                    <label for='inputText' class='col-sm-3 col-form-label'>Cliente</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['cliente']."'>
+          die('Invalid query: ' . $cnx->error);
+        }
+
+        if (!$result) 
+        {
+          die('Invalid query: ' . $mysqli->error);
+        }
+        else
+        {
+            $info="";
+
+            while($row = mysqli_fetch_array($result))
+            {
+                $info= "
+                    <section class='section'>
+                        <div class='row'>
+                            <div class='col-lg-6'>
+                                <div class='card'>
+                                <div class='card-body'>
+                                    <h5 class='card-title'>Datos Cliente</h5>
+                                    <!-- General Form Elements -->
+                                    <form>
+                                    <div class='row mb-3'>
+                                        <label for='inputText' class='col-sm-3 col-form-label'>Cliente</label>
+                                        <div class='col-sm-9'>
+                                        <input type='text' class='form-control' value='".$row['cliente']."'>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputEmail' class='col-sm-3 col-form-label'>Domicilio</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['domicilio']."'>
+                                    <div class='row mb-3'>
+                                        <label for='inputEmail' class='col-sm-3 col-form-label'>Domicilio</label>
+                                        <div class='col-sm-9'>
+                                        <input type='text' class='form-control' value='".$row['domicilio']."'>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputPassword' class='col-sm-3 col-form-label'>Modelo</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['modelo']."'>
+                                    <div class='row mb-3'>
+                                        <label for='inputPassword' class='col-sm-3 col-form-label'>Modelo</label>
+                                        <div class='col-sm-9'>
+                                        <input type='text' class='form-control' value='".$row['modelo']."'>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputNumber' class='col-sm-3 col-form-label'>N° Chasis</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['numchasis']."'>
+                                    <div class='row mb-3'>
+                                        <label for='inputNumber' class='col-sm-3 col-form-label'>N° Chasis</label>
+                                        <div class='col-sm-9'>
+                                        <input type='text' class='form-control' value='".$row['numchasis']."'>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputNumber' class='col-sm-3 col-form-label'>Patente</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['patente']."'>
+                                    <div class='row mb-3'>
+                                        <label for='inputNumber' class='col-sm-3 col-form-label'>Patente</label>
+                                        <div class='col-sm-9'>
+                                        <input type='text' class='form-control' value='".$row['patente']."'>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputNumber' class='col-sm-3 col-form-label'>Kilometraje</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['kilometraje']."'>
+                                    <div class='row mb-3'>
+                                        <label for='inputNumber' class='col-sm-3 col-form-label'>Kilometraje</label>
+                                        <div class='col-sm-9'>
+                                        <input type='text' class='form-control' value='".$row['kilometraje']."'>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputNumber' class='col-sm-3 col-form-label'>F. Venta</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['fventa']."'>
+                                    <div class='row mb-3'>
+                                        <label for='inputNumber' class='col-sm-3 col-form-label'>F. Venta</label>
+                                        <div class='col-sm-9'>
+                                        <input type='text' class='form-control' value='".$row['fventa']."'>
+                                        </div>
                                     </div>
+                                    </form>
+                                    <!-- End General Form Elements -->
                                 </div>
-                                </form>
-                                <!-- End General Form Elements -->
                             </div>
-                        </div>
-                    </div>";
+                        </div>";
+            }
         }
 
         desconectar($con);
@@ -84,177 +96,83 @@
 
         $con=conectar();
 
-        $result = mysqli_query($con,$sql);
+        $result = $cnx->query($sql);
 
-        $infoencabezado="<div class='col-lg-6'>
-                            <div class='card'>
-                            <div class='card-body'>
-                                <h5 class='card-title'>Lista de Tareas</h5>
-
-                                <!-- Table with stripped rows -->
-                                <table class='table table-striped'>
-                                <thead>
-                                    <tr>
-                                    <th scope='col'>#</th>
-                                    <th scope='col'>Descripción</th>
-                                    <th scope='col'>Tiempo</th>
-                                    </tr>
-                                </thead>
-                                <tbody>";
-        $infofilas="";
-        $infopie="</tbody>
-                    </table>
-                    <!-- End Table with stripped rows -->
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                </section>";
-        $fil=1;
-        
-        while($row = mysqli_fetch_array($result))
+        if (!$result) 
         {
-            switch($row['estado'])
+          die('Invalid query: ' . $cnx->error);
+        }
+
+        if (!$result) 
+        {
+          die('Invalid query: ' . $mysqli->error);
+        }
+        else
+        {
+            $infoencabezado="<div class='col-lg-6'>
+                                <div class='card'>
+                                <div class='card-body'>
+                                    <h5 class='card-title'>Lista de Tareas</h5>
+
+                                    <!-- Table with stripped rows -->
+                                    <table class='table table-striped'>
+                                    <thead>
+                                        <tr>
+                                        <th scope='col'>#</th>
+                                        <th scope='col'>Descripción</th>
+                                        <th scope='col'>Tiempo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>";
+            $infofilas="";
+            $infopie="</tbody>
+                        </table>
+                        <!-- End Table with stripped rows -->
+                        </div>
+                        </div>
+                        </div>
+                        </div>
+                    </section>";
+            $fil=1;
+            
+            while($row = mysqli_fetch_array($result))
             {
-                case "D": //LA TAREA ESTA DISPONIBLE
+                switch($row['estado'])
+                {
+                    case "D": //LA TAREA ESTA DISPONIBLE
+                                $infofilas=$infofilas. "<tr>
+                                                            <th scope='row'>".$fil."</th>
+                                                            <td>".$row['descripciontarea']."</td>
+                                                            <td>Disponible</td>
+                                                        </tr>";
+                    break;
+                    case "P": //LA TAREA ESTA EN PROCESO
                             $infofilas=$infofilas. "<tr>
                                                         <th scope='row'>".$fil."</th>
                                                         <td>".$row['descripciontarea']."</td>
-                                                        <td>Disponible</td>
+                                                        <td>En Proceso</td>
                                                     </tr>";
-                break;
-                case "P": //LA TAREA ESTA EN PROCESO
-                        $infofilas=$infofilas. "<tr>
-                                                    <th scope='row'>".$fil."</th>
-                                                    <td>".$row['descripciontarea']."</td>
-                                                    <td>En Proceso</td>
-                                                </tr>";
-                break;
-                case "F": //LA TAREA ESTA FINALIZADA
-                        $infofilas=$infofilas. "<tr>
-                                                    <th scope='row'>".$fil."</th>
-                                                    <td>".$row['descripciontarea']."</td>
-                                                    <td>".$row['tiempotarea']."</td>
-                                                </tr>";
-                break;
-            }
+                    break;
+                    case "F": //LA TAREA ESTA FINALIZADA
+                            $infofilas=$infofilas. "<tr>
+                                                        <th scope='row'>".$fil."</th>
+                                                        <td>".$row['descripciontarea']."</td>
+                                                        <td>".$row['tiempotarea']."</td>
+                                                    </tr>";
+                    break;
+                }
 
-            $fil=$fil+1;
+                $fil=$fil+1;
+            }
         }
 
         desconectar($con);
 
-       echo $info."".$infoencabezado."".$infofilas."".$infopie;
+        echo $info."".$infoencabezado."".$infofilas."".$infopie;
     }
     else
     {
       header('Location: index.php');
       exit;
     }   
-  
-
-/*    echo "
-             <section class='section'>
-                <div class='row'>
-                    <div class='col-lg-6'>
-                        <div class='card'>
-                        <div class='card-body'>
-                            <h5 class='card-title'>Datos Cliente</h5>
-                            <!-- General Form Elements -->
-                            <form>
-                            <div class='row mb-3'>
-                                <label for='inputText' class='col-sm-3 col-form-label'>Cliente</label>
-                                <div class='col-sm-9'>
-                                <input type='text' class='form-control' value='Cesar Flores'>
-                                </div>
-                            </div>
-                            <div class='row mb-3'>
-                                <label for='inputEmail' class='col-sm-3 col-form-label'>Domicilio</label>
-                                <div class='col-sm-9'>
-                                <input type='text' class='form-control' value='Colon 123'>
-                                </div>
-                            </div>
-                            <div class='row mb-3'>
-                                <label for='inputPassword' class='col-sm-3 col-form-label'>Modelo</label>
-                                <div class='col-sm-9'>
-                                <input type='text' class='form-control' value='FIAT UNO'>
-                                </div>
-                            </div>
-                            <div class='row mb-3'>
-                                <label for='inputNumber' class='col-sm-3 col-form-label'>N° Chasis</label>
-                                <div class='col-sm-9'>
-                                <input type='text' class='form-control' value='ADV12345ED'>
-                                </div>
-                            </div>
-                            <div class='row mb-3'>
-                                <label for='inputNumber' class='col-sm-3 col-form-label'>Patente</label>
-                                <div class='col-sm-9'>
-                                <input type='text' class='form-control' value='ADF234'>
-                                </div>
-                            </div>
-                            <div class='row mb-3'>
-                                <label for='inputNumber' class='col-sm-3 col-form-label'>Kilometraje</label>
-                                <div class='col-sm-9'>
-                                <input type='text' class='form-control' value='136.000'>
-                                </div>
-                            </div>
-                            <div class='row mb-3'>
-                                <label for='inputNumber' class='col-sm-3 col-form-label'>F. Venta</label>
-                                <div class='col-sm-9'>
-                                <input type='text' class='form-control' value='15/05/2013'>
-                                </div>
-                            </div>
-                            </form>
-                            <!-- End General Form Elements -->
-                        </div>
-                        </div>
-
-                    </div>
-                    <div class='col-lg-6'>
-
-                        <div class='card'>
-                        <div class='card-body'>
-                            <h5 class='card-title'>Lista de Tareas</h5>
-
-                            <!-- Table with stripped rows -->
-                            <table class='table table-striped'>
-                            <thead>
-                                <tr>
-                                <th scope='col'>#</th>
-                                <th scope='col'>Descripción</th>
-                                <th scope='col'>Tiempo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                <th scope='row'>1</th>
-                                <td>Cambio Filtro</td>
-                                <td>15 min</td>
-                                </tr>
-                                <tr>
-                                <th scope='row'>2</th>
-                                <td>Cambio Aceite</td>
-                                <td>30 min</td>
-                                </tr>
-                                <tr>
-                                <th scope='row'>3</th>
-                                <td>Cambio de foco guiño derecho delantero</td>
-                                <td>2 horas</td>
-                                </tr>
-                                <tr>
-                                <th scope='row'>4</th>
-                                <td>Cambio de luz de freno trasera derecha</td>
-                                <td>2 horas</td>
-                                </tr>
-                            </tbody>
-                            </table>
-                            <!-- End Table with stripped rows -->
-
-                        </div>
-                        </div>
-
-                    </div>
-                </div>
-            </section>
-    ";*/
 ?>

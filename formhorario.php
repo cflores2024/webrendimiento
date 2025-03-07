@@ -1,5 +1,5 @@
 <?php
-    include "/configuracion/conexion.php";
+    include "configuracion/conexion.php";
     date_default_timezone_set("America/Argentina/Tucuman");
 
     session_start();

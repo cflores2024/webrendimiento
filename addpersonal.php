@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
   session_start();
@@ -61,11 +61,23 @@
 
         $con=conectar();
 
-        $result = mysqli_query($con,$sql);
+        $result = $cnx->query($sql);
 
-        while($row = mysqli_fetch_array($result))
+        if (!$result) 
         {
-          $idsocio=$row['idpersona'];
+          die('Invalid query: ' . $cnx->error);
+        }
+
+        if (!$result) 
+        {
+          die('Invalid query: ' . $mysqli->error);
+        }
+        else
+        {
+          while($row = mysqli_fetch_array($result))
+          {
+            $idsocio=$row['idpersona'];
+          }
         }
 
         desconectar($con);
@@ -320,38 +332,50 @@
 
                           $con=conectar();
 
-                          $result = mysqli_query($con,$sql);
+                          $result = $cnx->query($sql);
 
-                          while($row = mysqli_fetch_array($result))
+                          if (!$result) 
                           {
-                            $id=$row['iddisciplina'];
-                            $discip=$row['disciplina'];
-                            $encontrado=false;
-
-                            if (isset($_GET['lsdisciplinas']))
-                            {
-                              foreach($_GET['lsdisciplinas'] as $i)
-                              {
-                                if ($id==$i) $encontrado=true;
-                              }
-                            }
-                            
-                            if ($encontrado==true)
-                            {
-                              echo "
-                                    <input type='checkbox' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."' checked>
-                                    <label for='op'>".$row['disciplina']."</label><br>
-                                  ";
-                            }
-                            else
-                            {
-                              echo "
-                                    <input type='checkbox' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."'>
-                                    <label for='op'>".$row['disciplina']."</label><br>
-                                  ";
-                            }
+                            die('Invalid query: ' . $cnx->error);
                           }
 
+                          if (!$result) 
+                          {
+                            die('Invalid query: ' . $mysqli->error);
+                          }
+                          else
+                          {
+                            while($row = mysqli_fetch_array($result))
+                            {
+                              $id=$row['iddisciplina'];
+                              $discip=$row['disciplina'];
+                              $encontrado=false;
+
+                              if (isset($_GET['lsdisciplinas']))
+                              {
+                                foreach($_GET['lsdisciplinas'] as $i)
+                                {
+                                  if ($id==$i) $encontrado=true;
+                                }
+                              }
+                              
+                              if ($encontrado==true)
+                              {
+                                echo "
+                                      <input type='checkbox' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."' checked>
+                                      <label for='op'>".$row['disciplina']."</label><br>
+                                    ";
+                              }
+                              else
+                              {
+                                echo "
+                                      <input type='checkbox' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."'>
+                                      <label for='op'>".$row['disciplina']."</label><br>
+                                    ";
+                              }
+                            }
+                          }
+                          
                           desconectar($con);
                         ?>
                       </div>

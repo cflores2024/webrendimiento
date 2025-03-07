@@ -1,6 +1,6 @@
 <?php
 
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
   session_start();
@@ -277,10 +277,22 @@
                                         
                       $con=conectar();
 
-                      $result = mysqli_query($con,$sql);
-                      $j=0;
-                      while($row = mysqli_fetch_array($result))
+                      $result = $cnx->query($sql);
+
+                      if (!$result) 
                       {
+                        die('Invalid query: ' . $cnx->error);
+                      }
+
+                      if (!$result) 
+                      {
+                        die('Invalid query: ' . $mysqli->error);
+                      }
+                      else
+                      {
+                        $j=0;
+                        while($row = mysqli_fetch_array($result))
+                        {
                         if ($j<=0)
                         {
 ?>
@@ -303,9 +315,10 @@
 ?>
                                 <option value="<?php echo $row["iddisciplina"]; ?>"><?php echo $row["disciplina"]; ?></option>
 <?php
-                        }
+                          }
 
-                        $j=$j+1;
+                          $j=$j+1;
+                        }
                       }
 ?>
                             </select>

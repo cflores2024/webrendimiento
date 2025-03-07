@@ -1,54 +1,76 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
+include "configuracion/conexion.php";
 
 $id=0;
 $apenomb="";
 $tipousu="";
 $foto="";
-$usu=$_GET['username'];
-$pass=$_GET['password'];
+$txtusu=$_GET['username'];
+$txtpass=$_GET['password'];
 
   if (isset($_GET['username']))
   {
-      include "/configuracion/conexion.php";
-
-      $sql = "SELECT a.`idpersona`,CONCAT(a.`apellido`,', ',a.`nombre`) AS usuario,b.`tipopersona`,a.`urlfoto`,a.`nombrecortousu`
-              FROM personas a INNER JOIN tipopersona b ON (a.`idtipopersona`=b.`idtipopersona`)
-              WHERE a.`accion`!='B' AND a.`emailusuario`='". $usu ."' AND a.`pass`='". $pass ."';";
-      
-      $con=conectar();
-      
-      $result = mysqli_query($con,$sql);
-
-      while($row = mysqli_fetch_array($result))
+      try 
       {
-          $id=$row['idpersona'];
-          $apenomb=$row['usuario'];
-          $tipousu=$row['tipopersona'];
-          $foto=$row['urlfoto'];
-          $nombrecorto=$row['nombrecortousu'];
+        $cnx=conectar();
+       
+        $sql = "SELECT a.`idpersona`,CONCAT(a.`apellido`,', ',a.`nombre`) AS usuario,b.`tipopersona`,a.`urlfoto`,a.`nombrecortousu`
+                FROM personas a INNER JOIN tipopersona b ON (a.`idtipopersona`=b.`idtipopersona`)
+                WHERE a.`accion`!='B' AND a.`emailusuario`='". $txtusu ."' AND a.`pass`='". $txtpass ."';";
+
+        $result = $cnx->query($sql);
+
+        if (!$result) 
+        {
+          die('Invalid query: ' . $cnx->error);
+        }
+
+        if (!$result) 
+        {
+          die('Invalid query: ' . $mysqli->error);
+        }
+        else
+        {
+           // echo $sql;
+
+            while($row = $result->fetch_assoc())
+            {
+              $id=$row['idpersona'];
+              $apenomb=$row['usuario'];
+              $tipousu=$row['tipopersona'];
+              $foto=$row['urlfoto'];
+              $nombrecorto=$row['nombrecortousu'];
+            }
+        }
+
+       // echo "IDUSUARIOS=".$id;
+       // echo "nombre de base de datos=".$base;
+
+        desconectar($cnx);
+     
+        if ($id>0)
+        {
+          session_start();
+          
+          $_SESSION['id']=$id;
+          $_SESSION['apenomb']=$apenomb;
+          $_SESSION['tipo']=$tipousu;
+          $_SESSION['foto']=$foto;
+          $_SESSION['nombrecorto']=$nombrecorto;
+        }
+
+        //REDIRIJO A PAG DEL MENU PRINCIPAL SI EXISTE USUARIO INGRESADO
+        if ($id>0)
+        {
+          header('Location: home.php');
+          exit;
+        }
       }
-      
-      if ($id>0)
+      catch(Exception $err)
       {
-        session_start();
-        
-        $_SESSION['id']=$id;
-        $_SESSION['apenomb']=$apenomb;
-        $_SESSION['tipo']=$tipousu;
-        $_SESSION['foto']=$foto;
-        $_SESSION['nombrecorto']=$nombrecorto;
+          $cnx=false;
       }
-
-      desconectar($con);
-
-     // echo $id;
-     //REDIRIJO A PAG DEL MENU PRINCIPAL SI EXISTE USUARIO INGRESADO
-     if ($id>0)
-     {
-      header('Location: home.php');
-      exit;
-     }
     }
 ?>
 
@@ -82,13 +104,6 @@ $pass=$_GET['password'];
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
   <script>
     //FUNCION QUE NO DEJA QUE SE PUEDA VOLVER HACIA LA PAG ANTERIOR
     function deshabilitaRetroceso()
@@ -133,14 +148,14 @@ $pass=$_GET['password'];
                       <label for="txtusu" class="form-label">Usuario</label>
                       <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input type="text" name="username" class="form-control" id="txtusu" value="<?php echo $usu; ?>" required>
+                        <input type="text" name="username" class="form-control" id="txtusu" value="<?php echo $txtusu; ?>" required>
                         <div class="invalid-feedback">Por favor ingrese su nombre de usuario!</div>
                       </div>
                     </div>
 
                     <div class="col-12">
                       <label for="txtpass" class="form-label">Password</label>
-                      <input type="password" name="password" class="form-control" id="txtpass" value="<?php echo $pass; ?>" required>
+                      <input type="password" name="password" class="form-control" id="txtpass" value="<?php echo $txtpass; ?>" required>
                       <div class="invalid-feedback">Por favor ingrese su password!</div>
                     </div>
 
@@ -152,7 +167,7 @@ $pass=$_GET['password'];
                     </div>
 
 <?php
-                  if (($id<=0)&&(strlen($usu)>0))
+                  if (($id<=0)&&(strlen($txtusu)>0))
                   {
 ?>
                     <div class="col-12">

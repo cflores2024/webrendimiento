@@ -1,10 +1,10 @@
 <?php
-    include "/configuracion/conexion.php";
+    include "configuracion/conexion.php";
     date_default_timezone_set("America/Argentina/Tucuman");
 
     $info="";
     $verbtn=""; 
-/*
+
     if (isset($_GET["num"]))
     {
       $verbtn=$_GET["ver"];
@@ -13,8 +13,12 @@
         $verbtn="&nbsp;&nbsp;&nbsp;<a href='#' onclick='vermovimientostareasvsempledos()'>
                 <img src='./assets/img/volver.png' alt='Volver'></a>";
       }
+      else
+      {
+        $verbtn=""; 
+      }
     }
-    */
+    
 
     if (isset($_GET["num"]))
     {  
@@ -26,86 +30,98 @@
 
       $con=conectar();
 
-      $result = mysqli_query($con,$sql);
+      $result = $cnx->query($sql);
 
-      $info="";
-
-      while($row = mysqli_fetch_array($result))
+      if (!$result) 
       {
-        $info="
-                <section class='section'>
-                    <div class='row'>
-                        <div class='col-lg-6'>
-                            <div class='card'>
-                            <div class='card-body'>
-                                <h5 class='card-title'>Datos Cliente</h5>
-                                <!-- General Form Elements -->
-                                <div class='row mb-3'>
-                                    <label for='inputText' class='col-sm-3 col-form-label'>Cliente</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['cliente']."'>
-                                    </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputEmail' class='col-sm-3 col-form-label'>Domicilio</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['dom']."'>
-                                    </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputPassword' class='col-sm-3 col-form-label'>Telefono</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['tel']."'>
-                                    </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputNumber' class='col-sm-3 col-form-label'>Email</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['email']."'>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
+        die('Invalid query: ' . $cnx->error);
+      }
 
-                        </div>
-                        <div class='col-lg-6'>
+      if (!$result) 
+      {
+        die('Invalid query: ' . $mysqli->error);
+      }
+      else
+      {
+        $info="";
 
+        while($row = mysqli_fetch_array($result))
+        {
+          $info="
+                  <section class='section'>
+                      <div class='row'>
+                          <div class='col-lg-6'>
                             <div class='card'>
-                            <div class='card-body'>
-                                <h5 class='card-title'>Datos Auto</h5>
-                                <div class='row mb-3'>
-                                    <label for='inputPassword' class='col-sm-3 col-form-label'>Modelo</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['modelo']."'>
-                                    </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputNumber' class='col-sm-3 col-form-label'>N° Chasis</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['numchasis']."'>
-                                    </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputNumber' class='col-sm-3 col-form-label'>Patente</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['patente']."'>
-                                    </div>
-                                </div>
-                                <div class='row mb-3'>
-                                    <label for='inputNumber' class='col-sm-3 col-form-label'>Kilometraje</label>
-                                    <div class='col-sm-9'>
-                                    <input type='text' class='form-control' value='".$row['kilometraje']."'>
-                                    </div>
-                                </div>
+                              <div class='card-body'>
+                                  <h5 class='card-title'>Datos Cliente</h5>
+                                  <!-- General Form Elements -->
+                                  <div class='row mb-3'>
+                                      <label for='inputText' class='col-sm-3 col-form-label'>Cliente</label>
+                                      <div class='col-sm-9'>
+                                      <input type='text' class='form-control' value='".$row['cliente']."'>
+                                      </div>
+                                  </div>
+                                  <div class='row mb-3'>
+                                      <label for='inputEmail' class='col-sm-3 col-form-label'>Domicilio</label>
+                                      <div class='col-sm-9'>
+                                      <input type='text' class='form-control' value='".$row['dom']."'>
+                                      </div>
+                                  </div>
+                                  <div class='row mb-3'>
+                                      <label for='inputPassword' class='col-sm-3 col-form-label'>Telefono</label>
+                                      <div class='col-sm-9'>
+                                      <input type='text' class='form-control' value='".$row['tel']."'>
+                                      </div>
+                                  </div>
+                                  <div class='row mb-3'>
+                                      <label for='inputNumber' class='col-sm-3 col-form-label'>Email</label>
+                                      <div class='col-sm-9'>
+                                      <input type='text' class='form-control' value='".$row['email']."'>
+                                      </div>
+                                  </div>
                               </div>
                             </div>
 
-                        </div>
-                    </div>
-                </section>
-              ";
+                          </div>
+                          <div class='col-lg-6'>
+
+                              <div class='card'>
+                              <div class='card-body'>
+                                  <h5 class='card-title'>Datos Auto</h5>
+                                  <div class='row mb-3'>
+                                      <label for='inputPassword' class='col-sm-3 col-form-label'>Modelo</label>
+                                      <div class='col-sm-9'>
+                                      <input type='text' class='form-control' value='".$row['modelo']."'>
+                                      </div>
+                                  </div>
+                                  <div class='row mb-3'>
+                                      <label for='inputNumber' class='col-sm-3 col-form-label'>N° Chasis</label>
+                                      <div class='col-sm-9'>
+                                      <input type='text' class='form-control' value='".$row['numchasis']."'>
+                                      </div>
+                                  </div>
+                                  <div class='row mb-3'>
+                                      <label for='inputNumber' class='col-sm-3 col-form-label'>Patente</label>
+                                      <div class='col-sm-9'>
+                                      <input type='text' class='form-control' value='".$row['patente']."'>
+                                      </div>
+                                  </div>
+                                  <div class='row mb-3'>
+                                      <label for='inputNumber' class='col-sm-3 col-form-label'>Kilometraje</label>
+                                      <div class='col-sm-9'>
+                                      <input type='text' class='form-control' value='".$row['kilometraje']."'>
+                                      </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                          </div>
+                      </div>
+                  </section>
+                ";
+        }
       }
-  
+
       desconectar($con);
 
       $sql = "SELECT a.`numorden`,a.`fecha`,a.`estado`
@@ -116,43 +132,55 @@
 
       $con=conectar();
 
-      $result = mysqli_query($con,$sql);
+      $result = $cnx->query($sql);
 
-      $histo="";
-      $msn="";
-      while($row = mysqli_fetch_array($result))
+      if (!$result) 
       {
-        $histo=$histo."
-                        <div class='activity-item d-flex'>
-                          <div class='activite-label'>". date("d/m/Y", strtotime($row['fecha'])) ."</div>";
-
-        switch ($row['estado'])
-        {
-          case "S": //ORDEN PENDIENTE A SER ASIGNADA PARA ESTAR DISPONIBLE
-                  $histo=$histo."<i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>";
-                  $msn="Orden pendiente de aceptación";
-          break;
-          case "D": //ORDEN DISPONIBLE
-                  $histo=$histo."<i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>";
-                  $msn="Orden disponible para ser trabajada";
-          break;
-          case "P": //ORDEN EN PROCESO
-                  $histo=$histo."<i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>";
-                  $msn="Orden en tratamiento";
-          break;
-          case "F": //ORDEN FINALIZADA
-                  $histo=$histo."<i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>";
-                  $msn="Orden finalizada";
-          break;
-        }
-        $histo=$histo."
-                          <div class='activity-content'>
-                            Número de orden <a href='#' class='fw-bold text-dark' title='".$msn."' onclick='vertabla(".$row['numorden'].")'>#".$row['numorden']."</a>
-                          </div>
-                        </div><!-- End activity item-->
-                      ";
+        die('Invalid query: ' . $cnx->error);
       }
-      
+
+      if (!$result) 
+      {
+        die('Invalid query: ' . $mysqli->error);
+      }
+      else
+      {
+        $histo="";
+        $msn="";
+        while($row = mysqli_fetch_array($result))
+        {
+          $histo=$histo."
+                          <div class='activity-item d-flex'>
+                            <div class='activite-label'>". date("d/m/Y", strtotime($row['fecha'])) ."</div>";
+
+          switch ($row['estado'])
+          {
+            case "S": //ORDEN PENDIENTE A SER ASIGNADA PARA ESTAR DISPONIBLE - GRIS text-muted
+                    $histo=$histo."<i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>";
+                    $msn="Orden pendiente de aceptación";
+            break;
+            case "D": //ORDEN DISPONIBLE - AMARILLO text-warning
+                    $histo=$histo."<i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>";
+                    $msn="Orden disponible para ser trabajada";
+            break;
+            case "P": //ORDEN EN PROCESO - VERDE text-success 
+                    $histo=$histo."<i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>";
+                    $msn="Orden en tratamiento";
+            break;
+            case "F": //ORDEN FINALIZADA - CELESTE text-info
+                    $histo=$histo."<i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>";
+                    $msn="Orden finalizada";
+            break;
+          }
+          $histo=$histo."
+                            <div class='activity-content'>
+                              Número de orden <a href='#' class='fw-bold text-dark' title='".$msn."' onclick='vertabla(".$row['numorden'].")'>#".$row['numorden']."</a>
+                            </div>
+                          </div><!-- End activity item-->
+                        ";
+        }
+      }
+            
       desconectar($con);
 
     }

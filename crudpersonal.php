@@ -1,6 +1,6 @@
 <?php
 
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
   session_start();
@@ -46,7 +46,7 @@
         //DETERMINAR ACCIÓN A REALIZAR SOBRE LOS DATOS DEL SOCIO SELECCIONADO
         switch ($_GET['btn'])
         {
-          case "ActDatos"://SE ACTUALIZAN SOLAMENTE LOS DATOS DEL SOCIO SIN LA FOTO Y SIN PASSWORD
+          case "ActDatos"://SE ACTUALIZAN SOLAMENTE LOS DATOS DEL PERSONAL SIN LA FOTO Y SIN PASSWORD
                           $txtapellido=$_GET['txtapellido'];
                           $txtnombre=$_GET['txtnombre'];
                           $txtnombcorto=$_GET['txtnombcorto'];
@@ -56,7 +56,7 @@
                           $txtdire=$_GET['txtdire'];
                           $txttel=$_GET['txttel'];
                           $txtemail=$_GET['txtemail'];
-                          //ACTUALIZO DATOS DEL SOCIO SELECCIONADO
+                          //ACTUALIZO DATOS DEL PERSONAL SELECCIONADO
                           $sql="UPDATE personas SET apellido=?,nombre=?,nombrecortousu=?,dni=?,nrosocio=?,domicilio=?,fnacimiento=?,emailusuario=?,tel=?,accion=?,idempleadoaccion=?,fechaaccion=?
                                 WHERE (idpersona=?);";
 
@@ -76,7 +76,7 @@
                             $accion="ERROR2";
                           }
           break;    
-          case "ActApto"://SE ACTUALIZA EL ESTADO DE INGRESO Y FECHA DE DURACCION COMO SOCIO
+          case "ActApto"://SE ACTUALIZA EL ESTADO DE INGRESO Y FECHA DE DURACCION COMO PERSONAL
                       $txtapto=$_GET['cbapto'];
                       $txtfini=$_GET['fini'];
                       $txtffin=$_GET['ffin'];
@@ -100,7 +100,7 @@
                         $accion="ERROR";
                       }
           break;
-          case "ActPass"://SE ACTUALIZA EL PASSWORD DEL SOCIO
+          case "ActPass"://SE ACTUALIZA EL PASSWORD DEL PERSONAL
                           $txtpass=$_GET['newpassword'];
                           $txtreppass=$_GET['renewpassword'];
                           
@@ -134,7 +134,7 @@
                                 $accion="ERROR2";
                               }
             break;
-            case "EliSoc"://SE ELIMINAN SOCIO Y SUS RESPECTIOVAS INSCRIPCIONES
+            case "EliSoc"://SE ELIMINAN PERSONA Y SU RESPECTIVAS ACTIVIDADES
                           $accion="B";
                           $sql="UPDATE personas SET accion=?,idempleadoaccion=?,fechaaccion=?
                                 WHERE (idpersona=?);";
@@ -148,7 +148,7 @@
          
                           if ($respsoc)  
                           {//ACTUALIZACION PASS OK
-                            $sql="UPDATE inscripciones SET accion=?,idempleadoaccion=?,fechaaccion=?
+                            $sql="UPDATE personasvsdisciplinas SET accion=?,idempleadoaccion=?,fechaaccion=?
                                   WHERE (idpersona=?);";
 
                             $con=conectar();
@@ -174,7 +174,7 @@
       if ($accion=="OKELI")
       {
           $sql = "SELECT a.`urlfoto`,a.`nombrecortousu`,a.`apellido`,a.`nombre`,a.`nrosocio`,a.`dni`,a.`fnacimiento`,a.`domicilio`,a.`tel`,a.`emailusuario`,a.`pass`,b.`iddisciplina`,c.`disciplina`,a.aptoingreso,a.finiapto,a.ffinapto
-                  FROM personas a INNER JOIN personasvsdisciplinas b ON (a.`idpersona`=b.`idpersona` AND b.accion!='B')
+                  FROM personas a INNER JOIN personasvsdisciplinas b ON (a.`idpersona`=b.`idpersona` AND b.accion='B')
                                   INNER JOIN disciplinas c ON (b.`iddisciplina`=c.`iddisciplina` AND c.`accion`!='B')
                   WHERE a.idpersona=". $idsocio ." AND a.`accion`='B';";     
           $accion="OK";
@@ -188,42 +188,56 @@
       }
       $con=conectar();
 
-      $result = mysqli_query($con,$sql);
-      while($row = mysqli_fetch_array($result))
-      {
-        $txtfoto=$row['urlfoto'];
-        
-        $txtnombcorto=$row["nombrecortousu"];
-        $txtapellido=$row["apellido"];
-        $txtnombre=$row["nombre"];
-        $txtnumsocio=$row["nrosocio"];
-        
-        $txtdni=$row["dni"];
-        $txtfnac=$row["fnacimiento"];
-        $txtdire=$row["domicilio"];
-        $txttel=$row["tel"];
-        $txtemail=$row["emailusuario"];
-        $txtpass=$row["pass"];
-        $txtapto=$row["aptoingreso"];
+      $result = $cnx->query($sql);
 
-        $txtfini=$row["finiapto"];
-        $txtffin=$row["ffinapto"];
-        
-        if (strlen($txtfini)<=0)
-        {
-          $txtfini=date('Y-m-d'); 
-          $txtffin=date('Y-m-d', strtotime(' + 1 months'));
-        }
-        
-        $lsiddisciplinas[$j]=$row["iddisciplina"];
-        
-        if (strlen($lsact)<=0) $lsact=$row["disciplina"];
-        else $lsact=$lsact ." / ". $row["disciplina"];
-        
-        $j=$j+1;
+      if (!$result) 
+      {
+        die('Invalid query: ' . $cnx->error);
       }
 
-      desconectar($con);   
+      if (!$result) 
+      {
+        die('Invalid query: ' . $mysqli->error);
+      }
+      else
+      {
+        while($row = mysqli_fetch_array($result))
+        {
+          $txtfoto=$row['urlfoto'];
+          
+          $txtnombcorto=$row["nombrecortousu"];
+          $txtapellido=$row["apellido"];
+          $txtnombre=$row["nombre"];
+          $txtnumsocio=$row["nrosocio"];
+          
+          $txtdni=$row["dni"];
+          $txtfnac=$row["fnacimiento"];
+          $txtdire=$row["domicilio"];
+          $txttel=$row["tel"];
+          $txtemail=$row["emailusuario"];
+          $txtpass=$row["pass"];
+          $txtapto=$row["aptoingreso"];
+
+          $txtfini=$row["finiapto"];
+          $txtffin=$row["ffinapto"];
+          
+          if (strlen($txtfini)<=0)
+          {
+            $txtfini=date('Y-m-d'); 
+            $txtffin=date('Y-m-d', strtotime(' + 1 months'));
+          }
+          
+          $lsiddisciplinas[$j]=$row["iddisciplina"];
+          
+          if (strlen($lsact)<=0) $lsact=$row["disciplina"];
+          else $lsact=$lsact ." / ". $row["disciplina"];
+          
+          $j=$j+1;
+        }
+      }
+      desconectar($con);
+      
+      //echo $sql;
     }
   }
   else
@@ -262,14 +276,6 @@
 
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
 
 </head>
 
@@ -496,7 +502,6 @@
                               <?php
                                 }
                               ?>
-                            <!--a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a-->
                           </div>
                         </div>
 
@@ -576,32 +581,44 @@
 
                           $con=conectar();
 
-                          $result = mysqli_query($con,$sql);
+                          $result = $cnx->query($sql);
 
-                          while($row = mysqli_fetch_array($result))
+                          if (!$result) 
                           {
-                            $id=$row['iddisciplina'];
-                            $discip=$row['disciplina'];
-                            $encontrado=false;
+                            die('Invalid query: ' . $cnx->error);
+                          }
 
-                            foreach($lsiddisciplinas as $i)
+                          if (!$result) 
+                          {
+                            die('Invalid query: ' . $mysqli->error);
+                          }
+                          else
+                          {
+                            while($row = mysqli_fetch_array($result))
                             {
-                              if ($id==$i) $encontrado=true;
-                            }
-                            
-                            if ($encontrado==true)
-                            {
-                              echo "
-                                    <input type='checkbox' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."' checked>
-                                    <label for='op'>".$row['disciplina']."</label><br>
-                                  ";
-                            }
-                            else
-                            {
-                              echo "
-                                    <input type='checkbox' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."'>
-                                    <label for='op'>".$row['disciplina']."</label><br>
-                                  ";
+                              $id=$row['iddisciplina'];
+                              $discip=$row['disciplina'];
+                              $encontrado=false;
+
+                              foreach($lsiddisciplinas as $i)
+                              {
+                                if ($id==$i) $encontrado=true;
+                              }
+                              
+                              if ($encontrado==true)
+                              {
+                                echo "
+                                      <input type='checkbox' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."' checked>
+                                      <label for='op'>".$row['disciplina']."</label><br>
+                                    ";
+                              }
+                              else
+                              {
+                                echo "
+                                      <input type='checkbox' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."'>
+                                      <label for='op'>".$row['disciplina']."</label><br>
+                                    ";
+                              }
                             }
                           }
                           

@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
 
   session_start();
   
@@ -50,13 +50,6 @@
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
   <script>
     function deshabilitaRetroceso()
     {
@@ -155,8 +148,7 @@
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
-          <li class="breadcrumb-item"><a href="buscadortareas.php">Buscador tareas</a></li>
-          <li class="breadcrumb-item active">CRUD tareas</li>
+          <li class="breadcrumb-item"><a href="buscadortareas.php">Buscador Tareas/Tiempo</a></li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -177,13 +169,25 @@
               <!-- Table with stripped rows -->
               <?php
 
-                  $sql = "SELECT a.`idtarea`,a.`descripciontarea`,a.`tiempotarea`
-                          FROM tareas a 
-                          WHERE a.`accion`!='B';";
+                $sql = "SELECT a.`idtarea`,a.`descripciontarea`,a.`tiempotarea`
+                        FROM tareas a 
+                        WHERE a.`accion`!='B';";
 
-                  $con=conectar();
+                $con=conectar();
 
-                  $result = mysqli_query($con,$sql);
+                $result = $cnx->query($sql);
+
+                if (!$result) 
+                {
+                  die('Invalid query: ' . $cnx->error);
+                }
+
+                if (!$result) 
+                {
+                  die('Invalid query: ' . $mysqli->error);
+                }
+                else
+                {
               ?>
     
               <table class="table datatable">
@@ -216,7 +220,7 @@
                           ";
                           $fil=$fil+1;
                     }
-
+                  }
                     desconectar($con);
 
                 ?>

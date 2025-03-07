@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
   session_start();
@@ -52,13 +52,6 @@
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
   <script>
     function deshabilitaRetroceso()
     {
@@ -67,19 +60,53 @@
       window.onhashchange=function(){window.location.hash="";}
     }
 
-    function verhorarios(id) {
-      //alert ("idsocio="+idsocio);
-      if (id<=0) {
+    function verorden(num) {
+      if (num<=0) {
         return;
       } else {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            //alert ('idsocio='+id);
-            document.getElementById("lsclases").innerHTML=this.responseText;
+            //alert ('numero orden='+num);
+            document.getElementById("lsinfo").innerHTML=this.responseText;
           }
         };
-        xmlhttp.open('GET', 'lshorarios.php?idsocio='+id, true);
+        xmlhttp.open('GET', 'detalleorden.php?num='+num, false);
+        xmlhttp.send();
+      }
+    }
+
+    function verhistorial(num) {
+      if (num<=0) {
+        return;
+      } else {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ('numero patente='+num);
+            document.getElementById("lsinfo").innerHTML=this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'historialorden.php?num='+num+'&ver=N', false);
+        xmlhttp.send();
+      }
+    }
+
+    function vertabla(num)
+    {
+      //alert("Se muestra historial de la orden " + num);
+
+      if (num<=0) {
+        return;
+      } else {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ('numero orden='+num);
+            document.getElementById("tbldetalleorden").innerHTML=this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'vertablatareas.php?num='+num, false);
         xmlhttp.send();
       }
     }
@@ -174,226 +201,250 @@
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
-          <li class="breadcrumb-item active">Avances de tareas</li>
+          <li class="breadcrumb-item active"><a href="avancestareas.php">Avances de tareas</a></li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
 
-    <section class="section">
-      <div class="row">
-        <div class="col-lg-12">
+    <span id="lsinfo">
+      <section class="section">
+        <div class="row">
+          <div class="col-lg-12">
 
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Progreso de tareas</h5>
-              <p>Se muestran todas las tareas que se fueron realizando a lo largo del tiempo</p>
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Progreso de tareas</h5>
+                <p>Se muestran todas las tareas que se fueron realizando a lo largo del tiempo</p>
 
-              <!-- Table with stripped rows -->
-              <table class="table table-borderless datatable">
-                    <thead>
-                      <tr>
-                        <th scope="col">N° Orden</th>
-                        <th scope="col" data-type="date" data-format="MM/DD/YYYY">Fecha inicio</th>
-                        <th scope="col">Tiempo</th>
-                        <th scope="col">Avance %</th>
-                        <th scope="col">Afectados</th>
-                        <th scope="col">Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row"><a href="#">#2457</a></th>
-                        <td>04/02/2025</td>
-                        <td>4 hs</td>
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
-                          </div>
-                        </td>
-                        <td>
+                <!-- Table with stripped rows -->
+                <table class="table table-borderless datatable">
+                      <thead>
+                        <tr>
+                          <th scope="col">N° Orden</th>
+                          <th scope="col" data-type="date" data-format="MM/DD/YYYY">Fecha inicio</th>
+                          <th scope="col">Tiempo</th>
+                          <th scope="col">Avance %</th>
+                          <th scope="col">Afectados</th>
+                          <th scope="col">Estado</th>
+                          <th scope="col">&nbsp;</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th scope="row"><a href="#" onclick="verorden(1234)">#1234</a></th>
+                          <td>04/02/2025</td>
+                          <td>4 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                            </div>
+                          </td>
+                          <td>
+                              <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/team-1.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              </a>
+                          </td>
+                          <td><span class="badge bg-success">Finalizado</span></td>
+                          <td>
+                            <a href='#'>
+                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick="verhistorial('ABC123')">
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th scope="row"><a href="#">#2147</a></th>
+                          <td>04/02/2025</td>
+                          <td>1 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                            </div>
+                          </td>
+                          <td>
+                              <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/team-1.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              </a>
+                          </td>
+                          <td><span class="badge bg-warning">En proceso</span></td>
+                          <td>
+                            <a href='#'>
+                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick="verhistorial('ABC123')">
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th scope="row"><a href="#">#2049</a></th>
+                          <td>04/02/2025</td>
+                          <td>4 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 5%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100">5%</div>
+                            </div>
+                          </td>
+                          <td>
+                              <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                                <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              </a>
+                          </td>
+                          <td><span class="badge bg-warning">En proceso</span></td>
+                          <td>
+                            <a href='#'>
+                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick="verhistorial('ABC123')">
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th scope="row"><a href="#">#2644</a></th>
+                          <td>04/02/2025</td>
+                          <td>3 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                            </div>
+                          </td>
+                          <td>
+                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                              <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                            </a>
+                          </td>
+                          <td><span class="badge bg-danger">Demorado</span></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <th scope="row"><a href="#">#26244</a></th>
+                          <td>04/02/2025</td>
+                          <td>36 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                            </div>
+                          </td>
+                          <td>
+                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                              <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                            </a>
+                          </td>
+                          <td><span class="badge bg-warning">En proceso</span></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <th scope="row"><a href="#">#26434</a></th>
+                          <td>04/02/2025</td>
+                          <td>4 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100">55%</div>
+                            </div>
+                          </td>
+                          <td>
+                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                              <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                            </a>
+                          </td>
+                          <td><span class="badge bg-warning">En proceso</span></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <th scope="row"><a href="#">#26444</a></th>
+                          <td>04/02/2025</td>
+                          <td>4 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                            </div>
+                          </td>
+                          <td>
                             <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                               <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
                               <img src="assets/img/team-1.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
                               <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                            </a>
+                          </td>
+                          <td><span class="badge bg-success">Finalizado</span></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <th scope="row"><a href="#">#26445</a></th>
+                          <td>03/02/2025</td>
+                          <td>4 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                            </div>
+                          </td>
+                          <td>
+                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                              <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
                               <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
                               <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
                             </a>
-                        </td>
-                        <td><span class="badge bg-success">Finalizado</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2147</a></th>
-                        <td>04/02/2025</td>
-                        <td>1 hs</td>
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-                          </div>
-                        </td>
-                        <td>
+                          </td>
+                          <td><span class="badge bg-info text-dark">En Espera</span></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <th scope="row"><a href="#">#26446</a></th>
+                          <td>03/02/2025</td>
+                          <td>1 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                            </div>
+                          </td>
+                          <td>
+                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                            </a>
+                          </td>
+                          <td><span class="badge bg-success">Finalizado</span></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <th scope="row"><a href="#">#26447</a></th>
+                          <td>03/02/2025</td>
+                          <td>48 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                            </div>
+                          </td>
+                          <td>
                             <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                               <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
                               <img src="assets/img/team-1.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
                               <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
                             </a>
-                        </td>
-                        <td><span class="badge bg-warning">En proceso</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2049</a></th>
-                        <td>04/02/2025</td>
-                        <td>4 hs</td>
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 5%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100">5%</div>
-                          </div>
-                        </td>
-                        <td>
-                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                              <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            </a>
-                        </td>
-                        <td><span class="badge bg-warning">En proceso</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2644</a></th>
-                        <td>04/02/2025</td>
-                        <td>3 hs</td>
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-                          </div>
-                        </td>
-                        <td>
-                          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                          </a>
-                        </td>
-                        <td><span class="badge bg-danger">Demorado</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#26244</a></th>
-                        <td>04/02/2025</td>
-                        <td>36 hs</td>
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
-                          </div>
-                        </td>
-                        <td>
-                          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                          </a>
-                        </td>
-                        <td><span class="badge bg-warning">En proceso</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#26434</a></th>
-                        <td>04/02/2025</td>
-                        <td>4 hs</td>
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100">55%</div>
-                          </div>
-                        </td>
-                        <td>
-                          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                          </a>
-                        </td>
-                        <td><span class="badge bg-warning">En proceso</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#26444</a></th>
-                        <td>04/02/2025</td>
-                        <td>4 hs</td>
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
-                          </div>
-                        </td>
-                        <td>
-                          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-1.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                          </a>
-                        </td>
-                        <td><span class="badge bg-success">Finalizado</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#26445</a></th>
-                        <td>03/02/2025</td>
-                        <td>4 hs</td>
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                          </div>
-                        </td>
-                        <td>
-                          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                          </a>
-                        </td>
-                        <td><span class="badge bg-info text-dark">En Espera</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#26446</a></th>
-                        <td>03/02/2025</td>
-                        <td>1 hs</td>
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
-                          </div>
-                        </td>
-                        <td>
-                          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                          </a>
-                        </td>
-                        <td><span class="badge bg-success">Finalizado</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#26447</a></th>
-                        <td>03/02/2025</td>
-                        <td>48 hs</td>
-                        <td>
-                          <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                          </div>
-                        </td>
-                        <td>
-                          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-1.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                          </a>
-                        </td>
-                        <td><span class="badge bg-info text-dark">En Espera</span></td>
-                      </tr>
-                    </tbody>
-              </table>
-              <!-- End Table with stripped rows -->
+                          </td>
+                          <td><span class="badge bg-info text-dark">En Espera</span></td>
+                          <td>&nbsp;</td>
+                        </tr>
+                      </tbody>
+                </table>
+                <!-- End Table with stripped rows -->
+              </div>
             </div>
+
           </div>
-
         </div>
-      </div>
-    </section>
-
+      </section>
+    </span>
 
   </main><!-- End #main -->
 

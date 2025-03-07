@@ -1,6 +1,6 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "/configuracion/conexion.php";
+  include "configuracion/conexion.php";
 
   session_start();
   
@@ -23,9 +23,8 @@
     $filasproydis="";
     $filasap="";
     $bandera="";
-    $poup="";
-    $poupproydis="";
-    $poupap="";
+    $estadoorden="";
+    $color="";
    
     //ORDENES DE TRABAJOS EN ESTADO DE PROCESO Y ORDENES DISPONIBLES
     $sql = "-- ORDENES EN PROCESOS
@@ -101,261 +100,274 @@
 
     $con=conectar();
 
-    $result = mysqli_query($con,$sql);
-    
-    while($row = mysqli_fetch_array($result))
+    $result = $cnx->query($sql);
+
+    if (!$result) 
     {
-      if ($orden==$row['numorden'])
-      {
-          if (strlen($row['foto'])>0)
-          {
-              $lsfotos=$lsfotos."<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='30' height='30'>";
-          }
-          else
-          {
-              $lsfotos=$lsfotos."&nbsp;";
-          }
-
-          if (($idempleado==$idusuario)&&(strlen($bandera)<=0)) $bandera="del";
-      }
-      else
-      {
-          if (strlen($orden)>0)
-          {
-              if ($idempleado==$idusuario) $bandera="del";
-
-              $fila="
-                      <tr>
-                          <th scope='row'><a href='#'>#".$orden."</a></th>
-                          <td>".$titulo."</td>
-                          <td>".$lsfotos."</td>";
-              
-              switch($estado)
-              {
-                case "DI":
-                        if ($bandera=="del")
-                        {
-                            $fila=$fila."
-                                          <td><span class='badge bg-info text-dark'>Disponible</span></td>
-                                          <td>
-                                              <a href='#'>
-                                                  <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                              </a>
-                                          </td>
-                                          <td> 
-                                              &nbsp;
-                                          </td>
-                                          <td>"; 
-                                          
-                                          if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                          else $fila=$fila."<a href='#'>
-                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                            </a></td></tr>";
-                        }
-                        else
-                        {
-                            $fila=$fila."
-                                          <td><span class='badge bg-info text-dark'>Disponible</span></td>
-                                          <td>
-                                              <a href='#'>
-                                                  <img src='assets/img/usu_add.png' alt='Sumarse a tarea' onclick='vincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                              </a>
-                                          </td>
-                                          <td> 
-                                              &nbsp;
-                                          </td>
-                                          <td>"; 
-
-                                          if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                          else $fila=$fila."<a href='#'>
-                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                            </a></td></tr>";
-                        }
-
-                        $bandera="";
-                break;
-                case "PR":
-                        if ($bandera=="del")
-                        {
-                            $fila=$fila."
-                                          <td><span class='badge bg-warning text-dark'>En proceso</span></td>
-                                          <td>
-                                              <!--a href='#' data-bs-toggle='modal' data-bs-target='#".$orden."'-->
-                                              <a href='#'>
-                                                <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                              </a>
-                                          </td>
-                                          <td>
-                                              <a href='#'>
-                                              <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\")'>
-                                              </a>
-                                          </td>
-                                          <td>";
-
-                                          if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                          else $fila=$fila."<a href='#'>
-                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                            </a></td></tr>";
-                        }
-                        else
-                        {
-                            $fila=$fila."
-                                          <td><span class='badge bg-warning text-dark'>En proceso</span></td>
-                                          <td>
-                                              <!--a href='#' data-bs-toggle='modal' data-bs-target='#".$orden."'-->
-                                              <a href='#'>
-                                                <img src='assets/img/usu_add.png' alt='Sumarse a tarea' onclick='vincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                              </a>
-                                          </td>
-                                          <td> 
-                                              &nbsp;
-                                          </td>
-                                          <td>";
-                                          if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                          else $fila=$fila."<a href='#'>
-                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                            </a></td></tr>";
-                        }
-
-                        $bandera="";
-                break;
-                case "AU":
-                        if ($bandera=="del")
-                        {
-                            $fila=$fila."
-                                          <td><span class='badge bg-warning text-dark'>En proceso</span></td>
-                                          <td>
-                                              <!--a href='#' data-bs-toggle='modal' data-bs-target='#".$orden."'-->
-                                              <a href='#'>
-                                                <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                              </a>
-                                          </td>
-                                          <td>
-                                              <a href='#'>
-                                              <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\")'>
-                                              </a>
-                                          </td>
-                                          <td>";
-                                          if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                          else $fila=$fila."<a href='#'>
-                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                            </a></td></tr>";
-                        }
-                        else
-                        {
-                            $fila=$fila."
-                                          <td><span class='badge bg-warning text-dark'>En proceso</span></td>
-                                          <td>
-                                              <!--a href='#' data-bs-toggle='modal' data-bs-target='#".$orden."'-->
-                                              <a href='#'>
-                                                <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                              </a>
-                                          </td>
-                                          <td>
-                                              <a href='#'>
-                                                <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\")'>
-                                              </a>
-                                          </td>
-                                          <td>";
-                                          if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                          else $fila=$fila."<a href='#'>
-                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                            </a></td></tr>";
-                        }
-
-                        $bandera="";
-                break;
-                case "PE":
-                          $fila=$fila."
-                                        <td><span class='badge bg-info text-dark'>Disponible</span></td>
-                                        <td>
-                                            <!--a href='#' data-bs-toggle='modal' data-bs-target='#".$orden."'-->
-                                            <a href='#'>
-                                              <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                            </a>
-                                        </td>
-                                        <td> 
-                                            &nbsp;
-                                        </td>
-                                        <td>";
-                                        if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                        else $fila=$fila."<a href='#'>
-                                                            <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                          </a></td></tr>";
-                          $bandera="";
-                  break;
-              }
-          }
-
-          if (strlen($orden)>0) 
-          {
-            if (($estado=="DI")||($estado=="PR")||($estado=="AU")) 
-            {
-              $filasproydis=$filasproydis."".$fila;
-            }
-
-            if ($estado=="PE") 
-            {
-              $filasap=$filasap."".$fila;
-            }
-
-            $fila="";
-          }
-          
-          $orden=$row['numorden'];
-          $titulo=$row['tituloorden'];
-          $matricula=$row['patente'];
-          $estado=$row['situacionorden'];
-          $idempleado=$row['idempleado'];
-          $tienehisto=$row['historial'];
-                          
-          if (strlen($row['foto'])>0)
-          {
-              $lsfotos="<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='30' height='30'>";
-          }
-          else
-          {
-              $lsfotos="&nbsp;";
-          }
-      }   
+      die('Invalid query: ' . $cnx->error);
     }
 
-    $fila="
-            <tr>
-                <th scope='row'><a href='#'>#".$orden."</a></th>
-                <td>".$titulo."</td>
-                <td>".$lsfotos."</td>";
-    
-    switch($estado)
+    if (!$result) 
     {
-      case "DI":
-                if ($bandera=="del")
+      die('Invalid query: ' . $mysqli->error);
+    }
+    else
+    {
+      while($row = mysqli_fetch_array($result))
+      {
+        if ($orden==$row['numorden'])
+        {
+            if (strlen($row['foto'])>0)
+            {
+                $lsfotos=$lsfotos."<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='30' height='30'>";
+            }
+            else
+            {
+                $lsfotos=$lsfotos."&nbsp;";
+            }
+
+            if (($idempleado==$idusuario)&&(strlen($bandera)<=0)) $bandera="del";
+        }
+        else
+        {
+            if (strlen($orden)>0)
+            {
+                if ($idempleado==$idusuario) $bandera="del";
+
+                $fila="
+                        <tr>
+                            <th scope='row'><a href='#'>#".$orden."</a></th>
+                            <td>".$titulo."</td>
+                            <td>".$lsfotos."</td>";
+                
+                switch ($estadoorden)
                 {
-                    $fila=$fila."
-                                  <td><span class='badge bg-info text-dark'>Disponible</span></td>
-                                  <td>
-                                      <!--a href='#' data-bs-toggle='modal' data-bs-target='#".$orden."'-->
-                                      <a href='#'>
-                                        <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                      </a>
-                                  </td>
-                                  <td> 
-                                      &nbsp;
-                                  </td>
-                                  <td>";
-                                  if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                  else $fila=$fila."<a href='#'>
-                                                      <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                    </a></td></tr>";
+                  case "D": //ORDEN DISPONIBLE - AMARILLO bg-warning
+                          $color="<span class='badge bg-warning'>Disponible</span>";
+                  break;
+                  case "P": //ORDEN EN PROCESO - VERDE bg-success 
+                          $color="<span class='badge bg-success'>En proceso</span>";
+                  break;
+                  default: //ORDEN DEMORADA - ROJO bg-danger 
+                          $color="<span class='badge bg-danger'>Atrazado</span>";
+                  break;
                 }
-                else
+
+                switch($estado)
                 {
-                    $fila=$fila."
-                                    <td><span class='badge bg-info text-dark'>Disponible</span></td>
+                  case "DI":
+                          if ($bandera=="del")
+                          {
+                              $fila=$fila."
+                                            <td>".$color."</td>
+                                            <td>
+                                                <a href='#'>
+                                                    <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                                </a>
+                                            </td>
+                                            <td> 
+                                                &nbsp;
+                                            </td>
+                                            <td>"; 
+                                            
+                                            if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                            else $fila=$fila."<a href='#'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                              </a></td></tr>";
+                          }
+                          else
+                          {
+                              $fila=$fila."
+                                            <td>".$color."</td>
+                                            <td>
+                                                <a href='#'>
+                                                    <img src='assets/img/usu_add.png' alt='Sumarse a tarea' onclick='vincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                                </a>
+                                            </td>
+                                            <td> 
+                                                &nbsp;
+                                            </td>
+                                            <td>"; 
+
+                                            if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                            else $fila=$fila."<a href='#'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                              </a></td></tr>";
+                          }
+
+                          $bandera="";
+                  break;
+                  case "PR":
+                          if ($bandera=="del")
+                          {
+                              $fila=$fila."
+                                            <td>".$color."</td>
+                                            <td>
+                                                <a href='#'>
+                                                  <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href='#'>
+                                                <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\",\"$idusuario\")'>
+                                                </a>
+                                            </td>
+                                            <td>";
+
+                                            if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                            else $fila=$fila."<a href='#'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                              </a></td></tr>";
+                          }
+                          else
+                          {
+                              $fila=$fila."
+                                            <td>".$color."</td>
+                                            <td>
+                                                <a href='#'>
+                                                  <img src='assets/img/usu_add.png' alt='Sumarse a tarea' onclick='vincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                                </a>
+                                            </td>
+                                            <td> 
+                                                &nbsp;
+                                            </td>
+                                            <td>";
+                                            if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                            else $fila=$fila."<a href='#'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                              </a></td></tr>";
+                          }
+
+                          $bandera="";
+                  break;
+                  case "AU":
+                          if ($bandera=="del")
+                          {
+                              $fila=$fila."
+                                            <td>".$color."</td>
+                                            <td>
+                                                <a href='#'>
+                                                  <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href='#'>
+                                                <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\",\"$idusuario\")'>
+                                                </a>
+                                            </td>
+                                            <td>";
+                                            if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                            else $fila=$fila."<a href='#'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                              </a></td></tr>";
+                          }
+                          else
+                          {
+                              $fila=$fila."
+                                            <td>".$color."</td>
+                                            <td>
+                                                <a href='#'>
+                                                  <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href='#'>
+                                                  <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\",\"$idusuario\")'>
+                                                </a>
+                                            </td>
+                                            <td>";
+                                            if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                            else $fila=$fila."<a href='#'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                              </a></td></tr>";
+                          }
+
+                          $bandera="";
+                  break;
+                  case "PE":
+                            $fila=$fila."
+                                          <td>".$color."</td>
+                                          <td>
+                                              <a href='#'>
+                                                <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                              </a>
+                                          </td>
+                                          <td> 
+                                              &nbsp;
+                                          </td>
+                                          <td>";
+                                          if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                          else $fila=$fila."<a href='#'>
+                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                            </a></td></tr>";
+                            $bandera="";
+                    break;
+                }
+            }
+
+            if (strlen($orden)>0) 
+            {
+              if (($estado=="DI")||($estado=="PR")||($estado=="AU")) 
+              {
+                $filasproydis=$filasproydis."".$fila;
+              }
+
+              if ($estado=="PE") 
+              {
+                $filasap=$filasap."".$fila;
+              }
+
+              $fila="";
+            }
+            
+            $orden=$row['numorden'];
+            $titulo=$row['tituloorden'];
+            $matricula=$row['patente'];
+            $estado=$row['situacionorden'];
+            $estadoorden=$row['estado'];
+            $idempleado=$row['idempleado'];
+            $tienehisto=$row['historial'];
+                            
+            if (strlen($row['foto'])>0)
+            {
+                $lsfotos="<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='30' height='30'>";
+            }
+            else
+            {
+                $lsfotos="&nbsp;";
+            }
+        }   
+      }
+
+      $fila="
+              <tr>
+                  <th scope='row'><a href='#'>#".$orden."</a></th>
+                  <td>".$titulo."</td>
+                  <td>".$lsfotos."</td>";
+      
+      switch ($estadoorden)
+      {
+        case "D": //ORDEN DISPONIBLE - AMARILLO bg-warning
+                $color="<span class='badge bg-warning'>Disponible</span>";
+        break;
+        case "P": //ORDEN EN PROCESO - VERDE bg-success 
+                $color="<span class='badge bg-success'>En proceso</span>";
+        break;
+        default: //ORDEN DEMORADA - ROJO bg-danger 
+                $color="<span class='badge bg-danger'>Atrazado</span>";
+        break;
+      }
+
+      switch($estado)
+      {
+        case "DI":
+                  if ($bandera=="del")
+                  {
+                      $fila=$fila."
+                                    <td>".$color."</td>
                                     <td>
-                                        <!--a href='#' data-bs-toggle='modal' data-bs-target='#".$orden."'-->
                                         <a href='#'>
-                                          <img src='assets/img/usu_add.png' alt='Sumarse a tarea' onclick='vincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                          <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
                                         </a>
                                     </td>
                                     <td> 
@@ -366,74 +378,90 @@
                                     else $fila=$fila."<a href='#'>
                                                         <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
                                                       </a></td></tr>";
-                }
-      break;
-      case "AU":
-                if ($bandera=="del")
-                {
-                    $fila=$fila."
-                                  <td><span class='badge bg-warning text-dark'>En proceso</span></td>
-                                  <td>
-                                      <!--a href='#' data-bs-toggle='modal' data-bs-target='#".$orden."'-->
-                                      <a href='#'>
-                                        <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                      </a>
-                                  </td>
-                                  <td>
-                                      <a href='#'>
-                                        <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\")'>
-                                      </a>
-                                  </td>
-                                  <td>";
-                                  if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                  else $fila=$fila."<a href='#'>
-                                                      <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                    </a></td></tr>";
-                }
-                else
-                {
-                    $fila=$fila."
-                                  <td><span class='badge bg-warning text-dark'>En proceso</span></td>
-                                  <td>
-                                      <!--a href='#' data-bs-toggle='modal' data-bs-target='#".$orden."'-->
-                                      <a href='#'>
-                                        <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                      </a>
-                                  </td>
-                                  <td>
-                                      <a href='#'>
-                                        <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\")'>
-                                      </a>
-                                  </td>
-                                  <td>";
-                                  if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                  else $fila=$fila."<a href='#'>
-                                                      <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                    </a></td></tr>";
-                }
+                  }
+                  else
+                  {
+                      $fila=$fila."
+                                      <td>".$color."</td>
+                                      <td>
+                                          <a href='#'>
+                                            <img src='assets/img/usu_add.png' alt='Sumarse a tarea' onclick='vincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                          </a>
+                                      </td>
+                                      <td> 
+                                          &nbsp;
+                                      </td>
+                                      <td>";
+                                      if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                      else $fila=$fila."<a href='#'>
+                                                          <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                        </a></td></tr>";
+                  }
+        break;
+        case "AU":
+                  if ($bandera=="del")
+                  {
+                      $fila=$fila."
+                                    <td>".$color."</td>
+                                    <td>
+                                        <a href='#'>
+                                          <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href='#'>
+                                          <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\",\"$idusuario\")'>
+                                        </a>
+                                    </td>
+                                    <td>";
+                                    if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                    else $fila=$fila."<a href='#'>
+                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                      </a></td></tr>";
+                  }
+                  else
+                  {
+                      $fila=$fila."
+                                    <td>".$color."</td>
+                                    <td>
+                                        <a href='#'>
+                                          <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href='#'>
+                                          <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\",\"$idusuario\")'>
+                                        </a>
+                                    </td>
+                                    <td>";
+                                    if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                    else $fila=$fila."<a href='#'>
+                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                      </a></td></tr>";
+                  }
 
-                $bandera="";
-      break;
-      case "PE":
-                  $fila=$fila."
-                                <td><span class='badge bg-warning text-dark'>En proceso</span></td>
-                                <td>
-                                    <!--a href='#' data-bs-toggle='modal' data-bs-target='#".$orden."'-->
-                                    <a href='#'>
-                                      <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                    </a>
-                                </td>
-                                <td>
-                                    &nbsp;
-                                </td>
-                                <td>";
-                                if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                else $fila=$fila."<a href='#'>
-                                                    <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
-                                                  </a></td></tr>";
-      break;
+                  $bandera="";
+        break;
+        case "PE":
+                    $fila=$fila."
+                                  <td>".$color."</td>
+                                  <td>
+                                      <a href='#'>
+                                        <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                      </a>
+                                  </td>
+                                  <td>
+                                      &nbsp;
+                                  </td>
+                                  <td>";
+                                  if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                  else $fila=$fila."<a href='#'>
+                                                      <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                    </a></td></tr>";
+        break;
+      }
     }
-
+    
     desconectar($con);
 
     if (($estado=="DI")||($estado=="PR")||($estado=="AU")) 
@@ -491,6 +519,11 @@
   * F => TAREA TERMINADA
   ======================================================== -->
   <script>
+    function vermovimientostareasvsempledos() 
+    {
+      location.reload();
+    }
+
     function vincularordentrabajo(num,id) 
     {
       if (num<=0) {
@@ -536,7 +569,7 @@
       }
     }
 
-    function atendertareas(num) 
+    function atendertareas(num,id) 
     {
       if (num<=0) {
         return;
@@ -548,7 +581,7 @@
             document.getElementById("lsdetalles").innerHTML=this.responseText;
           }
         };
-        xmlhttp.open('GET', 'atendertareas.php?num='+num, false);
+        xmlhttp.open('GET', 'atendertareas.php?num='+num+'&id='+id, false);
         xmlhttp.send();
       }
     }
@@ -686,7 +719,6 @@
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
           <li class="breadcrumb-item"><a href="atenderordenes.php">Atención de ordenes</a></li>
-          <li class="breadcrumb-item active">Atención</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -699,7 +731,7 @@
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Tareas Disponibles o en Proceso</h5>
+              <h5 class="card-title">Ordenes de Trabajo Disponibles/Autorizadas</h5>
               <!-- Table with stripped rows -->
               <table class="table datatable">
                 <thead>
@@ -718,7 +750,6 @@
                 </tbody>
               </table>
               <!-- End Table with stripped rows -->
-                <?php echo $poupproydis; ?>
             </div>
           </div>
 
@@ -732,7 +763,7 @@
 
           <div class="card">
             <div class="card-body">
-            <h5 class="card-title">Ordenes Pendientes de Autorización</h5>
+            <h5 class="card-title">Ordenes de Trabajos Pendientes de Autorización</h5>
               <!-- Table with stripped rows -->
               <table class="table datatable">
                 <thead>
@@ -751,7 +782,6 @@
                 </tbody>
               </table>
               <!-- End Table with stripped rows -->
-                  <?php echo $poupap; ?>
             </div>
           </div>
 

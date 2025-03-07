@@ -1,6 +1,65 @@
 <?php
+include "configuracion/conexion.php";
+date_default_timezone_set("America/Argentina/Tucuman");
 
+if (isset($_GET['id']))
+{  
+  $id=$_GET['id'];
+  $orden="";
+
+  if (isset($_GET["num"]))
+  {  
+    $orden=$_GET["num"];
+  
     echo "
+     <section class='section'>
+      <div class='row'>
+        <div class='col-lg-6'>
+
+          <div class='card'>
+            <div class='card-body'>
+              <h5 class='card-title'>Detalle Orden</h5>
+              <div class='row mb-3'>
+                  <label for='inputText' class='col-sm-3 col-form-label'>N° Orden</label>
+                  <div class='col-sm-9'>
+                    <input type='text' class='form-control' value='".$orden."'>
+                  </div>
+              </div>
+              <div class='row mb-3'>
+                    <label for='inputEmail' class='col-sm-3 col-form-label'>Titulo</label>
+                    <div class='col-sm-9'>
+                    <input type='text' class='form-control' value='...'>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class='col-lg-6'>
+
+          <div class='card'>
+            <div class='card-body'>
+              <h5 class='card-title'>Detalle Auto</h5>
+              <div class='row mb-3'>
+                  <label for='inputText' class='col-sm-3 col-form-label'>Kilometraje</label>
+                  <div class='col-sm-9'>
+                    <input type='text' class='form-control' value='".$orden."'>
+                  </div>
+              </div>
+              <div class='row mb-3'>
+                    <label for='inputEmail' class='col-sm-3 col-form-label'>Modelo</label>
+                    <div class='col-sm-9'>
+                      <input type='text' class='form-control' value='...'>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
     <section class='section'>
       <div class='row align-items-top'>
         <div class='col-lg-4'>
@@ -60,7 +119,7 @@
             </div>
             
             <div class='card-footer'>
-              Seleccione tarea a tratar
+              Tareas Disponibles
             </div>
           </div><!-- End Card with header and footer -->
 
@@ -252,4 +311,11 @@
       </div>
     </section>
     ";
+  }
+}
+else
+{
+  header('Location: index.php');
+  exit;
+}   
 ?>
