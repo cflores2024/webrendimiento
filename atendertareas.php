@@ -11,6 +11,31 @@ if (isset($_GET['id']))
   {  
     $orden=$_GET["num"];
   
+    $sql = "";
+
+    $con=conectar();
+
+    $result = $cnx->query($sql);
+
+    if (!$result) 
+    {
+      die('Invalid query: ' . $cnx->error);
+    }
+
+    if (!$result) 
+    {
+      die('Invalid query: ' . $mysqli->error);
+    }
+    else
+    {
+      while($row = mysqli_fetch_array($result))
+      {
+        if ($orden==$row['numorden'])
+        {
+        }
+      }
+    }
+
     echo "
      <section class='section'>
       <div class='row'>

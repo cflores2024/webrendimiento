@@ -37,7 +37,7 @@
             (
               SELECT aa.`numorden`
               FROM autorizaraccorden aa
-              WHERE aa.`accion`!='B' AND aa.`idpersona`=".$idusuario." AND aa.`estado` IN ('P')
+              WHERE aa.`accion`!='B' AND aa.`idpersona`=".$idusuario."
             )
             UNION
             -- ORDENES DISPONIBLES
