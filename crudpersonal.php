@@ -188,11 +188,11 @@
       }
       $con=conectar();
 
-      $result = $cnx->query($sql);
+      $result = $con->query($sql);
 
       if (!$result) 
       {
-        die('Invalid query: ' . $cnx->error);
+        die('Invalid query: ' . $con->error);
       }
 
       if (!$result) 
@@ -286,8 +286,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="">
-        <span class="d-none d-lg-block">Mantenimiento</span>
+        <!--img src="assets/img/logo.png" alt=""-->
+        <span class="d-none d-lg-block">SAM</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -308,14 +308,14 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-          <img src="assets/img/<? echo $foto; ?>" alt="Profile" class="rounded-circle">
-          <span class="d-none d-md-block dropdown-toggle ps-2"><? echo $nombrecorto; ?></span>
+          <img src="assets/img/<?php echo $foto; ?>" alt="Profile" class="rounded-circle">
+          <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $nombrecorto; ?></span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-            <h6><? echo $apenomb; ?></h6>
-            <span><? echo $tipousu; ?>r</span>
+            <h6><?php echo $apenomb; ?></h6>
+            <span><?php echo $tipousu; ?>r</span>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -363,7 +363,7 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Personal</h1>
+      <h1>Gestión Usuarios</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
@@ -382,9 +382,9 @@
           <div class="card">
             <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
               <span id="img1">
-                <img src="assets/img/<? echo $txtfoto; ?>" alt="Profile" class="rounded-circle">
+                <img src="assets/img/<?php echo $txtfoto; ?>" alt="Profile" class="rounded-circle">
               </span>
-              <h2><? echo $txtnombcorto; ?></h2>
+              <h2><?php echo $txtnombcorto; ?></h2>
               <h3>Personal</h3>
             </div>
           </div>
@@ -433,47 +433,47 @@
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label ">Nombre</div>
-                    <div class="col-lg-9 col-md-8"><? echo $txtapellido .", ". $txtnombre; ?></div>
+                    <div class="col-lg-9 col-md-8"><?php echo $txtapellido .", ". $txtnombre; ?></div>
                   </div>
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label ">Nombre corto</div>
-                    <div class="col-lg-9 col-md-8"><? echo $txtnombcorto; ?></div>
+                    <div class="col-lg-9 col-md-8"><?php echo $txtnombcorto; ?></div>
                   </div>
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label">N° Identificación</div>
-                    <div class="col-lg-9 col-md-8"><? echo $txtnumsocio; ?></div>
+                    <div class="col-lg-9 col-md-8"><?php echo $txtnumsocio; ?></div>
                   </div>
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label">N° Documento</div>
-                    <div class="col-lg-9 col-md-8"><? echo $txtdni; ?></div>
+                    <div class="col-lg-9 col-md-8"><?php echo $txtdni; ?></div>
                   </div>
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label">Disciplinas</div>
-                    <div class="col-lg-9 col-md-8"><? echo $lsact; ?></div>
+                    <div class="col-lg-9 col-md-8"><?php echo $lsact; ?></div>
                   </div>
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label">Fecha Nac.</div>
-                    <div class="col-lg-9 col-md-8"><? echo $txtfnac; ?></div>
+                    <div class="col-lg-9 col-md-8"><?php echo $txtfnac; ?></div>
                   </div>
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label">Domicilio</div>
-                    <div class="col-lg-9 col-md-8"><? echo $txtdire; ?></div>
+                    <div class="col-lg-9 col-md-8"><?php echo $txtdire; ?></div>
                   </div>
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label">Telefono</div>
-                    <div class="col-lg-9 col-md-8"><? echo $txttel; ?></div>
+                    <div class="col-lg-9 col-md-8"><?php echo $txttel; ?></div>
                   </div>
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 label">Email</div>
-                    <div class="col-lg-9 col-md-8"><? echo $txtemail; ?></div>
+                    <div class="col-lg-9 col-md-8"><?php echo $txtemail; ?></div>
                   </div>
 
                 </div>
@@ -489,7 +489,7 @@
                       <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Imagen Perfil</label>
                         <div class="col-md-8 col-lg-9">
                           <span id="img2">
-                            <img id="avatar" src="assets/img/<? echo $txtfoto; ?>" alt="Profile" class="rounded-circle">
+                            <img id="avatar" src="assets/img/<?php echo $txtfoto; ?>" alt="Profile" class="rounded-circle">
                           </span>
                           <div class="pt-2">
                             <input id="changeavatar" type="file" style = "display: none;">
@@ -581,11 +581,11 @@
 
                           $con=conectar();
 
-                          $result = $cnx->query($sql);
+                          $result = $con->query($sql);
 
                           if (!$result) 
                           {
-                            die('Invalid query: ' . $cnx->error);
+                            die('Invalid query: ' . $con->error);
                           }
 
                           if (!$result) 
@@ -793,7 +793,7 @@
                     <div class="row g-0">
                       <div class="col-md-4">
                         <p>
-                          <img src="assets/img/<? echo $txtfoto; ?>" class="img-fluid rounded-start" alt="Profile">
+                          <img src="assets/img/<?php echo $txtfoto; ?>" class="img-fluid rounded-start" alt="Profile">
                         </p>
 
                           <!-- GENERANDO CODIGO QR CON EL NUMERO DE IDENTIFICACION -->

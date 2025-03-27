@@ -35,73 +35,88 @@
       $txtemail=$_GET["txtemail"];
       $accion="N";
       $fechaaccion=date("Y-m-d H:i:s"); 
-      $idtipoper="2";
+      $idtipoper="";
       $idarea="4";
       $txtfini=date('Y-m-d'); 
       $txtffin=date('Y-m-d', strtotime(' + 1 months'));
 
 
       //ALTA DEL NUEVO SOCIO
-      
-      $sql="INSERT INTO personas (apellido,nombre,nombrecortousu,dni,nrosocio,domicilio,fnacimiento,idtipopersona,emailusuario,tel,idoficina,aptoingreso,finiapto,ffinapto,accion,idempleadoaccion,fechaaccion)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-
-      $con=conectar();
-      $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-      mysqli_stmt_bind_param($sentencia,'sssssssssssssssss',$txtapellido,$txtnombre,$txtnombcorto,$txtdni,$txtnumsocio,$txtdire,$txtfnac,$idtipoper,$txtemail,$txttel,$idarea,$apto,$txtfini,$txtffin,$accion,$id,$fechaaccion);
-      $respsoc=mysqli_stmt_execute($sentencia);
-    
-      desconectar($con);
-      
-      if ($respsoc)  
+     /* switch ($_GET['lsdisciplinas'])
       {
-        //RECUPERO ID DEL NUEVO SOCIO
-        $sql = "SELECT a.`idpersona` FROM personas a WHERE `accion`!='B' AND a.dni='".$txtdni."';";
-        $respact="";
+        case "Administrador":
+          $idtipoper="2";
+          break;
+        case "Mecanico":
+          $idtipoper="3";
+          break;
+        case "Gerencia":
+          $idtipoper="4";
+          break;
+      }*/
+      foreach($_GET['lsdisciplinas'] as $idtipoper)
+      {
+        $sql="INSERT INTO personas (apellido,nombre,nombrecortousu,dni,nrosocio,domicilio,fnacimiento,idtipopersona,emailusuario,tel,idoficina,aptoingreso,finiapto,ffinapto,accion,idempleadoaccion,fechaaccion)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 
         $con=conectar();
-
-        $result = $cnx->query($sql);
-
-        if (!$result) 
-        {
-          die('Invalid query: ' . $cnx->error);
-        }
-
-        if (!$result) 
-        {
-          die('Invalid query: ' . $mysqli->error);
-        }
-        else
-        {
-          while($row = mysqli_fetch_array($result))
-          {
-            $idsocio=$row['idpersona'];
-          }
-        }
-
+        $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+        mysqli_stmt_bind_param($sentencia,'sssssssssssssssss',$txtapellido,$txtnombre,$txtnombcorto,$txtdni,$txtnumsocio,$txtdire,$txtfnac,$idtipoper,$txtemail,$txttel,$idarea,$apto,$txtfini,$txtffin,$accion,$id,$fechaaccion);
+        $respsoc=mysqli_stmt_execute($sentencia);
+               
         desconectar($con);
-    
-        //ALTA EN LAS DISCIPLINAS DONDE SE INSCRIBE
-        foreach($_GET['lsdisciplinas'] as $i)
+        
+        if ($respsoc)  
         {
-          $sql="INSERT INTO personasvsdisciplinas (idpersona,iddisciplina,accion,idempleadoaccion,fechaaccion)
-                VALUES (?,?,?,?,?);";
+          //RECUPERO ID DEL NUEVO SOCIO
+          
+          $sql = "SELECT a.`idpersona` FROM personas a WHERE `accion`!='B' AND a.dni='".$txtdni."';";
+          $respact="";
 
           $con=conectar();
-          $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-          mysqli_stmt_bind_param($sentencia,'sssss',$idsocio,$i,$accion,$id,$fechaaccion);
-          $respact=mysqli_stmt_execute($sentencia);
+
+          $result = $cnx->query($sql);
+
+          if (!$result) 
+          {
+            die('Invalid query: ' . $cnx->error);
+          }
+
+          if (!$result) 
+          {
+            die('Invalid query: ' . $mysqli->error);
+          }
+          else
+          {
+            while($row = mysqli_fetch_array($result))
+            {
+              $idsocio=$row['idpersona'];
+            }
+          }
+
           desconectar($con);
-        }
-             
-        if ($respact)  
-        {
-          $accion="OK";
-        }
-        else
-        {
-          $accion="ERROR";
+      
+          //ALTA EN LAS DISCIPLINAS DONDE SE INSCRIBE
+          /*foreach($_GET['lsdisciplinas'] as $i)
+          {*/
+            $sql="INSERT INTO personasvsdisciplinas (idpersona,iddisciplina,accion,idempleadoaccion,fechaaccion)
+                  VALUES (?,?,?,?,?);";
+
+            $con=conectar();
+            $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+            mysqli_stmt_bind_param($sentencia,'sssss',$idsocio,$idtipoper,$accion,$id,$fechaaccion);
+            $respact=mysqli_stmt_execute($sentencia);
+            desconectar($con);
+        // }
+              
+          if ($respact)  
+          {
+            $accion="OK";
+          }
+          else
+          {
+            $accion="ERROR";
+          }
         }
       }
     }
@@ -160,8 +175,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="">
-        <span class="d-none d-lg-block">Mantenimiento</span>
+        <!--img src="assets/img/logo.png" alt=""-->
+        <span class="d-none d-lg-block">SAM</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -182,14 +197,14 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="assets/img/<? echo $foto; ?>" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2"><? echo $nombrecorto; ?></span>
+            <img src="assets/img/<?php echo $foto; ?>" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $nombrecorto; ?></span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6><? echo $apenomb; ?></h6>
-              <span><? echo $tipousu; ?>r</span>
+              <h6><?php echo $apenomb; ?></h6>
+              <span><?php echo $tipousu; ?>r</span>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -332,11 +347,11 @@
 
                           $con=conectar();
 
-                          $result = $cnx->query($sql);
+                          $result = $con->query($sql);
 
                           if (!$result) 
                           {
-                            die('Invalid query: ' . $cnx->error);
+                            die('Invalid query: ' . $con->error);
                           }
 
                           if (!$result) 

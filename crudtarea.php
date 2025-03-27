@@ -131,11 +131,11 @@
       }
       $con=conectar();
 
-      $result = $cnx->query($sql);
+      $result = $con->query($sql);
 
       if (!$result) 
       {
-        die('Invalid query: ' . $cnx->error);
+        die('Invalid query: ' . $con->error);
       }
 
       if (!$result) 
@@ -208,8 +208,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="">
-        <span class="d-none d-lg-block">Mantenimiento</span>
+        <!--img src="assets/img/logo.png" alt=""-->
+        <span class="d-none d-lg-block">SAM</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -230,14 +230,14 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-          <img src="assets/img/<? echo $foto; ?>" alt="Profile" class="rounded-circle">
-          <span class="d-none d-md-block dropdown-toggle ps-2"><? echo $nombrecorto; ?></span>
+          <img src="assets/img/<?php echo $foto; ?>" alt="Profile" class="rounded-circle">
+          <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $nombrecorto; ?></span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-            <h6><? echo $apenomb; ?></h6>
-            <span><? echo $tipousu; ?>r</span>
+            <h6><?php echo $apenomb; ?></h6>
+            <span><?php echo $tipousu; ?>r</span>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -322,12 +322,12 @@
 
                     <div class="row">
                       <div class="col-lg-3 col-md-4 label ">Nombre</div>
-                      <div class="col-lg-9 col-md-8"><? echo $txttarea; ?></div>
+                      <div class="col-lg-9 col-md-8"><?php echo $txttarea; ?></div>
                     </div>
                     </br>
                     <div class="row">
                       <div class="col-lg-3 col-md-4 label ">Tiempo</div>
-                      <div class="col-lg-9 col-md-8"><? echo $txttiempo; ?></div>
+                      <div class="col-lg-9 col-md-8"><?php echo $txttiempo; ?></div>
                     </div>
                   </div>
 

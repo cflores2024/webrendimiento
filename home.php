@@ -29,7 +29,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Gestión de mantenimiento</title>
+  <title>Sistema Administrativo de Mantenimiento</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -67,23 +67,6 @@
       window.location.hash="Again-No-back-button" //chrome
       window.onhashchange=function(){window.location.hash="";}
     }
-
-    function verhorarios(id) {
-      //alert ("idsocio="+idsocio);
-      if (id<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            //alert ('idsocio='+id);
-            document.getElementById("lsclases").innerHTML=this.responseText;
-          }
-        };
-        xmlhttp.open('GET', 'lshorarios.php?idsocio='+id, true);
-        xmlhttp.send();
-      }
-    }
   </script>
 </head>
 
@@ -94,14 +77,14 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="">
-        <span class="d-none d-lg-block">Mantenimiento</span>
+        <!--img src="assets/img/logo.png" alt=""-->
+        <span class="d-none d-lg-block">SAM</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
     <div class="search-bar">
-      <strong>Gestión</strong>
+      <strong>Mantenimiento</strong>
     </div><!-- End Search Bar -->
 
     <nav class="header-nav ms-auto">
@@ -171,423 +154,1150 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Dashboard</h1>
+      <h1>Mantenimiento</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item active">Dashboard</li>
+          <li class="breadcrumb-item active">Mantenimiento</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
       <div class="row">
+
+    <!-- TOTAL DE ORDENES X MES -->
+        <div class="col-lg-3">
+
+          <div class="card info-card sales-card">
+
+            <div class="filter">
+              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                  <h6>Filtro</h6>
+                </li>
+
+                <li><a class="dropdown-item" href="#">Hoy</a></li>
+                <li><a class="dropdown-item" href="#">Este Mes</a></li>
+                <li><a class="dropdown-item" href="#">Este Año</a></li>
+              </ul>
+            </div>
+
+            <div class="card-body">
+              <h5 class="card-title">Total Ordenes<span>| Mar 25</span></h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-car-front"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>150</h6>
+                  <h5>Ordenes</h5>
+                  <span class="text-success small pt-1 fw-bold">+12%</span> <span class="text-muted small pt-2 ps-1">Feb 2025</span>
+
+                </div>
+              </div>
+            </div>
+
+            </div>
+
+          </div>
+
+  <!-- ORDENES DEMORAS-->
+        <div class="col-lg-3">
+
+          <div class="card info-card sales-card">
+
+            <div class="filter">
+              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                  <h6>Filtro</h6>
+                </li>
+
+                <li><a class="dropdown-item" href="#">Hoy</a></li>
+                <li><a class="dropdown-item" href="#">Este Mes</a></li>
+                <li><a class="dropdown-item" href="#">Este Año</a></li>
+              </ul>
+            </div>
+
+            <div class="card-body">
+              <h5 class="card-title">Demoradas <span>| Mar 25</span></h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-clock"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>45</h6>
+                  <h5>Ordenes</h5>
+                  <span class="text-success small pt-1 fw-bold">-2%</span> <span class="text-muted small pt-2 ps-1">Feb 2025</span>
+
+                </div>
+              </div>
+            </div>
+
+            </div>
+
+          </div>
+       
+        
+        <div class="col-lg-3">
+
+          <div class="card info-card sales-card">
+
+            <div class="filter">
+              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                  <h6>Filtro</h6>
+                </li>
+
+                <li><a class="dropdown-item" href="#">Hoy</a></li>
+                <li><a class="dropdown-item" href="#">Este Mes</a></li>
+                <li><a class="dropdown-item" href="#">Este Año</a></li>
+              </ul>
+            </div>
+
+            <div class="card-body">
+              <h5 class="card-title">Terminadas <span>| Mar 25</span></h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-hand-thumbs-up-fill"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>100</h6>
+                  <h5>Ordenes</h5>
+                  <span class="text-success small pt-1 fw-bold">+20%</span> <span class="text-muted small pt-2 ps-1">Feb 2025</span>
+
+                </div>
+              </div>
+            </div>
+
+            </div>
+
+          </div>
+       
+
+        <div class="col-lg-3">
+
+          <div class="card info-card sales-card">
+
+            <div class="filter">
+              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                  <h6>Filtro</h6>
+                </li>
+
+                <li><a class="dropdown-item" href="#">Hoy</a></li>
+                <li><a class="dropdown-item" href="#">Este Mes</a></li>
+                <li><a class="dropdown-item" href="#">Este Año</a></li>
+              </ul>
+            </div>
+
+            <div class="card-body">
+              <h5 class="card-title">En curso <span>| Hoy</span></h5>
+
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-headset"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>5</h6>
+                  <h5>Ordenes</h5>
+                  <span class="text-success small pt-1 fw-bold">+10%</span> <span class="text-muted small pt-2 ps-1">Feb 2025</span>
+
+                </div>
+              </div>
+            </div>
+
+            </div>
+
+          </div>
+        
+      </div>
+    </section>
+
+    <section class="section dashboard">
+      <div class="row">
+
+        <div class="col-lg-6">
+        
+          <!-- Customers Card -->
+            <div class="card info-card customers-card">
+
+              <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                  <li class="dropdown-header text-start">
+                    <h6>Filtro</h6>
+                  </li>
+
+                  <li><a class="dropdown-item" href="#">Hoy</a></li>
+                  <li><a class="dropdown-item" href="#">Este Mes</a></li>
+                  <li><a class="dropdown-item" href="#">Este Año</a></li>
+                </ul>
+              </div>
+
+              <div class="card-body">
+                <h5 class="card-title">Designación Ordenes<span>| Marzo 2025</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-people"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6>40 Min</h6>
+                    <span class="text-danger small pt-1 fw-bold">-25%</span> <span class="text-muted small pt-2 ps-1">Febrero 2025</span>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          <!-- End Customers Card -->  
+
+        </div>
+
+        <div class="col-lg-6">
+        
+          <!-- Customers Card -->
+            <div class="card info-card customers-card">
+
+              <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                  <li class="dropdown-header text-start">
+                    <h6>Filtro</h6>
+                  </li>
+
+                  <li><a class="dropdown-item" href="#">Hoy</a></li>
+                  <li><a class="dropdown-item" href="#">Este Mes</a></li>
+                  <li><a class="dropdown-item" href="#">Este Año</a></li>
+                </ul>
+              </div>
+
+              <div class="card-body">
+                <h5 class="card-title">Tiempo Muerto <span>| Marzo 2025</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-cup-straw"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6>2:30 hs</h6>
+                    <span class="text-danger small pt-1 fw-bold">+12%</span> <span class="text-muted small pt-2 ps-1">Febrero 2025</span>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          <!-- End Customers Card -->  
+
+        </div>
+
+      </div>
+    </section>
+<!--=========================================== FIN DE TARJETAS ===============================================-->
+
+<!--=========================================== INICIO GRAFICAS ===============================================-->
+    <section class="section dashboard">
+      <div class="row">
+      
+        <!-- Tiempo de Atención de Ordenes -->
+        <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Tiempo de Atención de Ordenes</h5>
+                <div id="barChart"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart"), {
+                      series: [{
+                                name: 'Atención',
+                                data: [2, 3, 4, 10, 4]
+                              }],
+                                chart: {
+                                height: 350,
+                                type: 'bar',
+                              },
+                              plotOptions: {
+                                bar: {
+                                  borderRadius: 0,
+                                  dataLabels: {
+                                    position: 'center', // top, center, bottom
+                                  },
+                                }
+                              },
+                              dataLabels: {
+                                enabled: true,
+                                formatter: function (val) {
+                                  return val + "hs";
+                                },
+                                offsetY: -20,
+                                style: {
+                                  fontSize: '12px',
+                                  colors: ["#304758"]
+                                }
+                              },
+                              
+                              xaxis: {
+                                categories: ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes"],
+                                position: 'top',
+                                axisBorder: {
+                                  show: false
+                                },
+                                axisTicks: {
+                                  show: false
+                                },
+                                crosshairs: {
+                                  fill: {
+                                    type: 'gradient',
+                                    gradient: {
+                                      colorFrom: '#D8E3F0',
+                                      colorTo: '#BED1E6',
+                                      stops: [0, 100],
+                                      opacityFrom: 0.4,
+                                      opacityTo: 0.5,
+                                    }
+                                  }
+                                },
+                                tooltip: {
+                                  enabled: true,
+                                }
+                              },
+                              colors: ["#33b2df", "#33b2df", "#33b2df", "#33b2df", "#33b2df"],
+                              yaxis: {
+                                axisBorder: {
+                                  show: false
+                                },
+                                axisTicks: {
+                                  show: false,
+                                },
+                                labels: {
+                                  show: false,
+                                  formatter: function (val) {
+                                    return val + "hs";
+                                  }
+                                }
+                              
+                              },
+                              title: {
+                                text: 'Tiempo de Atención',
+                                floating: true,
+                                offsetY: 330,
+                                align: 'center',
+                                style: {
+                                  color: '#444'
+                                }
+                              }
+                      }).render();
+                    });
+                  </script>
+              </div>
+            </div>
+        </div>
+        <!-- Fin Tiempo de Atención de Ordenes -->
+
+        <!-- Tiempo Asignación Tarea Administrador -->
         <div class="col-lg-6">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Line Chart</h5>
+              <h5 class="card-title">Tiempo Asignación Tarea Administrador</h5>
 
-              <!-- Line Chart -->
-              <canvas id="lineChart" style="max-height: 400px;"></canvas>
+                <div id="barChart45"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart45"), {
+                      series: [{
+                                name: 'Asignación',
+                                data: [2, 3, 4]
+                              }],
+                                chart: {
+                                height: 350,
+                                type: 'bar',
+                              },
+                              plotOptions: {
+                                bar: {
+                                  borderRadius: 0,
+                                  dataLabels: {
+                                    position: 'center', // top, center, bottom
+                                  },
+                                }
+                              },
+                              dataLabels: {
+                                enabled: true,
+                                formatter: function (val) {
+                                  return val + "hs";
+                                },
+                                offsetY: -20,
+                                style: {
+                                  fontSize: '12px',
+                                  colors: ["#304758"]
+                                }
+                              },
+                              
+                              xaxis: {
+                                categories: ["Enero", "Febrero", "Marzo"],
+                                position: 'top',
+                                axisBorder: {
+                                  show: false
+                                },
+                                axisTicks: {
+                                  show: false
+                                },
+                                crosshairs: {
+                                  fill: {
+                                    type: 'gradient',
+                                    gradient: {
+                                      colorFrom: '#D8E3F0',
+                                      colorTo: '#BED1E6',
+                                      stops: [0, 100],
+                                      opacityFrom: 0.4,
+                                      opacityTo: 0.5,
+                                    }
+                                  }
+                                },
+                                tooltip: {
+                                  enabled: true,
+                                }
+                              },
+                              colors: ["#d4526e", "#d4526e", "#d4526e", "#d4526e", "#d4526e", "#d4526e"],
+                              yaxis: {
+                                axisBorder: {
+                                  show: false
+                                },
+                                axisTicks: {
+                                  show: false,
+                                },
+                                labels: {
+                                  show: false,
+                                  formatter: function (val) {
+                                    return val + "hs";
+                                  }
+                                }
+                              },
+                              title: {
+                                text: 'Tiempo Asignación Tarea',
+                                floating: true,
+                                offsetY: 330,
+                                align: 'center',
+                                style: {
+                                  color: '#444'
+                                }
+                              }
+                      }).render();
+                    });
+                  </script>
+            </div>
+          </div>
+        </div>
+        <!-- Fin Tiempo Asignación Tarea Administrador -->
+ 
+        <!-- Total Ordenes Demoradas x Mes -->
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Total Ordenes Demoradas x Mes</h5>
+
+              <div id="donutChart"></div>
+
               <script>
                 document.addEventListener("DOMContentLoaded", () => {
-                  new Chart(document.querySelector('#lineChart'), {
-                    type: 'line',
-                    data: {
-                      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                      datasets: [{
-                        label: 'Line Chart',
-                        data: [65, 59, 80, 81, 56, 55, 40],
-                        fill: false,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                      }]
-                    },
-                    options: {
-                      scales: {
-                        y: {
-                          beginAtZero: true
-                        }
+                  new ApexCharts(document.querySelector("#donutChart"), {
+                    series: [44, 55, 13, 43, 22, 35],
+                    chart: {
+                      height: 350,
+                      type: 'donut',
+                      toolbar: {
+                        show: true
                       }
-                    }
-                  });
-                });
-              </script>
-              <!-- End Line CHart -->
-
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Bar CHart</h5>
-
-              <!-- Bar Chart -->
-              <canvas id="barChart" style="max-height: 400px;"></canvas>
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  new Chart(document.querySelector('#barChart'), {
-                    type: 'bar',
-                    data: {
-                      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                      datasets: [{
-                        label: 'Bar Chart',
-                        data: [65, 59, 80, 81, 56, 55, 40],
-                        backgroundColor: [
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 159, 64, 0.2)',
-                          'rgba(255, 205, 86, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(153, 102, 255, 0.2)',
-                          'rgba(201, 203, 207, 0.2)'
-                        ],
-                        borderColor: [
-                          'rgb(255, 99, 132)',
-                          'rgb(255, 159, 64)',
-                          'rgb(255, 205, 86)',
-                          'rgb(75, 192, 192)',
-                          'rgb(54, 162, 235)',
-                          'rgb(153, 102, 255)',
-                          'rgb(201, 203, 207)'
-                        ],
-                        borderWidth: 1
-                      }]
                     },
-                    options: {
-                      scales: {
-                        y: {
-                          beginAtZero: true
-                        }
-                      }
-                    }
-                  });
+                    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
+                  }).render();
                 });
               </script>
-              <!-- End Bar CHart -->
 
             </div>
           </div>
         </div>
+        <!-- Fin Total Ordenes Demoradas xx Mes -->
 
+        <!-- Cantidad Ordenes Atendidas x Mes -->
         <div class="col-lg-6">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Pie Chart</h5>
+              <h5 class="card-title">Cantidad Ordenes Atendidas x Mes</h5>
 
-              <!-- Pie Chart -->
-              <canvas id="pieChart" style="max-height: 400px;"></canvas>
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  new Chart(document.querySelector('#pieChart'), {
-                    type: 'pie',
-                    data: {
-                      labels: [
-                        'Red',
-                        'Blue',
-                        'Yellow'
-                      ],
-                      datasets: [{
-                        label: 'My First Dataset',
-                        data: [300, 50, 100],
-                        backgroundColor: [
-                          'rgb(255, 99, 132)',
-                          'rgb(54, 162, 235)',
-                          'rgb(255, 205, 86)'
-                        ],
-                        hoverOffset: 4
-                      }]
-                    }
-                  });
-                });
-              </script>
-              <!-- End Pie CHart -->
+                <div id="barChart46"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart46"), {
+                      series: [{
+                                name: 'Ordenes',
+                                data: [20, 30, 40]
+                              }],
+                                chart: {
+                                height: 350,
+                                type: 'bar',
+                              },
+                              plotOptions: {
+                                bar: {
+                                  borderRadius: 0,
+                                  dataLabels: {
+                                    position: 'center', // top, center, bottom
+                                  },
+                                }
+                              },
+                              dataLabels: {
+                                enabled: true,
+                                formatter: function (val) {
+                                  return val + "";
+                                },
+                                offsetY: -20,
+                                style: {
+                                  fontSize: '12px',
+                                  colors: ["#304758"]
+                                }
+                              },
+                              
+                              xaxis: {
+                                categories: ["Enero", "Febrero", "Marzo"],
+                                position: 'top',
+                                axisBorder: {
+                                  show: false
+                                },
+                                axisTicks: {
+                                  show: false
+                                },
+                                crosshairs: {
+                                  fill: {
+                                    type: 'gradient',
+                                    gradient: {
+                                      colorFrom: '#D8E3F0',
+                                      colorTo: '#BED1E6',
+                                      stops: [0, 100],
+                                      opacityFrom: 0.4,
+                                      opacityTo: 0.5,
+                                    }
+                                  }
+                                },
+                                tooltip: {
+                                  enabled: true,
+                                }
+                              },
+                              colors: ["#13d8aa", "#13d8aa", "#13d8aa"],
+                              yaxis: {
+                                axisBorder: {
+                                  show: false
+                                },
+                                axisTicks: {
+                                  show: false,
+                                },
+                                labels: {
+                                  show: false,
+                                  formatter: function (val) {
+                                    return val + "";
+                                  }
+                                }
+                              },
+                              title: {
+                                text: 'Cantidad Ordenes Atendidas',
+                                floating: true,
+                                offsetY: 330,
+                                align: 'center',
+                                style: {
+                                  color: '#444'
+                                }
+                              }
+                      }).render();
+                    });
+                  </script>
 
             </div>
           </div>
         </div>
+        <!-- Fin Cantidad Ordenes Atendidas x Mes -->
 
+        <!-- Tareas Realizadas -->
+        <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Tareas Realizadas</h5>
+
+                <div id="barChart47"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart47"), {
+                      series: [{
+                                name: 'Servicios',
+                                data: [44, 55, 41, 67, 22, 43, 23, 46]
+                              }],
+                                
+                              chart: {
+                                height: 350,
+                                type: 'bar',
+                              },
+                              plotOptions: {
+                                bar: {
+                                  borderRadius: 0,
+                                  columnWidth: '50%',
+                                }
+                              },
+                              dataLabels: {
+                                enabled: false
+                              },
+                              stroke: {
+                                width: 0
+                              },
+                              grid: {
+                                row: {
+                                  colors: ['#fff', '#f2f2f2']
+                                }
+                              },
+                              xaxis: {
+                                labels: {
+                                  rotate: -45
+                                },
+                                categories: ['Filtro', 'Aire', 'Aceite', 'Cierre Centralizado', 'Paragolpes', 'Luces delantera',
+                                              'Bomba de agua', 'Luces traseras'
+                                ],
+                                tickPlacement: 'on'
+                              },
+                              colors: ["#A5978B", "#A5978B", "#A5978B", "#A5978B", "#A5978B", "#A5978B", "#A5978B", "#A5978B"],
+                              yaxis: {
+                                title: {
+                                  text: 'Servicios',
+                                },
+                              },
+                              fill: {
+                                type: 'gradient',
+                                gradient: {
+                                  shade: 'light',
+                                  type: "horizontal",
+                                  shadeIntensity: 0.25,
+                                  gradientToColors: undefined,
+                                  inverseColors: true,
+                                  opacityFrom: 0.85,
+                                  opacityTo: 0.85,
+                                  stops: [50, 0, 100]
+                                },
+                              }
+                      }).render();
+                    });
+                  </script>
+
+              </div>
+            </div>
+        </div>
+        <!-- Fin Tareas Realizadas -->
+
+        <!-- Total Services x Modelo -->
+        <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Total Services x Modelo</h5>
+
+                <div id="barChart48"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart48"), {
+                      series: [{
+                                name: 'Servicios',
+                                data: [12, 10, 5, 8]
+                              }],
+                                
+                              chart: {
+                                height: 350,
+                                type: 'bar',
+                              },
+                              plotOptions: {
+                                bar: {
+                                  borderRadius: 0,
+                                  columnWidth: '50%',
+                                }
+                              },
+                              dataLabels: {
+                                enabled: false
+                              },
+                              stroke: {
+                                width: 0
+                              },
+                              grid: {
+                                row: {
+                                  colors: ['#fff', '#f2f2f2']
+                                }
+                              },
+                              xaxis: {
+                                labels: {
+                                  rotate: -45
+                                },
+                                categories: ['Fiat Argo', 'Fiat Cronos', 'Fiat Fullback', 'Fiat Toro'
+                                ],
+                                tickPlacement: 'on'
+                              },
+                              colors: ["#2b908f", "#2b908f", "#2b908f", "#2b908f"],
+                              yaxis: {
+                                title: {
+                                  text: 'Servicios',
+                                },
+                              },
+                              fill: {
+                                type: 'gradient',
+                                gradient: {
+                                  shade: 'light',
+                                  type: "horizontal",
+                                  shadeIntensity: 0.25,
+                                  gradientToColors: undefined,
+                                  inverseColors: true,
+                                  opacityFrom: 0.85,
+                                  opacityTo: 0.85,
+                                  stops: [50, 0, 100]
+                                },
+                              }
+                      }).render();
+                    });
+                  </script>
+  
+              </div>
+            </div>
+        </div>
+        <!-- Fin Total Services x Modelo -->
+
+        <!-- Comparativas Mecanicos x Tareas -->
         <div class="col-lg-6">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Doughnut Chart</h5>
+              <h5 class="card-title">Comparativas Mecanicos x Tareas</h5>
 
-              <!-- Doughnut Chart -->
-              <canvas id="doughnutChart" style="max-height: 400px;"></canvas>
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  new Chart(document.querySelector('#doughnutChart'), {
-                    type: 'doughnut',
-                    data: {
-                      labels: [
-                        'Red',
-                        'Blue',
-                        'Yellow'
-                      ],
-                      datasets: [{
-                        label: 'My First Dataset',
-                        data: [300, 50, 100],
-                        backgroundColor: [
-                          'rgb(255, 99, 132)',
-                          'rgb(54, 162, 235)',
-                          'rgb(255, 205, 86)'
-                        ],
-                        hoverOffset: 4
-                      }]
-                    }
-                  });
-                });
-              </script>
-              <!-- End Doughnut CHart -->
-
+                <div id="barChart49"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart49"), {
+                      series: [{
+                                name: 'Mecanico 1',
+                                data: [10, 5, 4, 7, 2, 4]
+                              }, {
+                                name: 'Mecanico 2',
+                                data: [3, 2, 3, 5, 3, 4]
+                              }, {
+                                name: 'Mecanico 3',
+                                data: [2, 7, 1, 9, 5, 1]
+                              }, {
+                                name: 'Mecanico 4',
+                                data: [9, 7, 5, 8, 6, 9]
+                              }, {
+                                name: 'Mecanico 5',
+                                data: [2, 2, 9, 3, 5, 2]
+                              }],
+                                chart: {
+                                type: 'bar',
+                                height: 350,
+                                stacked: true,
+                              },
+                              plotOptions: {
+                                bar: {
+                                  horizontal: true,
+                                  dataLabels: {
+                                    total: {
+                                      enabled: true,
+                                      offsetX: 0,
+                                      style: {
+                                        fontSize: '13px',
+                                        fontWeight: 900
+                                      }
+                                    }
+                                  }
+                                },
+                              },
+                              stroke: {
+                                width: 1,
+                                colors: ['#fff']
+                              },
+                              title: {
+                                text: ''
+                              },
+                              xaxis: {
+                                categories: ['Enero', 'Febrero', 'Marzo'],
+                                labels: {
+                                  formatter: function (val) {
+                                    return val + ""
+                                  }
+                                }
+                              },
+                              yaxis: {
+                                title: {
+                                  text: undefined
+                                },
+                              },
+                              tooltip: {
+                                y: {
+                                  formatter: function (val) {
+                                    return val + ""
+                                  }
+                                }
+                              },
+                              fill: {
+                                opacity: 1
+                              },
+                              legend: {
+                                position: 'top',
+                                horizontalAlign: 'left',
+                                offsetX: 40
+                              }
+                      }).render();
+                    });
+                  </script>
             </div>
           </div>
         </div>
+        <!-- Fin Comparativas Mecanicos x Tareas -->
 
+        <!-- Total Revisitas x Mes -->
         <div class="col-lg-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Radar Chart</h5>
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Total Revisitas x Mes</h5>
 
-              <!-- Radar Chart -->
-              <canvas id="radarChart" style="max-height: 400px;"></canvas>
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  new Chart(document.querySelector('#radarChart'), {
-                    type: 'radar',
-                    data: {
-                      labels: [
-                        'Eating',
-                        'Drinking',
-                        'Sleeping',
-                        'Designing',
-                        'Coding',
-                        'Cycling',
-                        'Running'
-                      ],
-                      datasets: [{
-                        label: 'First Dataset',
-                        data: [65, 59, 90, 81, 56, 55, 40],
-                        fill: true,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgb(255, 99, 132)',
-                        pointBackgroundColor: 'rgb(255, 99, 132)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(255, 99, 132)'
-                      }, {
-                        label: 'Second Dataset',
-                        data: [28, 48, 40, 19, 96, 27, 100],
-                        fill: true,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgb(54, 162, 235)',
-                        pointBackgroundColor: 'rgb(54, 162, 235)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(54, 162, 235)'
-                      }]
-                    },
-                    options: {
-                      elements: {
-                        line: {
-                          borderWidth: 3
-                        }
-                      }
-                    }
-                  });
-                });
-              </script>
-              <!-- End Radar CHart -->
+                <div id="barChart50"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart50"), {
+                      series: [{
+                                name: 'Revisitas',
+                                data: [2, 7, 4]
+                              }],
+                                chart: {
+                                height: 350,
+                                type: 'bar',
+                              },
+                              plotOptions: {
+                                bar: {
+                                  borderRadius: 0,
+                                  dataLabels: {
+                                    position: 'center', // top, center, bottom
+                                  },
+                                }
+                              },
+                              dataLabels: {
+                                enabled: true,
+                                formatter: function (val) {
+                                  return val + "";
+                                },
+                                offsetY: -20,
+                                style: {
+                                  fontSize: '12px',
+                                  colors: ["#304758"]
+                                }
+                              },
+                              
+                              xaxis: {
+                                categories: ["Enero", "Febrero", "Marzo"],
+                                position: 'top',
+                                axisBorder: {
+                                  show: false
+                                },
+                                axisTicks: {
+                                  show: false
+                                },
+                                crosshairs: {
+                                  fill: {
+                                    type: 'gradient',
+                                    gradient: {
+                                      colorFrom: '#D8E3F0',
+                                      colorTo: '#BED1E6',
+                                      stops: [0, 100],
+                                      opacityFrom: 0.4,
+                                      opacityTo: 0.5,
+                                    }
+                                  }
+                                },
+                                tooltip: {
+                                  enabled: true,
+                                }
+                              },
+                              colors: ["#c388d6", "#c388d6", "#c388d6"],
+                              yaxis: {
+                                axisBorder: {
+                                  show: false
+                                },
+                                axisTicks: {
+                                  show: false,
+                                },
+                                labels: {
+                                  show: false,
+                                  formatter: function (val) {
+                                    return val + "";
+                                  }
+                                }
+                              },
+                              title: {
+                                text: 'Cantidad Revisitas',
+                                floating: true,
+                                offsetY: 330,
+                                align: 'center',
+                                style: {
+                                  color: '#444'
+                                }
+                              }
+                      }).render();
+                    });
+                  </script>
 
+              </div>
             </div>
-          </div>
         </div>
+        <!-- Fin Total Revisitas x Mes -->
 
+        <!-- Tiempo Ocupación x Mecanicos -->
         <div class="col-lg-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Polar Area Chart</h5>
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Horas Trabajadas Mecanico - Marzo 2025</h5>
 
-              <!-- Polar Area Chart -->
-              <canvas id="polarAreaChart" style="max-height: 400px;"></canvas>
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  new Chart(document.querySelector('#polarAreaChart'), {
-                    type: 'polarArea',
-                    data: {
-                      labels: [
-                        'Red',
-                        'Green',
-                        'Yellow',
-                        'Grey',
-                        'Blue'
-                      ],
-                      datasets: [{
-                        label: 'My First Dataset',
-                        data: [11, 16, 7, 3, 14],
-                        backgroundColor: [
-                          'rgb(255, 99, 132)',
-                          'rgb(75, 192, 192)',
-                          'rgb(255, 205, 86)',
-                          'rgb(201, 203, 207)',
-                          'rgb(54, 162, 235)'
-                        ]
-                      }]
-                    }
-                  });
-                });
-              </script>
-              <!-- End Polar Area Chart -->
-
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Stacked Bar Chart</h5>
-
-              <!-- Stacked Bar Chart -->
-              <canvas id="stakedBarChart" style="max-height: 400px;"></canvas>
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  new Chart(document.querySelector('#stakedBarChart'), {
-                    type: 'bar',
-                    data: {
-                      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                      datasets: [{
-                          label: 'Dataset 1',
-                          data: [-75, -15, 18, 48, 74],
-                          backgroundColor: 'rgb(255, 99, 132)',
-                        },
-                        {
-                          label: 'Dataset 2',
-                          data: [-11, -1, 12, 62, 95],
-                          backgroundColor: 'rgb(75, 192, 192)',
-                        },
-                        {
-                          label: 'Dataset 3',
-                          data: [-44, -5, 22, 35, 62],
-                          backgroundColor: 'rgb(255, 205, 86)',
-                        },
-                      ]
-                    },
-                    options: {
-                      plugins: {
-                        title: {
-                          display: true,
-                          text: 'Chart.js Bar Chart - Stacked'
-                        },
-                      },
-                      responsive: true,
-                      scales: {
-                        x: {
-                          stacked: true,
-                        },
-                        y: {
-                          stacked: true
-                        }
-                      }
-                    }
-                  });
-                });
-              </script>
-              <!-- End Stacked Bar Chart -->
-
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Bubble Chart</h5>
-
-              <!-- Bubble Chart -->
-              <canvas id="bubbleChart" style="max-height: 400px;"></canvas>
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  new Chart(document.querySelector('#bubbleChart'), {
-                    type: 'bubble',
-                    data: {
-                      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                      datasets: [{
-                          label: 'Dataset 1',
-                          data: [{
-                              x: 20,
-                              y: 30,
-                              r: 15
+                <div id="barChart51"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart51"), {
+                      series: [{
+                              data: [30, 20, 40, 70, 50]
+                            }],
+                              chart: {
+                              type: 'bar',
+                              height: 380
                             },
-                            {
-                              x: 40,
-                              y: 10,
-                              r: 10
+                            plotOptions: {
+                              bar: {
+                                barHeight: '100%',
+                                distributed: true,
+                                horizontal: true,
+                                dataLabels: {
+                                  position: 'bottom'
+                                },
+                              }
                             },
-                            {
-                              x: 15,
-                              y: 37,
-                              r: 12
+                            colors: ['#33b2df', '#546E7A', '#d4526e', '#13d8aa', '#A5978B'
+                            ],
+                            dataLabels: {
+                              enabled: true,
+                              textAnchor: 'start',
+                              style: {
+                                colors: ['#fff']
+                              },
+                              formatter: function (val, opt) {
+                                return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val
+                              },
+                              offsetX: 0,
+                              dropShadow: {
+                                enabled: true
+                              }
                             },
-                            {
-                              x: 32,
-                              y: 42,
-                              r: 33
+                            stroke: {
+                              width: 1,
+                              colors: ['#fff']
+                            },
+                            xaxis: {
+                              categories: ['Mecanico 1', 'Mecanico 2', 'Mecanico 3', 'Mecanico 4', 'Mecanico 5'
+                              ],
+                            },
+                            yaxis: {
+                              labels: {
+                                show: false
+                              }
+                            },
+                            title: {
+                                text: '',
+                                align: 'center',
+                                floating: true
+                            },
+                            subtitle: {
+                                text: 'Horas Trabajadas',
+                                align: 'center',
+                            },
+                            tooltip: {
+                              theme: 'dark',
+                              x: {
+                                show: false
+                              },
+                              y: {
+                                title: {
+                                  formatter: function () {
+                                    return ''
+                                  }
+                                }
+                              }
                             }
-                          ],
-                          borderColor: 'rgb(255, 99, 132)',
-                          backgroundColor: 'rgba(255, 99, 132, 0.5)'
-                        },
-                        {
-                          label: 'Dataset 2',
-                          data: [{
-                              x: 40,
-                              y: 25,
-                              r: 22
-                            },
-                            {
-                              x: 24,
-                              y: 47,
-                              r: 11
-                            },
-                            {
-                              x: 65,
-                              y: 11,
-                              r: 14
-                            },
-                            {
-                              x: 11,
-                              y: 55,
-                              r: 8
-                            }
-                          ],
-                          borderColor: 'rgb(75, 192, 192)',
-                          backgroundColor: 'rgba(75, 192, 192, 0.5)'
-                        }
-                      ]
-                    },
-                    options: {
-                      responsive: true,
-                      plugins: {
-                        legend: {
-                          position: 'top',
-                        },
-                        title: {
-                          display: true,
-                          text: 'Chart.js Bubble Chart'
-                        }
-                      }
-                    }
-                  });
-                });
-              </script>
-              <!-- End Bubble Chart -->
-
+                      }).render();
+                    });
+                  </script>
+              </div>
             </div>
-          </div>
         </div>
+        <!-- Fin Tiempo Ocupación x Mecanicos -->
+
+        <!-- Total Tiempo Muerto x Mecanicos -->
+        <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Tiempo Muerto Mecanicos - Marzo 2025</h5>
+
+                <div id="barChart52"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart52"), {
+                      series: [{
+                              data: [3, 2, 1, 2, 1]
+                            }],
+                              chart: {
+                              type: 'bar',
+                              height: 380
+                            },
+                            plotOptions: {
+                              bar: {
+                                barHeight: '100%',
+                                distributed: true,
+                                horizontal: true,
+                                dataLabels: {
+                                  position: 'bottom'
+                                },
+                              }
+                            },
+                            colors: ['#33b2df', '#546E7A', '#d4526e', '#13d8aa', '#A5978B'
+                            ],
+                            dataLabels: {
+                              enabled: true,
+                              textAnchor: 'start',
+                              style: {
+                                colors: ['#fff']
+                              },
+                              formatter: function (val, opt) {
+                                return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val
+                              },
+                              offsetX: 0,
+                              dropShadow: {
+                                enabled: true
+                              }
+                            },
+                            stroke: {
+                              width: 1,
+                              colors: ['#fff']
+                            },
+                            xaxis: {
+                              categories: ['Mecanico 1', 'Mecanico 2', 'Mecanico 3', 'Mecanico 4', 'Mecanico 5'
+                              ],
+                            },
+                            yaxis: {
+                              labels: {
+                                show: false
+                              }
+                            },
+                            title: {
+                                text: '',
+                                align: 'center',
+                                floating: true
+                            },
+                            subtitle: {
+                                text: 'Tiempo Muerto',
+                                align: 'center',
+                            },
+                            tooltip: {
+                              theme: 'dark',
+                              x: {
+                                show: false
+                              },
+                              y: {
+                                title: {
+                                  formatter: function () {
+                                    return ''
+                                  }
+                                }
+                              }
+                            }
+                      }).render();
+                    });
+                  </script>
+              </div>
+            </div>
+        </div>
+        <!-- Fin Total Tiempo Muerto x Mecanicos -->
+
+        <!-- Total Ordenes Finalizadas x Mecanico -->
+        <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Total Ordenes Finalizadas x Mecanico</h5>
+
+                <div id="barChart53"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart53"), {
+                      series: [{
+                                name: 'Mecanco 1',
+                                data: [44, 55, 57]
+                              }, {
+                                name: 'Mecanico 2',
+                                data: [76, 85, 10]
+                              }, {
+                                name: 'Mecanico 3',
+                                data: [35, 41, 36]
+                              }, {
+                                name: 'Mecanico 4',
+                                data: [16, 5, 11]
+                              }, {
+                                name: 'Mecanico 5',
+                                data: [26, 8, 12]
+                              }],
+                                chart: {
+                                type: 'bar',
+                                height: 350
+                              },
+                              plotOptions: {
+                                bar: {
+                                  horizontal: false,
+                                  columnWidth: '55%',
+                                  borderRadius: 5,
+                                  borderRadiusApplication: 'end'
+                                },
+                              },
+                              dataLabels: {
+                                enabled: false
+                              },
+                              stroke: {
+                                show: true,
+                                width: 2,
+                                colors: ['transparent']
+                              },
+                              xaxis: {
+                                categories: ['Ene', 'Feb', 'Mar'],
+                              },
+                              yaxis: {
+                                title: {
+                                  text: 'Total Ordenes'
+                                }
+                              },
+                              fill: {
+                                opacity: 1
+                              },
+                              tooltip: {
+                                y: {
+                                  formatter: function (val) {
+                                    return "$ " + val + " Ordenes"
+                                  }
+                                }
+                              }
+                      }).render();
+                    });
+                  </script>
+
+              </div>
+            </div>
+        </div>
+        <!-- Fin Total Ordenes Finalizadas x Mecanico -->
+       
       </div>
     </section>
 
@@ -598,27 +1308,20 @@
     <div class="copyright">
       &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
     </div>
-    <div class="credits">
-      <!-- All the links in the footer should remain intact. -->
-      <!-- You can delete the links only if you purchased the pro version. -->
-      <!-- Licensing information: https://bootstrapmade.com/license/ -->
-      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-    </div>
   </footer><!-- End Footer -->
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
   <!-- Vendor JS Files -->
+  <script src="assets/vendor/chart.js/chart.umd.js"></script>
+  
+  
   <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/chart.js/chart.umd.js"></script>
-  <script src="assets/vendor/echarts/echarts.min.js"></script>
   <script src="assets/vendor/quill/quill.js"></script>
   <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
   <script src="assets/vendor/tinymce/tinymce.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-
+  
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
 

@@ -70,14 +70,14 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="">
-        <span class="d-none d-lg-block">Complejo Belgrano</span>
+        <!--img src="assets/img/logo.png" alt=""-->
+        <span class="d-none d-lg-block">SAM</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
     <div class="search-bar">
-      <strong>Secretaria de Deporte</strong>
+      <strong>Gestión</strong>
     </div><!-- End Search Bar -->
 
     <nav class="header-nav ms-auto">

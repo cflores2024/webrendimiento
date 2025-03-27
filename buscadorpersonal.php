@@ -67,8 +67,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="">
-        <span class="d-none d-lg-block">Mantenimiento</span>
+        <!--img src="assets/img/logo.png" alt=""-->
+        <span class="d-none d-lg-block">SAM</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -89,14 +89,14 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="assets/img/<? echo $foto; ?>" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2"><? echo $nombrecorto; ?></span>
+            <img src="assets/img/<?php echo $foto; ?>" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $nombrecorto; ?></span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6><? echo $apenomb; ?></h6>
-              <span><? echo $tipousu; ?></span>
+              <h6><?php echo $apenomb; ?></h6>
+              <span><?php echo $tipousu; ?></span>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -170,7 +170,7 @@
 <?php
     $sql = "SELECT a.idpersona,a.nrosocio,CONCAT(a.apellido,', ',a.`nombre`) AS usuario,a.tel,a.`domicilio`,a.`aptoingreso`
             FROM personas a INNER JOIN personasvsdisciplinas b ON (a.`idpersona`=b.`idpersona` AND b.accion!='B')
-            WHERE a.`accion`!='B' AND a.`idtipopersona`=2 AND a.`idoficina`=4
+            WHERE a.`accion`!='B'
             GROUP BY a.idpersona,a.nrosocio,a.tel,a.`domicilio`,a.`aptoingreso`
             ORDER BY a.`apellido`,a.`nombre`;";
 

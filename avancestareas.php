@@ -111,6 +111,13 @@
       }
     }
   </script>
+
+  <style>
+    .activo {
+      outline: 3px solid green;
+      box-shadow:0 0 15px green;
+    }
+  </style>
 </head>
 
 <body onload="deshabilitaRetroceso()">
@@ -120,8 +127,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="">
-        <span class="d-none d-lg-block">Mantenimiento</span>
+        <!--img src="assets/img/logo.png" alt=""-->
+        <span class="d-none d-lg-block">SAM</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -197,11 +204,11 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Avances</h1>
+      <h1>Estados de Ordenes</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
-          <li class="breadcrumb-item active"><a href="avancestareas.php">Avances de tareas</a></li>
+          <li class="breadcrumb-item active"><a href="avancestareas.php">Avances en ordenes</a></li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -213,14 +220,14 @@
 
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Progreso de tareas</h5>
-                <p>Se muestran todas las tareas que se fueron realizando a lo largo del tiempo</p>
+                <h5 class="card-title">Estado Tratamiento Ordenes</h5>
+                <p>Se muestran todas las ordenes y sus respectivos estados en el tiempo</p>
 
                 <!-- Table with stripped rows -->
                 <table class="table table-borderless datatable">
                       <thead>
                         <tr>
-                          <th scope="col">N° Orden</th>
+                          <th scope="col">Titulo Orden</th>
                           <th scope="col" data-type="date" data-format="MM/DD/YYYY">Fecha inicio</th>
                           <th scope="col">Tiempo</th>
                           <th scope="col">Avance %</th>
@@ -231,7 +238,7 @@
                       </thead>
                       <tbody>
                         <tr>
-                          <th scope="row"><a href="#" onclick="verorden(1234)">#1234</a></th>
+                          <th scope="row"><a href="#" onclick="verorden(1234)">Service por 40.000 Kms</a></th>
                           <td>04/02/2025</td>
                           <td>4 hs</td>
                           <td>
@@ -241,11 +248,9 @@
                           </td>
                           <td>
                               <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                                <img src="assets/img/team-1.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                                <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                                <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Sergio: Fija disponibilidad orden">
+                                <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Carlos: Cambio Aceite">
+                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Cesar: Cambio de una cubierta">
                               </a>
                           </td>
                           <td><span class="badge bg-success">Finalizado</span></td>
@@ -256,180 +261,80 @@
                           </td>
                         </tr>
                         <tr>
-                          <th scope="row"><a href="#">#2147</a></th>
-                          <td>04/02/2025</td>
-                          <td>1 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-                            </div>
-                          </td>
-                          <td>
-                              <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                                <img src="assets/img/team-1.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                                <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                                <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              </a>
-                          </td>
-                          <td><span class="badge bg-warning">En proceso</span></td>
-                          <td>
-                            <a href='#'>
-                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick="verhistorial('ABC123')">
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="row"><a href="#">#2049</a></th>
+                          <th scope="row"><a href="#">Service por 10.000 Kms</a></th>
                           <td>04/02/2025</td>
                           <td>4 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 5%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100">5%</div>
-                            </div>
-                          </td>
-                          <td>
-                              <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                                <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                                <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              </a>
-                          </td>
-                          <td><span class="badge bg-warning">En proceso</span></td>
-                          <td>
-                            <a href='#'>
-                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick="verhistorial('ABC123')">
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="row"><a href="#">#2644</a></th>
-                          <td>04/02/2025</td>
-                          <td>3 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                              <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            </a>
-                          </td>
-                          <td><span class="badge bg-danger">Demorado</span></td>
-                          <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                          <th scope="row"><a href="#">#26244</a></th>
-                          <td>04/02/2025</td>
-                          <td>36 hs</td>
                           <td>
                             <div class="progress">
                               <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
                             </div>
                           </td>
                           <td>
-                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                              <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            </a>
+                              <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Sergio: Fija disponibilidad orden">
+                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle activo" width="35" height="35" title="Cesar: Cambio de una cubierta">  
+                              </a>
                           </td>
                           <td><span class="badge bg-warning">En proceso</span></td>
-                          <td>&nbsp;</td>
+                          <td>
+                            <a href='#'>
+                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick="verhistorial('ABC123')">
+                            </a>
+                          </td>
                         </tr>
                         <tr>
-                          <th scope="row"><a href="#">#26434</a></th>
+                          <th scope="row"><a href="#">Service por 20.000 Kms</a></th>
                           <td>04/02/2025</td>
-                          <td>4 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100">55%</div>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                              <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            </a>
-                          </td>
-                          <td><span class="badge bg-warning">En proceso</span></td>
-                          <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                          <th scope="row"><a href="#">#26444</a></th>
-                          <td>04/02/2025</td>
-                          <td>4 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                              <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-1.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            </a>
-                          </td>
-                          <td><span class="badge bg-success">Finalizado</span></td>
-                          <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                          <th scope="row"><a href="#">#26445</a></th>
-                          <td>03/02/2025</td>
-                          <td>4 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                              <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                            </a>
-                          </td>
-                          <td><span class="badge bg-info text-dark">En Espera</span></td>
-                          <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                          <th scope="row"><a href="#">#26446</a></th>
-                          <td>03/02/2025</td>
                           <td>1 hs</td>
                           <td>
                             <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                              <div class="progress-bar" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">20%</div>
                             </div>
                           </td>
                           <td>
-                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                              <img src="assets/img/team-3.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                              <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Sergio: Fija disponibilidad orden">
+                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle activo" width="35" height="35" title="Cesar: Cambio de una cubierta">  
+                              </a>
+                          </td>
+                          <td><span class="badge bg-warning">En proceso</span></td>
+                          <td>
+                            <a href='#'>
+                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick="verhistorial('ABC123')">
                             </a>
                           </td>
-                          <td><span class="badge bg-success">Finalizado</span></td>
+                        </tr>
+                        <tr>
+                          <th scope="row"><a href="#">Service por 50.000 Kms</a></th>
+                          <td>04/02/2025</td>
+                          <td>6 hs</td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar" role="progressbar" style="width: 35%" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100">35%</div>
+                            </div>
+                          </td>
+                          <td>
+                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown" >
+                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Sergio: Fija disponibilidad orden">
+                                <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle activo" width="35" height="35" title="Tito: Cambio Aceite">
+                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle activo" width="35" height="35" title="Cesar: Cambio de una cubierta">  
+                            </a>
+                          </td>
+                          <td><span class="badge bg-danger">Demorado</span></td>
                           <td>&nbsp;</td>
                         </tr>
                         <tr>
-                          <th scope="row"><a href="#">#26447</a></th>
+                          <th scope="row"><a href="#">Service por 50.000 Kms</a></th>
                           <td>03/02/2025</td>
-                          <td>48 hs</td>
+                          <td>0 hs</td>
                           <td>
                             <div class="progress">
                               <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                             </div>
                           </td>
                           <td>
-                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                              <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-1.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
-                              <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="30" height="30">
+                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown" >
+                              <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Sergio: Fija disponibilidad orden">
                             </a>
                           </td>
                           <td><span class="badge bg-info text-dark">En Espera</span></td>

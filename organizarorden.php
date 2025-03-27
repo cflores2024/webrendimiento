@@ -284,7 +284,7 @@
 
                 <div class='card'>
                   <div class='card-body'>
-                    <h5 class='card-title'>Ordenes de trabajo sin tratar</h5>
+                    <h5 class='card-title'>Ordenes de trabajo sin asignar</h5>
 
                     <!-- Default Accordion -->
                     <div class='accordion' id='accordionExample'>
@@ -299,7 +299,7 @@
 
                 <div class='card'>
                   <div class='card-body'>
-                    <h5 class='card-title'>Ordenes de trabajo disponibles a tratar</h5>
+                    <h5 class='card-title'>Ordenes a trabajar</h5>
 
                     <!-- Default Accordion -->
                     <div class='accordion' id='accordionExample'>

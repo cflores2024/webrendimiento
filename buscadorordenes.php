@@ -155,8 +155,8 @@
 
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
-        <img src="assets/img/logo.png" alt="">
-        <span class="d-none d-lg-block">Mantenimiento</span>
+        <!--img src="assets/img/logo.png" alt=""-->
+        <span class="d-none d-lg-block">SAM</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -177,14 +177,14 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="assets/img/<? echo $foto; ?>" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2"><? echo $nombrecorto; ?></span>
+            <img src="assets/img/<?php echo $foto; ?>" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $nombrecorto; ?></span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6><? echo $apenomb; ?></h6>
-              <span><? echo $tipousu; ?></span>
+              <h6><?php echo $apenomb; ?></h6>
+              <span><?php echo $tipousu; ?></span>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -266,7 +266,7 @@
                                                       
                               <div class="row mb-3">
                                   <div class="col-sm-10">
-                                      <input type="button" id="btnBusOrden" class="btn btn-primary" value="Ver Orden" onclick="verorden()">
+                                      <input type="button" id="btnBusOrden" class="btn btn-primary" value="Importar Orden" onclick="verorden()">
                                       &nbsp;&nbsp;&nbsp;&nbsp;
                                       <input type="button" id="btnGestionar" class="btn btn-primary" value="Gestionar Ordenes" onclick="organizartareas(0,'')">
                                       &nbsp;&nbsp;&nbsp;&nbsp;
