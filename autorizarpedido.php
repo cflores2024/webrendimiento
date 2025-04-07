@@ -15,10 +15,11 @@
     $idusuario=$_SESSION['id'];
     $apenomb=$_SESSION['apenomb'];
     $idempleado="";
+    $empleado="";
     $lsfotos="";
     $orden="";
     $titulo="";
-    $matricula="";
+    $numchasis="";
     $fila="";
     $filasaprob="";
     $filaspend="";
@@ -29,18 +30,18 @@
    
     //ORDENES DE TRABAJOS EN ESTADO DE PROCESO Y ORDENES DISPONIBLES
     $sql = "-- ORDENES PENDIENTES
-            SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
+            SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`numchasis`,
 
-            yy.idpersona,
+            yy.idpersona, 
 
             yy.`urlfoto` AS foto, 
 
-            CONCAT(yy.apellido,',',yy.nombre) AS empleado,
+            CONCAT(yy.apellido,',',yy.nombre) AS apenom,
 
             xx2.`estado`,xx2.`fechaaccion`,
 
             'PE' AS situacionorden, 
-            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.patente=xx2.`patente`) historial  
+            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial 
 
             FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
                                   INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
@@ -67,7 +68,7 @@
         {
             if (strlen($row['foto'])>0)
             {
-                $lsfotos=$lsfotos."<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='30' height='30'>";
+                $lsfotos=$lsfotos."<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='30' height='30' title='". $empleado ."'>";
             }
             else
             {
@@ -118,7 +119,7 @@
                               <td>";
                               if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                               else $fila=$fila."<a href='#'>
-                                                  <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                  <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$numchasis\")'>
                                                 </a></td></tr>";
                 $bandera="";
                 
@@ -143,16 +144,17 @@
             
             $orden=$row['numorden'];
             $titulo=$row['tituloorden'];
-            $matricula=$row['patente'];
+            $numchasis=$row['numchasis'];
             $estado=$row['situacionorden'];
             $estadoorden=$row['estado'];
             $idempleado=$row['idpersona'];
+            $empleado=$row['apenom'];
             $tienehisto=$row['historial'];
             $fechasolic=$row['fechaaccion'];
                             
             if (strlen($row['foto'])>0)
             {
-                $lsfotos="<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='30' height='30'>";
+                $lsfotos="<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='30' height='30' title='". $empleado ."'>";
             }
             else
             {
@@ -196,7 +198,7 @@
                                     <td>";
                                     if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                     else $fila=$fila."<a href='#'>
-                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$numchasis\")'>
                                                       </a></td></tr>";
                   }
                   else
@@ -212,7 +214,7 @@
                                     <td>";
                                     if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                     else $fila=$fila."<a href='#'>
-                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$numchasis\")'>
                                                       </a></td></tr>";
                   }
 
@@ -235,7 +237,7 @@
                                   <td>";
                                   if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                   else $fila=$fila."<a href='#'>
-                                                      <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                      <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$numchasis\")'>
                                                     </a></td></tr>";
         break;
       }

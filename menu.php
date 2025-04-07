@@ -18,7 +18,7 @@ switch ($tipousu)
                                       </a>
                                     </li>
                                     <li class='nav-item'>
-                                      <a class='nav-link ' href='avancestareas.php'>
+                                      <a class='nav-link collapsed' href='avancestareas.php'>
                                         <i class='bi bi-grid'></i>
                                         <span>Tareas en curso</span>
                                       </a>
@@ -112,7 +112,7 @@ switch ($tipousu)
                                   </a>
                                 </li>
                                 <li class='nav-item'>
-                                  <a class='nav-link ' href='avancestareas.php'>
+                                  <a class='nav-link collapsed' href='avancestareas.php'>
                                     <i class='bi bi-grid'></i>
                                     <span>Tareas en curso</span>
                                   </a>
@@ -177,7 +177,7 @@ switch ($tipousu)
                                 </a>
                               </li>
                               <li class='nav-item'>
-                                <a class='nav-link ' href='avancestareas.php'>
+                                <a class='nav-link collapsed' href='avancestareas.php'>
                                   <i class='bi bi-grid'></i>
                                   <span>Tareas en curso</span>
                                 </a>

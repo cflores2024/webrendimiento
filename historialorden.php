@@ -22,11 +22,11 @@
 
     if (isset($_GET["num"]))
     {  
-      $patente=$_GET["num"];
+      $numchasis=$_GET["num"];
    
       $sql = "SELECT CONCAT(a.`apellido`,', ', a.`nombre`) AS cliente, MAX(a.`domicilio`) dom,MAX(a.`tel`) tel,MAX(a.`emailusuario`) email,b.`patente`,b.`modelo`,b.`numchasis`,b.`kilometraje`
               FROM personas a INNER JOIN numeroorden b ON (a.`idpersona`=b.`idcliente` AND b.`accion`!='B')
-              WHERE a.accion!='B' AND a.`idtipopersona`=2 AND b.`patente`='".$patente."';";
+              WHERE a.accion!='B' AND b.numchasis='".$numchasis."';";
 
       $con=conectar();
 
@@ -126,7 +126,7 @@
 
       $sql = "SELECT a.`numorden`,a.`fecha`,a.`estado`
               FROM numeroorden a INNER JOIN detalleorden b ON (a.`numorden`=b.`numeroorden` AND b.`accion`!='B')
-              WHERE a.`accion`!='B' AND a.`patente`='".$patente."'
+              WHERE a.`accion`!='B' AND a.`numchasis`='".$numchasis."'
               GROUP BY a.`numorden`,a.`fecha`,a.`estado`
               ORDER BY a.`fecha` DESC;";
 

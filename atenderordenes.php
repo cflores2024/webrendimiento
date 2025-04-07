@@ -1,4 +1,3 @@
-<!--// CHEQUEO DATOS LOGIN -->
 <?php
   include "configuracion/conexion.php";
 
@@ -18,7 +17,7 @@
     $lsfotos="";
     $orden="";
     $titulo="";
-    $matricula="";
+    $numchasis="";
     $fila="";
     $filasproydis="";
     $filasap="";
@@ -29,15 +28,16 @@
     //ORDENES DE TRABAJOS EN ESTADO DE PROCESO Y ORDENES DISPONIBLES
     $sql = "-- ORDENES EN PROCESOS
             SELECT xx1.`numorden`,xx1.`tituloorden`,xx1.patente,yy1.`idempleado`,zz1.urlfoto AS foto, CONCAT(zz1.`apellido`,', ',zz1.`nombre`) empleado,
-                  xx1.`estado`,xx1.`fechaaccion`,'PR' AS situacionorden, 
-                  (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.patente=xx1.`patente`) historial  
+              xx1.`estado`,xx1.`fechaaccion`,'PR' AS situacionorden, 
+              (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx1.`numchasis` AND tt.numorden!=xx1.`numorden`) historial,
+              xx1.numchasis  
             FROM numeroorden xx1 INNER JOIN afectadostareas yy1 ON (xx1.`numorden`=yy1.`numorden`)
-                                INNER JOIN personas zz1 ON (yy1.`idempleado`=zz1.`idpersona` AND zz1.`accion`!='B')
+                INNER JOIN personas zz1 ON (yy1.`idempleado`=zz1.`idpersona` AND zz1.`accion`!='B')
             WHERE xx1.`accion`!='B' AND xx1.`estado`='P' AND xx1.`numorden` NOT IN  
             (
-              SELECT aa.`numorden`
-              FROM autorizaraccorden aa
-              WHERE aa.`accion`!='B' AND aa.`idpersona`=".$idusuario."
+            SELECT aa.`numorden`
+            FROM autorizaraccorden aa
+            WHERE aa.`accion`!='B' AND aa.`idpersona`=".$idusuario."
             )
             UNION
             -- ORDENES DISPONIBLES
@@ -52,14 +52,14 @@
             xx2.`estado`,xx2.`fechaaccion`,
 
             'DI' AS situacionorden, 
-            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.patente=xx2.`patente`) historial  
-
+            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,
+            xx2.numchasis
             FROM numeroorden xx2 
             WHERE xx2.accion!='B' AND xx2.estado='D' AND xx2.`numorden` NOT IN  
             (
-              SELECT aa.`numorden`
-              FROM autorizaraccorden aa
-              WHERE aa.`accion`!='B' AND aa.`idpersona`=".$idusuario." AND aa.`estado` IN ('P','A')
+            SELECT aa.`numorden`
+            FROM autorizaraccorden aa
+            WHERE aa.`accion`!='B' AND aa.`idpersona`=".$idusuario." AND aa.`estado` IN ('P','A')
             )
             UNION
             -- ORDENES PENDIENTES
@@ -74,10 +74,10 @@
             xx2.`estado`,xx2.`fechaaccion`,
 
             'PE' AS situacionorden, 
-            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.patente=xx2.`patente`) historial  
-
+            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,  
+            xx2.numchasis
             FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
-                                  INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
+                  INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
             WHERE xx2.accion!='B'  AND yy.idpersona=".$idusuario." AND zz.estado='P'
             UNION
             -- ORDENES AUTORIZAS
@@ -92,11 +92,13 @@
             xx2.`estado`,xx2.`fechaaccion`,
 
             'AU' AS situacionorden, 
-            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.patente=xx2.`patente`) historial  
-
+            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,  
+            xx2.numchasis
             FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
-                                  INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
+                  INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
             WHERE xx2.accion!='B' AND yy.idpersona=".$idusuario." AND zz.estado='A';";
+
+//echo $sql;
 
     $con=conectar();
 
@@ -172,7 +174,7 @@
                                             
                                             if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                             else $fila=$fila."<a href='#'>
-                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                               </a></td></tr>";
                           }
                           else
@@ -191,7 +193,7 @@
 
                                             if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                             else $fila=$fila."<a href='#'>
-                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                               </a></td></tr>";
                           }
 
@@ -216,7 +218,7 @@
 
                                             if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                             else $fila=$fila."<a href='#'>
-                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                               </a></td></tr>";
                           }
                           else
@@ -234,7 +236,7 @@
                                             <td>";
                                             if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                             else $fila=$fila."<a href='#'>
-                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                               </a></td></tr>";
                           }
 
@@ -258,7 +260,7 @@
                                             <td>";
                                             if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                             else $fila=$fila."<a href='#'>
-                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                               </a></td></tr>";
                           }
                           else
@@ -278,7 +280,7 @@
                                             <td>";
                                             if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                             else $fila=$fila."<a href='#'>
-                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                               </a></td></tr>";
                           }
 
@@ -298,7 +300,7 @@
                                           <td>";
                                           if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                           else $fila=$fila."<a href='#'>
-                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                             </a></td></tr>";
                             $bandera="";
                     break;
@@ -322,7 +324,7 @@
             
             $orden=$row['numorden'];
             $titulo=$row['tituloorden'];
-            $matricula=$row['patente'];
+            $numchasis=$row['numchasis'];
             $estado=$row['situacionorden'];
             $estadoorden=$row['estado'];
             $idempleado=$row['idempleado'];
@@ -376,7 +378,7 @@
                                     <td>";
                                     if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                     else $fila=$fila."<a href='#'>
-                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                       </a></td></tr>";
                   }
                   else
@@ -394,7 +396,7 @@
                                       <td>";
                                       if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                       else $fila=$fila."<a href='#'>
-                                                          <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                          <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                         </a></td></tr>";
                   }
         break;
@@ -416,7 +418,7 @@
                                     <td>";
                                     if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                     else $fila=$fila."<a href='#'>
-                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                       </a></td></tr>";
                   }
                   else
@@ -436,7 +438,7 @@
                                     <td>";
                                     if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                     else $fila=$fila."<a href='#'>
-                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                       </a></td></tr>";
                   }
 
@@ -456,7 +458,7 @@
                                   <td>";
                                   if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
                                   else $fila=$fila."<a href='#'>
-                                                      <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='historial(\"$matricula\")'>
+                                                      <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                     </a></td></tr>";
         break;
       }
@@ -519,6 +521,84 @@
   * F => TAREA TERMINADA
   ======================================================== -->
   <script>
+    function iniciar(num,idtarea,idmecanico) 
+    {
+      if (num<=0 && idtarea<=0 && idmecanico<=0) {
+        return;
+      } else {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+           // alert("VALORES INICIALES=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
+            
+            var resp=this.responseText;
+ 
+            if (resp=="0") 
+            {
+              //alert ("El valor de respesta fue: "+resp);
+          
+              atendertareas(num,idmecanico);
+            }
+          }
+        };
+        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=I&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico, false);
+        xmlhttp.send();
+      }
+    }
+
+    function aprocesar(num,idtarea,idmecanico) 
+    {
+      if (num<=0 && idtarea<=0 && idmecanico<=0) {
+        return;
+      } else {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+           // alert("VALORES INICIALES=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
+            
+            var resp=this.responseText;
+ 
+            if (resp=="0") 
+            {
+              //alert ("El valor de respesta fue: "+resp);
+          
+              atendertareas(num,idmecanico);
+            }
+          }
+        };
+        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=P&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico, false);
+        xmlhttp.send();
+      }
+    }
+
+    function finalizar(num,idtarea,idmecanico) 
+    {
+      var obs=document.getElementById("txtobservacion").value;// "Se finaliza por prueba de CESAR";
+
+      if ((num<=0)&&(idtarea<=0)&&(idmecanico<=0)) {
+        return;
+      } else {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ('VINCULAR orden ='+num+" y tarea ='+idtarea+" y idempleado="+idmecanico);
+            var resp=this.responseText;
+ 
+            if (resp=="0") 
+            {
+              //alert("FINALIZAR=>Orden:"+num+"-Tarea:"+idtarea+"-Mecanico:"+idmecanico+"-Observacion:"+obs);
+ 
+              atendertareas(num,idmecanico);
+            }
+          }
+        };
+        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=F&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico+'&obs='+obs, false);
+        xmlhttp.send();
+      }
+    }
+
     function vermovimientostareasvsempledos() 
     {
       location.reload();
@@ -594,7 +674,7 @@
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            //alert ('numero patente='+num);
+            //alert ('numero chasis='+num);
             document.getElementById("lsdetalles").innerHTML=this.responseText;
           }
         };

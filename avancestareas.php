@@ -13,7 +13,7 @@
     $foto=$_SESSION['foto'];
     $nombrecorto=$_SESSION['nombrecorto'];
 
-    $fechaasistencia=date("Y-m-d");            
+    $fechaasistencia=date("Y-m-d");           
   }
   else
   {
@@ -83,7 +83,7 @@
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            //alert ('numero patente='+num);
+            //alert ('numero chasis='+num);
             document.getElementById("lsinfo").innerHTML=this.responseText;
           }
         };
@@ -227,6 +227,7 @@
                 <table class="table table-borderless datatable">
                       <thead>
                         <tr>
+                          <th scope="col">Orden</th>
                           <th scope="col">Titulo Orden</th>
                           <th scope="col" data-type="date" data-format="MM/DD/YYYY">Fecha inicio</th>
                           <th scope="col">Tiempo</th>
@@ -237,8 +238,264 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <th scope="row"><a href="#" onclick="verorden(1234)">Service por 40.000 Kms</a></th>
+<?php
+
+  $con=conectar();
+
+  if ($tipousu=="Mecanico")
+  {
+    $sql="-- ORDENES DISPONIBLES
+          SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`fecha`,(TIMESTAMPDIFF(DAY, xx2.`fecha`,xx2.`fechaaccion`)+1)*1440 AS tiempo,
+                '' AS foto,'' AS empleado,'' AS descripciontarea,
+                xx2.`estado`,
+                (SELECT CASE WHEN COUNT(tt.numorden)<=0 THEN 'N' ELSE 'S' END FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.numorden) historial,  
+                xx2.numchasis
+          FROM numeroorden xx2 
+          WHERE xx2.accion!='B' AND xx2.estado='D' 
+          UNION
+          -- ORDENES EN OTROS ESTADOS
+          SELECT a.`numorden`,b.`tituloorden`,b.`fecha`,(TIMESTAMPDIFF(DAY, b.`fecha`,b.`fechaaccion`)+1)*1440 AS tiempo,
+                (SELECT xx.urlfoto FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=a.idempleado) AS foto,
+                (SELECT CONCAT(xx.apellido,',',xx.nombre) FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=a.idempleado) AS empleado,c.`descripciontarea`,b.`estado`,
+                (SELECT CASE WHEN COUNT(tt.numorden)<=0 THEN 'N' ELSE 'S' END FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=b.`numchasis` AND tt.numorden!=a.numorden) historial, 
+                b.numchasis
+          FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
+                                INNER JOIN tareas c ON (c.`idtarea`=a.`idtarea` AND c.`accion`!='B')
+          WHERE a.idempleado=". $id ." GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,c.`descripciontarea`,b.`estado`,b.numchasis
+          ORDER BY 3 DESC;";
+  }
+  else
+  {
+    $sql="-- ORDENES DISPONIBLES
+        SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`fecha`,(TIMESTAMPDIFF(DAY, xx2.`fecha`,xx2.`fechaaccion`)+1)*1440 AS tiempo,
+              '' AS foto,'' AS empleado,'' AS descripciontarea,
+              xx2.`estado`,
+              (SELECT CASE WHEN COUNT(tt.numorden)<=0 THEN 'N' ELSE 'S' END FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.numorden) historial,  
+              xx2.numchasis
+        FROM numeroorden xx2 
+        WHERE xx2.accion!='B' AND xx2.estado='D' AND xx2.`numorden` NOT IN  
+        (
+          SELECT aa.`numorden`
+          FROM autorizaraccorden aa
+          WHERE aa.`accion`!='B' AND aa.`idpersona`=".$id." AND aa.`estado` IN ('P','A')
+        )
+        UNION
+        -- ORDENES EN OTROS ESTADOS
+        SELECT a.`numorden`,b.`tituloorden`,b.`fecha`,(TIMESTAMPDIFF(DAY, b.`fecha`,b.`fechaaccion`)+1)*1440 AS tiempo,
+              (SELECT xx.urlfoto FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=a.idempleado) AS foto,
+              (SELECT CONCAT(xx.apellido,',',xx.nombre) FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=a.idempleado) AS empleado,c.`descripciontarea`,b.`estado`,
+              (SELECT CASE WHEN COUNT(tt.numorden)<=0 THEN 'N' ELSE 'S' END FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=b.`numchasis` AND tt.numorden!=a.numorden) historial, 
+              b.numchasis
+        FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
+                               INNER JOIN tareas c ON (c.`idtarea`=a.`idtarea` AND c.`accion`!='B')
+        GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,c.`descripciontarea`,b.`estado`,b.numchasis
+        ORDER BY 3 DESC;";
+  }
+
+  //echo $sql;
+
+  $result = $con->query($sql);
+
+  if (!$result) 
+  {
+    die('Invalid query: ' . $con->error);
+  }
+
+  if (!$result) 
+  {
+    die('Invalid query: ' . $mysqli->error);
+  }
+  else
+  {
+    $lsfotos="";
+    $orden="";
+    $titulo="";
+    $fecha="";
+    $tiempo="";
+    $fila="";
+    $estadoorden="";
+    $color="";
+    $numchasis="";
+  
+    while($row = mysqli_fetch_array($result))
+    {
+      if ($orden==$row['numorden'])
+      {
+          if (strlen($row['foto'])>0)
+          {
+            if ($estadoorden=="P") //EN PROGRESO
+            {
+               $lsfotos=$lsfotos."<a href='#'><img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle activo' width='35' height='35' title='".$row['empleado'].": ".$row['descripciontarea']."'></a>";
+            }
+            else
+            {
+               $lsfotos=$lsfotos."<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='25' height='25' title='".$row['empleado'].": ".$row['descripciontarea']."'>";
+            }
+          }
+          else
+          {
+              $lsfotos=$lsfotos."&nbsp;";
+          }
+      }
+      else
+      {
+          if (strlen($orden)>0)
+          {
+              $fila="
+                      <tr>
+                          <th scope='row'><a href='#'>#".$orden."</a></th>
+                          <td>".$titulo."</td>
+                          <td>".$fecha."</td>
+                          <td>".$tiempo." min</td>";
+              
+              switch ($estadoorden)
+              {
+                case "F": //ORDEN FINALIZADA
+                        $fila=$fila." <td>
+                                        <div class='progress'>
+                                          <div class='progress-bar' role='progressbar' style='width: 100%' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100'>100%</div>
+                                        </div>
+                                      </td>";
+                break;
+                case "P": //ORDEN EN PROCESO 
+                        $fila=$fila." <td>
+                                        <div class='progress'>
+                                          <div class='progress-bar' role='progressbar' style='width: 50%' aria-valuenow='50' aria-valuemin='0' aria-valuemax='50'>50%</div>
+                                        </div>
+                                      </td>";
+                break;
+                default: //ORDEN DEMORADA
+                        $fila=$fila." <td>
+                                        <div class='progress'>
+                                          <div class='progress-bar' role='progressbar' style='width: 70%' aria-valuenow='70' aria-valuemin='0' aria-valuemax='70'>70%</div>
+                                        </div>
+                                      </td>";
+                break;
+              }
+
+              $fila=$fila."<td>".$lsfotos."</td>";
+              
+              switch ($estadoorden)
+              {
+                case "P": //ORDEN EN PROCESO - VERDE
+                        $color="<span class='badge bg-success'>En proceso</span>";
+                break;
+                case "F": //ORDEN FINALIZADA - AZUL
+                        $color="<span class='badge bg-primary'>Finalizada</span>";
+                break;
+                case "D": //ORDEN DISPONIBLE A SER TRATADA - AMARILLO
+                        $color="<span class='badge bg-warning'>Disponible</span>";
+                break;
+                default: //ORDEN DEMORADA - ROJO
+                        $color="<span class='badge bg-danger'>Atrazado</span>";
+                break;
+              }
+
+              $fila=$fila ."<td>".$color."</td>";
+              
+              if ($tienehisto=="N") $fila=$fila."<td>&nbsp</td></tr>";
+              else $fila=$fila."<td><a href='#'>
+                                  <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='verhistorial(\"$numchasis\")'>
+                                </a></td></tr>";            
+          }
+
+          if (strlen($orden)>0) 
+          {
+            //$filasproy=$filasproy."".$fila;
+
+            echo $fila;
+
+            $fila="";
+          }
+          
+          $orden=$row['numorden'];
+          $titulo=$row['tituloorden'];
+          $fecha=$row['fecha'];
+          $tiempo=$row['tiempo'];
+          $estadoorden=$row['estado'];
+          $tienehisto=$row['historial'];
+          $numchasis=$row['numchasis'];
+                          
+          if (strlen($row['foto'])>0)
+          {
+            if ($estadoorden=="P") //EN PROGRESO
+            {
+              $lsfotos="<a href='#'><img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle activo' width='35' height='35' title='".$row['empleado'].": ".$row['descripciontarea']."'></a>";
+            }
+            else
+            {
+              $lsfotos="<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='25' height='25' title='".$row['empleado'].": ".$row['descripciontarea']."'>";
+            }
+          }
+          else
+          {
+            $lsfotos="&nbsp;";
+          }
+      }   
+    }
+
+    $fila="
+            <tr>
+                <th scope='row'><a href='#'>#".$orden."</a></th>
+                <td>".$titulo."</td>
+                <td>".$fecha."</td>
+                <td>".$tiempo." min</td>";
+      
+    switch ($estadoorden)
+    {
+      case "F": //ORDEN FINALIZADA
+              $fila=$fila." <td>
+                              <div class='progress'>
+                                <div class='progress-bar' role='progressbar' style='width: 100%' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100'>100%</div>
+                              </div>
+                            </td>";
+      break;
+      case "P": //ORDEN EN PROCESO 
+              $fila=$fila." <td>
+                              <div class='progress'>
+                                <div class='progress-bar' role='progressbar' style='width: 50%' aria-valuenow='50' aria-valuemin='0' aria-valuemax='50'>50%</div>
+                              </div>
+                            </td>";
+      break;
+      default: //ORDEN DEMORADA
+              $fila=$fila." <td>
+                              <div class='progress'>
+                                <div class='progress-bar' role='progressbar' style='width: 70%' aria-valuenow='70' aria-valuemin='0' aria-valuemax='70'>70%</div>
+                              </div>
+                            </td>";
+      break;
+    }
+
+    $fila=$fila."<td>".$lsfotos."</td>";
+
+    switch ($estadoorden)
+    {
+      case "P": //ORDEN EN PROCESO - AMARILLO bg-warning
+              $color="<span class='badge bg-warning'>En proceso</span>";
+      break;
+      case "F": //ORDEN FINALIZADA - VERDE bg-success 
+              $color="<span class='badge bg-success'>Finalizada</span>";
+      break;
+      default: //ORDEN DEMORADA - ROJO bg-danger 
+              $color="<span class='badge bg-danger'>Atrazado</span>";
+      break;
+    }
+
+    $fila=$fila ."<td>".$color."</td>";     
+
+    if ($tienehisto=="N") $fila=$fila."<td>&nbsp</td></tr>";
+    else $fila=$fila."<td><a href='#'>
+                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='verhistorial(\"$numchasis\")'>
+                      </a></td></tr>";     
+  }
+
+  desconectar($con);
+
+  echo $fila;
+?>
+                      <!--tr>
+                          <td><a href="#" onclick="verorden(1234)">#1234</a></td>
+                          <td scope="row">Service por 40.000 Kms</td>
                           <td>04/02/2025</td>
                           <td>4 hs</td>
                           <td>
@@ -261,7 +518,8 @@
                           </td>
                         </tr>
                         <tr>
-                          <th scope="row"><a href="#">Service por 10.000 Kms</a></th>
+                          <td><a href="#">#1234</a></td>
+                          <td scope="row">Service por 10.000 Kms</td>
                           <td>04/02/2025</td>
                           <td>4 hs</td>
                           <td>
@@ -283,7 +541,8 @@
                           </td>
                         </tr>
                         <tr>
-                          <th scope="row"><a href="#">Service por 20.000 Kms</a></th>
+                          <td><a href="#">#1e33234</a></td>
+                          <td scope="row">Service por 20.000 Kms</td>
                           <td>04/02/2025</td>
                           <td>1 hs</td>
                           <td>
@@ -305,7 +564,8 @@
                           </td>
                         </tr>
                         <tr>
-                          <th scope="row"><a href="#">Service por 50.000 Kms</a></th>
+                          <td><a href="#">#12111234</a></td>
+                          <td scope="row">Service por 50.000 Kms</td>
                           <td>04/02/2025</td>
                           <td>6 hs</td>
                           <td>
@@ -324,7 +584,8 @@
                           <td>&nbsp;</td>
                         </tr>
                         <tr>
-                          <th scope="row"><a href="#">Service por 50.000 Kms</a></th>
+                          <td><a href="#">#12213234</a></td>
+                          <td scope="row">Service por 50.000 Kms</td>
                           <td>03/02/2025</td>
                           <td>0 hs</td>
                           <td>
@@ -339,7 +600,7 @@
                           </td>
                           <td><span class="badge bg-info text-dark">En Espera</span></td>
                           <td>&nbsp;</td>
-                        </tr>
+                        </tr-->
                       </tbody>
                 </table>
                 <!-- End Table with stripped rows -->
