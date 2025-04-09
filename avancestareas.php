@@ -348,6 +348,9 @@
                           <td>".$fecha."</td>
                           <td>".$tiempo." min</td>";
               
+              //ANALIZO PORCENTAJE DE AVANCE DE LA ORDEN
+              $avance=AvanceOrden($orden);
+
               switch ($estadoorden)
               {
                 case "F": //ORDEN FINALIZADA
@@ -493,114 +496,6 @@
 
   echo $fila;
 ?>
-                      <!--tr>
-                          <td><a href="#" onclick="verorden(1234)">#1234</a></td>
-                          <td scope="row">Service por 40.000 Kms</td>
-                          <td>04/02/2025</td>
-                          <td>4 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
-                            </div>
-                          </td>
-                          <td>
-                              <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Sergio: Fija disponibilidad orden">
-                                <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Carlos: Cambio Aceite">
-                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Cesar: Cambio de una cubierta">
-                              </a>
-                          </td>
-                          <td><span class="badge bg-success">Finalizado</span></td>
-                          <td>
-                            <a href='#'>
-                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick="verhistorial('ABC123')">
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><a href="#">#1234</a></td>
-                          <td scope="row">Service por 10.000 Kms</td>
-                          <td>04/02/2025</td>
-                          <td>4 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
-                            </div>
-                          </td>
-                          <td>
-                              <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Sergio: Fija disponibilidad orden">
-                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle activo" width="35" height="35" title="Cesar: Cambio de una cubierta">  
-                              </a>
-                          </td>
-                          <td><span class="badge bg-warning">En proceso</span></td>
-                          <td>
-                            <a href='#'>
-                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick="verhistorial('ABC123')">
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><a href="#">#1e33234</a></td>
-                          <td scope="row">Service por 20.000 Kms</td>
-                          <td>04/02/2025</td>
-                          <td>1 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">20%</div>
-                            </div>
-                          </td>
-                          <td>
-                              <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Sergio: Fija disponibilidad orden">
-                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle activo" width="35" height="35" title="Cesar: Cambio de una cubierta">  
-                              </a>
-                          </td>
-                          <td><span class="badge bg-warning">En proceso</span></td>
-                          <td>
-                            <a href='#'>
-                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick="verhistorial('ABC123')">
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><a href="#">#12111234</a></td>
-                          <td scope="row">Service por 50.000 Kms</td>
-                          <td>04/02/2025</td>
-                          <td>6 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 35%" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100">35%</div>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown" >
-                                <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Sergio: Fija disponibilidad orden">
-                                <img src="assets/img/team-2.jpg" alt="Profile" class="rounded-circle activo" width="35" height="35" title="Tito: Cambio Aceite">
-                                <img src="assets/img/team-4.jpg" alt="Profile" class="rounded-circle activo" width="35" height="35" title="Cesar: Cambio de una cubierta">  
-                            </a>
-                          </td>
-                          <td><span class="badge bg-danger">Demorado</span></td>
-                          <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                          <td><a href="#">#12213234</a></td>
-                          <td scope="row">Service por 50.000 Kms</td>
-                          <td>03/02/2025</td>
-                          <td>0 hs</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown" >
-                              <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" height="25" title="Sergio: Fija disponibilidad orden">
-                            </a>
-                          </td>
-                          <td><span class="badge bg-info text-dark">En Espera</span></td>
-                          <td>&nbsp;</td>
-                        </tr-->
                       </tbody>
                 </table>
                 <!-- End Table with stripped rows -->
@@ -646,3 +541,44 @@
 </body>
 
 </html>
+
+<?php
+  function fff()
+  {
+    //SE DETERMINA LA CANTIDAD DE TAREAS QUE TIENE EN CURSO VS FINALIZADAS
+    $totaltareas=0;
+    $totalfin=0;
+
+    $sql = "SELECT COUNT(a.`idtarea`) AS totaltareas,(SELECT COUNT(b.`idtarea`) 
+                                                    FROM detalleorden b 
+                                                    WHERE b.`accion`!='B' AND b.`estado`='F' AND b.`numeroorden`=a.numeroorden) AS totalfin
+          FROM detalleorden a
+          WHERE a.`accion`!='B' AND a.`numeroorden`=". $numorden;
+
+    $con=conectar();
+
+    $result = $con->query($sql);
+
+    if (!$result) 
+    {
+          die('Invalid query: ' . $con->error);
+    }
+
+    if (!$result) 
+    {
+          die('Invalid query: ' . $mysqli->error);
+    }
+    else
+    {
+          while($row = mysqli_fetch_array($result))
+          {
+                $totaltareas=$row['totaltareas'];
+                $totalfin=$row['totalfin'];
+          }
+
+          desconectar($con);
+    }
+
+    if ($totalfin<$totaltareas) $estado="P";
+  }
+?>

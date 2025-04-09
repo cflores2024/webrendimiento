@@ -91,7 +91,7 @@
 
             xx2.`estado`,xx2.`fechaaccion`,
 
-            'AU' AS situacionorden, 
+            CASE WHEN xx2.`estado`='F' THEN 'FI' ELSE 'AU' END AS situacionorden, 
             (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,  
             xx2.numchasis
             FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
@@ -150,6 +150,9 @@
                   case "P": //ORDEN EN PROCESO - VERDE bg-success 
                           $color="<span class='badge bg-success'>En proceso</span>";
                   break;
+                  case "F": //ORDEN FINALIZADA - AZUL
+                          $color="<span class='badge bg-primary'>Finalizada</span>";
+                  break;
                   default: //ORDEN DEMORADA - ROJO bg-danger 
                           $color="<span class='badge bg-danger'>Atrazado</span>";
                   break;
@@ -157,6 +160,23 @@
 
                 switch($estado)
                 {
+                  case "FI":
+                            $fila=$fila."
+                                          <td>".$color."</td>
+                                          <td>
+                                              &nbsp;
+                                          </td>
+                                          <td> 
+                                              &nbsp;
+                                          </td>
+                                          <td>"; 
+                                          
+                                          if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                          else $fila=$fila."<a href='#'>
+                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
+                                                            </a></td></tr>";
+                          $bandera="";
+                  break;
                   case "DI":
                           if ($bandera=="del")
                           {
@@ -309,7 +329,7 @@
 
             if (strlen($orden)>0) 
             {
-              if (($estado=="DI")||($estado=="PR")||($estado=="AU")) 
+              if (($estado=="DI")||($estado=="PR")||($estado=="AU")||($estado=="FI")) 
               {
                 $filasproydis=$filasproydis."".$fila;
               }
@@ -349,6 +369,9 @@
       
       switch ($estadoorden)
       {
+        case "F": //ORDEN FINALIZADA - AZUL
+                $color="<span class='badge bg-primary'>Finalizada</span>";
+        break;
         case "D": //ORDEN DISPONIBLE - AMARILLO bg-warning
                 $color="<span class='badge bg-warning'>Disponible</span>";
         break;
@@ -362,6 +385,23 @@
 
       switch($estado)
       {
+        case "FI":
+                  $fila=$fila."
+                                <td>".$color."</td>
+                                <td>
+                                    &nbsp;
+                                </td>
+                                <td> 
+                                    &nbsp;
+                                </td>
+                                <td>"; 
+                                
+                                if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                else $fila=$fila."<a href='#'>
+                                                    <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
+                                                  </a></td></tr>";
+                $bandera="";
+        break;
         case "DI":
                   if ($bandera=="del")
                   {
@@ -466,7 +506,7 @@
     
     desconectar($con);
 
-    if (($estado=="DI")||($estado=="PR")||($estado=="AU")) 
+    if (($estado=="DI")||($estado=="PR")||($estado=="AU")||($estado=="FI")) 
     {
       $filasproydis=$filasproydis."".$fila;
     }

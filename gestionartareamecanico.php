@@ -6,18 +6,18 @@
   
   if (isset($_SESSION['id']))
   {  
-    $numorden=$_GET['num'];
-    $idtarea=$_GET['idtarea'];
-    $idmecanico=$_GET['idmecanico'];
-    $estadocambia=$_GET['estado'];
+      $numorden=$_GET['num'];
+      $idtarea=$_GET['idtarea'];
+      $idmecanico=$_GET['idmecanico'];
+      $estadocambia=$_GET['estado'];
 
-    //INGRESO PEDIDO DE VINCULACIÓN DEL MECANICO A LA TAREA DE  LA ORDEN DE TRABAJO Y LO PONGO EN PROCESO
-    $idusuario=$_SESSION['id'];
+      //INGRESO PEDIDO DE VINCULACIÓN DEL MECANICO A LA TAREA DE  LA ORDEN DE TRABAJO Y LO PONGO EN PROCESO
+      $idusuario=$_SESSION['id'];
 
-    //SE ANALIZA ESTADO AL QUE SE DEBERA DE INVIAR LA TAREA SEGUN LO INDICADO POR MECANICO
-    switch ($estadocambia)
-    {
-        case "I":
+      //SE ANALIZA ESTADO AL QUE SE DEBERA DE INVIAR LA TAREA SEGUN LO INDICADO POR MECANICO
+      switch ($estadocambia)
+      {
+            case "I":
                     $fechaaccion=date("Y-m-d H:i:s"); 
                     $estado="D";
                     $obs="SE INICIA TAREA";
@@ -64,7 +64,7 @@
                         echo "1"; //La acción dio error
                     }
             break;
-        case "P":
+            case "P":
                     $accion="N";
                     $fechaaccion=date("Y-m-d H:i:s"); 
                     $estado="P";
@@ -113,7 +113,7 @@
                         echo "1"; //La acción dio error
                     }
             break;
-        case "F":
+            case "F":
                     $accion="M";
                     $fechaaccion=date("Y-m-d H:i:s"); 
                     $estado="F";
@@ -145,6 +145,42 @@
 
                         desconectar($con);
 
+                        //SE DETERMINA LA CANTIDAD DE TAREAS QUE TIENE EN CURSO VS FINALIZADAS
+                        $totaltareas=0;
+                        $totalfin=0;
+
+                        $sql = "SELECT COUNT(a.`idtarea`) AS totaltareas,(SELECT COUNT(b.`idtarea`) 
+                                                                        FROM detalleorden b 
+                                                                        WHERE b.`accion`!='B' AND b.`estado`='F' AND b.`numeroorden`=a.numeroorden) AS totalfin
+                              FROM detalleorden a
+                              WHERE a.`accion`!='B' AND a.`numeroorden`=". $numorden;
+
+                        $con=conectar();
+
+                        $result = $con->query($sql);
+
+                        if (!$result) 
+                        {
+                              die('Invalid query: ' . $con->error);
+                        }
+
+                        if (!$result) 
+                        {
+                              die('Invalid query: ' . $mysqli->error);
+                        }
+                        else
+                        {
+                              while($row = mysqli_fetch_array($result))
+                              {
+                                    $totaltareas=$row['totaltareas'];
+                                    $totalfin=$row['totalfin'];
+                              }
+
+                              desconectar($con);
+                        }
+
+                        if ($totalfin<$totaltareas) $estado="P";
+
                         $sql="UPDATE numeroorden SET estado=?,accion=?,idempleadoaccion=?,fechaaccion=?
                               WHERE numorden=?;";
 
@@ -162,11 +198,11 @@
                         echo "1"; //La acción dio error
                     }
             break;
-    }
+      }
   }
   else
   {
-    header('Location: index.php');
-    exit;
+      header('Location: index.php');
+      exit;
   }   
 ?>
