@@ -21,37 +21,47 @@
    
     if (isset($_GET['idtarea']))
     {
-       //SE RECUPERAN LOS DATOS DE LA TAREA
-       $idtarea=$_GET["idtarea"];
-       $accion=$_GET["accion"];
+      //SE RECUPERAN LOS DATOS DE LA TAREA
+      $idtarea=$_GET["idtarea"];
+      $accion=$_GET["accion"];
       
       if (isset($_GET['btn']))
       {
         switch ($_GET['btn'])
         {
-          case "ActDatos"://SE ACTUALIZAN DATOS TAREA
+          case "ActDatos":
+                          //SE ACTUALIZAN DATOS TAREA
+                          $txttviejo=strtotime($_GET["txttviejo"]);
                           $txttarea=$_GET['txttarea'];
-                          $txttiempo=$_GET['txttiempo'];
-                          //ACTUALIZO DATOS DEL SOCIO SELECCIONADO
-                          $sql="UPDATE tareas SET descripciontarea=?,tiempotarea=?,accion=?,idempleadoaccion=?,fechaaccion=?
-                                WHERE (idtarea=?);";
-
-                          $con=conectar();
-                          $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-                          mysqli_stmt_bind_param($sentencia,'ssssss',$txttarea,$txttiempo,$accion,$id,$fechaaccion,$idtarea);
-                          $resp=mysqli_stmt_execute($sentencia);
-                        
-                          desconectar($con);
+                          $txttiempo=strtotime($_GET['txttiempo']);
                           
-                        if ($resp)  
-                        {
-                            $accion="OK";
-                        }
-                        else
-                        {
-                            $accion="ERROR";
-                        }
-                    
+                          //SE CHEQUEA SI EL NUEVO TIEMPO ES MEJOR QUE EL ANTERIOR. dE SER ASI SE DEJA MODIFICAR
+                          if (($txttiempo<$txttviejo)||($txttviejo<=0))
+                          {
+                            //ACTUALIZO DATOS DEL SOCIO SELECCIONADO
+                            $sql="UPDATE tareas SET descripciontarea=?,tiempotarea=?,accion=?,idempleadoaccion=?,fechaaccion=?
+                                  WHERE (idtarea=?);";
+
+                            $con=conectar();
+                            $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+                            mysqli_stmt_bind_param($sentencia,'ssssss',$txttarea,$txttiempo,$accion,$id,$fechaaccion,$idtarea);
+                            $resp=mysqli_stmt_execute($sentencia);
+                          
+                            desconectar($con);
+                            
+                            if ($resp)  
+                            {
+                              $accion="OK";
+                            }
+                            else
+                            {
+                              $accion="ERROR";
+                            }
+                          }
+                          else
+                          {
+                            $accion="NOACT";
+                          }
           break;
           case "EliDis":
                         //SE CHEQUEA QUE TAREA NO ESTE EN USO DENTRO DE ALGUNA ORDEN DE TRABAJO
@@ -147,7 +157,7 @@
         while($row = mysqli_fetch_array($result))
         {
           $txttarea=$row['descripciontarea'];
-          $txttiempo=$row['tiempotarea'];
+          $txttiempo=date("H:i:s", $row['tiempotarea']);
         }
       }
       
@@ -336,6 +346,7 @@
                     <!-- Profile Edit Form -->
                     <form action="" method="get">
                       <input type="hidden" id="idtarea" name="idtarea" value="<?php echo $idtarea; ?>">
+                      <input type="hidden" id="txttviejo" name="txttviejo" value="<?php echo $txttiempo; ?>">
                       <input type="hidden" id="accion" name="accion" value="<?php echo $accion; ?>">
                       <div class="row mb-3">
                         
@@ -363,10 +374,15 @@
                               case "ActDatos":
                                               if ($accion=="OK") echo "Acción realizada satisfacoriamente!!!!"; 
                                               elseif ($accion=="ERROR") 
-                                                {
-                                                  echo "<p>Error en la acción!!!!</p>"; 
-                                                  echo "<button id='btn' name='btn' value='ActDatos' type='submit' class='btn btn-primary'>Actualizar Datos</button>";
-                                                }
+                                                  {
+                                                    echo "<p>Error en la acción!!!!</p>"; 
+                                                    echo "<button id='btn' name='btn' value='ActDatos' type='submit' class='btn btn-primary'>Actualizar Datos</button>";
+                                                  }
+                                                  else
+                                                  {
+                                                    echo "<p>El tiempo ingresado es mayor al que ya figura. Solo puede ingresar un tiempo menor al existente!!!!</p>"; 
+                                                    echo "<button id='btn' name='btn' value='ActDatos' type='submit' class='btn btn-primary'>Actualizar Datos</button>";
+                                                  }
                               break;
                               case "EliDis":
                                             if ($accion=="OK") echo "Acción realizada satisfacoriamente!!!!"; 

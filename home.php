@@ -6,22 +6,25 @@
 
   session_start();
   
+  $mesesabreviados = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  $mesescompleto = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    
   function obtenermes($opcion,$mesdeseado)
   {
     $resp="";
     $mesActual = date('n'); // Obtiene el número del mes actual
+    global $mesesabreviados;
+    global $mesescompleto;
 
     if ($mesdeseado==1) $mesActual=$mesActual-1; //PERMITE OBTENER EL MES ANTERIOR AL ACTUAL
       
     if ($opcion=="C")
     {//NOMBRE CORTO DEL MES  
-      $meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-      $resp=$meses[$mesActual - 1]; // Resta 1
+      $resp=$mesesabreviados[$mesActual - 1]; // Resta 1
     }
     else
     {//NOMBRE LARGO DEL MES
-      $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-      $resp=$meses[$mesActual - 1]; // Resta 1
+      $resp=$mesescompleto[$mesActual - 1]; // Resta 1
     }
 
     return $resp;
@@ -36,11 +39,15 @@
     $nombrecorto=$_SESSION['nombrecorto'];
     $fechahoy=date("Y-m-d");
     $fechaayer=date("Y-m-d", strtotime($fechahoy. "-1 day")); 
+    $fecha7diasantes=date("Y-m-d", strtotime($fechahoy. "-7 day")); 
     $anioC=date("y");
     $anioL=date("Y");
-    $mes=date("M");
-
-
+    $mes=date("m")*1;
+    $mesviejo=date("m", strtotime($fechahoy . "- 3 month"))*1;
+    
+    $lsdias = array("Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sábado");
+    $posdia=date('w');
+    $nombdia=$lsdias[$posdia];
   }
   else
   {
@@ -267,12 +274,11 @@
                 </div>
               </div>
             </div>
-
-            </div>
-
           </div>
-
-  <!-- ORDENES DEMORAS-->
+        </div>
+    <!-- FIN TOTAL DE ORDENES X MES -->
+    
+    <!-- ORDENES DEMORAS-->
         <div class="col-lg-3">
 
           <div class="card info-card sales-card">
@@ -300,12 +306,12 @@
                 <div class="ps-3">
                 <?php
                 
-                  $sql = "SELECT COUNT(DATEDIFF(a.`fechaentrega`,CURDATE())*-1) AS demoradaact,
-                            (SELECT COUNT(DATEDIFF(a.`fechaentrega`,CURDATE())*-1)
-                            FROM numeroorden a
-                            WHERE a.`accion`!='B' AND ((DATEDIFF(a.`fechaentrega`,CURDATE())*-1)>0) AND MONTH(a.`fecha`)=". $mesant .") AS demoraant
+                  $sql = "SELECT COUNT(TIMESTAMPDIFF(MINUTE,a.`fechaentrega`,CURDATE())) AS demoradaact,
+                                (SELECT COUNT(TIMESTAMPDIFF(MINUTE,b.`fechaentrega`,CURDATE()))
+                                FROM numeroorden b
+                                WHERE b.`accion`!='B' AND (TIMESTAMPDIFF(MINUTE,b.`fechaentrega`,CURDATE())>0) AND MONTH(b.`fecha`)=". $mesant .") AS demoraant
                           FROM numeroorden a
-                          WHERE a.`accion`!='B' AND ((DATEDIFF(a.`fechaentrega`,CURDATE())*-1)>0) AND MONTH(a.`fecha`)=". $mesact .";";
+                          WHERE a.`accion`!='B' AND (TIMESTAMPDIFF(MINUTE,a.`fechaentrega`,CURDATE())>0) AND MONTH(a.`fecha`)=". $mesact .";";
 
                   $con=conectar();
 
@@ -350,9 +356,10 @@
 
             </div>
 
-          </div>
-       
-        
+        </div>
+    <!-- FIN ORDENES DEMORAS-->
+    
+    <!-- ORDENES TERMINADAS-->    
         <div class="col-lg-3">
 
           <div class="card info-card sales-card">
@@ -434,9 +441,10 @@
 
             </div>
 
-          </div>
-       
-
+        </div>
+    <!-- FIN ORDENES TERMINADAS-->    
+    
+    <!-- ORDENES EN CURSO-->     
         <div class="col-lg-3">
 
           <div class="card info-card sales-card">
@@ -516,14 +524,15 @@
 
             </div>
 
-          </div>
-        
-      </div>
+          </div> 
+        </div>
+    <!-- FIN ORDENES EN CURSO-->
     </section>
 
     <section class="section dashboard">
       <div class="row">
 
+      <!-- DESIGNAR ORDENES EN CURSO-->
         <div class="col-lg-6">
         
           <!-- Customers Card -->
@@ -550,8 +559,56 @@
                     <i class="bi bi-people"></i>
                   </div>
                   <div class="ps-3">
-                    <h6>40 Min</h6>
-                    <span class="text-danger small pt-1 fw-bold">-25%</span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('L',1) ." ". $anioL; ?></span>
+                    <h6>
+                    <?php
+                        $promant=0;
+                        $promact=0;
+                        $hora="";
+
+                        $sql = "SELECT SEC_TO_TIME(AVG(TIMESTAMPDIFF(MINUTE,b.`fecha`,a.`fechaautoriza`))) AS hora,AVG(TIMESTAMPDIFF(MINUTE,b.`fecha`,a.`fechaautoriza`)) AS promact,
+                                  (SELECT AVG(TIMESTAMPDIFF(MINUTE,bb.`fecha`,aa.`fechaautoriza`))
+                                  FROM autorizaraccorden aa INNER JOIN numeroorden bb ON (aa.`numorden`=bb.`numorden` AND bb.`accion`!='B')
+                                  WHERE aa.`accion`!='B' AND aa.`estado`='A' AND MONTH(bb.`fecha`)=".$mesant.") AS promant
+                                FROM autorizaraccorden a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
+                                WHERE a.`accion`!='B' AND a.`estado`='A' AND MONTH(b.`fecha`)=".$mesact.";";
+
+                        $con=conectar();
+
+                        $result = $cnx->query($sql);
+
+                        if (!$result) 
+                        {
+                            die('Invalid query: ' . $cnx->error);
+                        }
+
+                        if (!$result) 
+                        {
+                            die('Invalid query: ' . $mysqli->error);
+                        }
+                        else
+                        {
+                          while($row = mysqli_fetch_array($result))
+                          {
+                              $promant=$row['promant'];
+                              $promact=$row['promact'];
+                              $hora=explode('.',$row['hora']);
+                          }
+                        }
+
+                        desconectar($con);
+
+                        echo $hora[0] ." hs";
+                      ?>
+                      </h6>
+                    <span class="text-danger small pt-1 fw-bold">
+                    <?php
+                      //Analizo porcentaje
+                      $porctarea=($promant*$promact*0)/100;
+
+                      if ($promact<$promant) echo "-".$porctarea."%";
+                      else echo "+".$porctarea."%";
+                    ?>    
+                    </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('L',1) ." ". $anioL; ?></span>
 
                   </div>
                 </div>
@@ -561,7 +618,9 @@
           <!-- End Customers Card -->  
 
         </div>
+      <!-- FIN DESIGNAR ORDENES EN CURSO-->
 
+      <!-- TIEMPO MUERTO -->
         <div class="col-lg-6">
         
           <!-- Customers Card -->
@@ -588,8 +647,57 @@
                     <i class="bi bi-cup-straw"></i>
                   </div>
                   <div class="ps-3">
-                    <h6>2:30 hs</h6>
-                    <span class="text-danger small pt-1 fw-bold">+12%</span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('L',1) ." ". $anioL; ?></span>
+                    <h6>
+                    <?php
+                        $promant=0;
+                        $promact=0;
+                        $hora="";
+
+                        $sql = "SELECT SEC_TO_TIME(AVG(TIMESTAMPDIFF(MINUTE,a.`fecha`,a.`fechaaccion`))) AS hora,
+                                      AVG(TIMESTAMPDIFF(MINUTE,a.`fecha`,a.`fechaaccion`)) AS promact,
+                                      (SELECT AVG(TIMESTAMPDIFF(MINUTE,bb.`fecha`,bb.`fechaaccion`))
+                                      FROM numeroorden bb
+                                      WHERE bb.`accion`!='B' AND bb.`estado`='D' AND MONTH(bb.`fecha`)=".$mesant.") AS promant
+                                FROM numeroorden a
+                                WHERE a.`accion`!='B' AND a.`estado`='D' AND MONTH(a.`fecha`)=".$mesact.";";
+
+                        $con=conectar();
+
+                        $result = $cnx->query($sql);
+
+                        if (!$result) 
+                        {
+                            die('Invalid query: ' . $cnx->error);
+                        }
+
+                        if (!$result) 
+                        {
+                            die('Invalid query: ' . $mysqli->error);
+                        }
+                        else
+                        {
+                          while($row = mysqli_fetch_array($result))
+                          {
+                              $promant=$row['promant'];
+                              $promact=$row['promact'];
+                              $hora=explode('.',$row['hora']);
+                          }
+                        }
+
+                        desconectar($con);
+
+                        echo $hora[0] ." hs";
+                      ?>
+                      </h6>
+                    <span class="text-danger small pt-1 fw-bold">
+                    <?php
+                      //Analizo porcentaje
+                      $porctarea=($promant*$promact)/100;
+
+                      if ($promact<$promant) echo "-".$porctarea."%";
+                      else echo "+".$porctarea."%";
+                    ?>      
+                    </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('L',1) ." ". $anioL; ?></span>
 
                   </div>
                 </div>
@@ -601,18 +709,65 @@
         </div>
 
       </div>
+      <!-- FIN TIEMPO MUERTO -->
     </section>
 <!--=========================================== FIN DE TARJETAS ===============================================-->
 
+<?php /*
 <!--=========================================== INICIO GRAFICAS ===============================================-->
+
     <section class="section dashboard">
       <div class="row">
       
-        <!-- Tiempo de Atención de Ordenes -->
+        <!-- TIEMPO DE ATENCION DE ORDENES -->
         <div class="col-lg-6">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Tiempo de Atención de Ordenes</h5>
+                <h5 class="card-title">Tiempo de Atención de Ordenes
+                <?php
+                
+                 // echo $fecha7diasantes ."-". $fechahoy ."-". $nombdia;
+                        
+                  $promant=0;
+                  $promact=0;
+                  $hora="";
+
+                  $sql = "SELECT SEC_TO_TIME(AVG(TIMESTAMPDIFF(MINUTE,b.`fecha`,a.`fechaautoriza`))) AS hora,AVG(TIMESTAMPDIFF(MINUTE,b.`fecha`,a.`fechaautoriza`)) AS promact,
+                            (SELECT AVG(TIMESTAMPDIFF(MINUTE,bb.`fecha`,aa.`fechaautoriza`))
+                            FROM autorizaraccorden aa INNER JOIN numeroorden bb ON (aa.`numorden`=bb.`numorden` AND bb.`accion`!='B')
+                            WHERE aa.`accion`!='B' AND aa.`estado`='A' AND MONTH(bb.`fecha`)=".$mesant.") AS promant
+                          FROM autorizaraccorden a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
+                          WHERE a.`accion`!='B' AND a.`estado`='A' AND MONTH(b.`fecha`)=".$mesact.";";
+
+                  $con=conectar();
+
+                  $result = $cnx->query($sql);
+
+                  if (!$result) 
+                  {
+                      die('Invalid query: ' . $cnx->error);
+                  }
+
+                  if (!$result) 
+                  {
+                      die('Invalid query: ' . $mysqli->error);
+                  }
+                  else
+                  {
+                    while($row = mysqli_fetch_array($result))
+                    {
+                        $promant=$row['promant'];
+                        $promact=$row['promact'];
+                        $hora=explode('.',$row['hora']);
+                    }
+                  }
+
+                  desconectar($con);
+
+                  echo $hora[0] ." hs";
+                  
+                ?>
+                </h5>
                 <div id="barChart"></div>
                 <script>
                   document.addEventListener("DOMContentLoaded", () => {
@@ -701,7 +856,7 @@
               </div>
             </div>
         </div>
-        <!-- Fin Tiempo de Atención de Ordenes -->
+        <!-- FIN DE TIEMPO DE ATENCION DE ORDENES -->
 
         <!-- Tiempo Asignación Tarea Administrador -->
         <div class="col-lg-6">
@@ -828,6 +983,159 @@
         <!-- Fin Total Ordenes Demoradas xx Mes -->
 
         <!-- Cantidad Ordenes Atendidas x Mes -->
+        <!--div class="col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Cantidad Ordenes Atendidas x Mes</h5-->
+                                
+                <?php
+          
+                 // echo $mesviejo."-".$mes;
+                 
+                  $lsmes="";
+                  $lscant="";
+                  $lscolor="";
+
+                  $sql = "SELECT MONTH(a.`fecha`) AS mes,
+                          (SELECT COUNT(b.`numorden`)
+                                FROM numeroorden b
+                                WHERE b.`accion`!='B' AND b.`estado`='F' AND b.`numorden`=a.`numorden`) AS cant
+                          FROM numeroorden a
+                          WHERE a.`accion`!='B' AND a.`estado`='F' AND (MONTH(a.`fecha`) BETWEEN ". $mesviejo ." AND ". $mes .") AND YEAR(a.`fecha`)=YEAR(CURDATE())
+                          ORDER BY 1;";
+                          
+                  $con=conectar();
+
+                  $result = $cnx->query($sql);
+
+                  if (!$result) 
+                  {
+                      die('Invalid query: ' . $cnx->error);
+                  }
+
+                  if (!$result) 
+                  {
+                      die('Invalid query: ' . $mysqli->error);
+                  }
+                  else
+                  {
+                    while($row = mysqli_fetch_array($result))
+                    {
+                        $lsmes=(strlen($lsmes)<=0)? $mesescompleto[$row['mes']-1] : $lsmes. ",". $mesescompleto[$row['mes']-1];
+                        $lscant=(strlen($lscant)<=0)? $row['cant'] : $lscant .",". $row['cant'];
+                        $lscolor=(strlen($lscolor)<=0)? "13d8aa": $lscolor .",13d8aa";
+                    }
+
+                   // $lsmes=$lsmes .",". $mesescompleto($row['mes']-1);
+                   // $lscant=$lscant .",". $row['cant'];
+                   // $lscolor=$lscolor .",13d8aa";
+                  }
+
+                  //echo "SQL=>". $sql;
+
+                  //echo $lsmes ."-". $lscant ."-". $lscolor;
+
+                  desconectar($con);                
+                  
+
+                  echo "
+                  <div class='col-lg-6'>
+          <div class='card'>
+            <div class='card-body'>
+              <h5 class='card-title'>Cantidad Ordenes Atendidas x Mes</h5>
+
+                  <div id='barChart46'></div>
+                  <script>
+                  document.addEventListener('DOMContentLoaded', () => {
+                    new ApexCharts(document.querySelector('#barChart46'), {
+                      series: [{
+                                name: 'Ordenes',
+                                data:[". $lsmes ."]
+                              }],
+                                chart: {
+                                height: 350,
+                                type: 'bar',
+                              },
+                              plotOptions: {
+                                bar: {
+                                  borderRadius: 0,
+                                  dataLabels: {
+                                    position: 'center', // top, center, bottom
+                                  },
+                                }
+                              },
+                              dataLabels: {
+                                enabled: true,
+                                formatter: function (val) {
+                                  return val + '';
+                                },
+                                offsetY: -20,
+                                style: {
+                                  fontSize: '12px',
+                                  colors: ['#304758']
+                                }
+                              },
+                              
+                              xaxis: {
+                                categories: [". $lscant ."],
+                                position: 'top',
+                                axisBorder: {
+                                  show: false
+                                },
+                                axisTicks: {
+                                  show: false
+                                },
+                                crosshairs: {
+                                  fill: {
+                                    type: 'gradient',
+                                    gradient: {
+                                      colorFrom: '#D8E3F0',
+                                      colorTo: '#BED1E6',
+                                      stops: [0, 100],
+                                      opacityFrom: 0.4,
+                                      opacityTo: 0.5,
+                                    }
+                                  }
+                                },
+                                tooltip: {
+                                  enabled: true,
+                                }
+                              },
+                              colors: [". $lscolor ."],
+                              yaxis: {
+                                axisBorder: {
+                                  show: false
+                                },
+                                axisTicks: {
+                                  show: false,
+                                },
+                                labels: {
+                                  show: false,
+                                  formatter: function (val) {
+                                    return val + '';
+                                  }
+                                }
+                              },
+                              title: {
+                                text: 'Cantidad Ordenes Atendidas',
+                                floating: true,
+                                offsetY: 330,
+                                align: 'center',
+                                style: {
+                                  color: '#444'
+                                }
+                              }
+                      }).render();
+                    });
+                  </script>
+
+                  </div>
+          </div>
+        </div>
+                  ";
+                  
+                
+        <!-- Cantidad Ordenes Atendidas x Mes -->
         <div class="col-lg-6">
           <div class="card">
             <div class="card-body">
@@ -921,6 +1229,7 @@
             </div>
           </div>
         </div>
+        
         <!-- Fin Cantidad Ordenes Atendidas x Mes -->
 
         <!-- Tareas Realizadas -->
@@ -1500,6 +1809,8 @@
        
       </div>
     </section>
+<?php */ 
+?>
 
   </main><!-- End #main -->
 

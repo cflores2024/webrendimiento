@@ -71,12 +71,12 @@ switch ($tipousu)
                                         <span>Personal</span>
                                       </a>
                                     </li><!-- End Profile Page Nav -->
-                                    <li class='nav-item'>
+                                    <!--li class='nav-item'>
                                       <a class='nav-link collapsed' href='contactenos.php'>
                                         <i class='bi bi-envelope'></i>
                                         <span>Contactenos</span>
                                       </a>
-                                    </li><!-- End Contact Page Nav -->
+                                    </li--><!-- End Contact Page Nav -->
 
                                     <li class='nav-item'>
                                       <a class='nav-link collapsed' href='#'>

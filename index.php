@@ -63,8 +63,8 @@ $txtpass=$_GET['password'];
         //REDIRIJO A PAG DEL MENU PRINCIPAL SI EXISTE USUARIO INGRESADO
         if ($id>0)
         {
-          header('Location: home.php');
-          //header('Location: avancestareas.php');
+          if ($tipousu=="Gerente") header('Location: home.php');
+          else header('Location: avancestareas.php');
           
           exit;
         }

@@ -194,7 +194,7 @@
                         //SE ACTUALIZA TIEMPOS DE TAREAS GUARDANDO LOS MEJORES
                               $ttarea=0;
                               $tnuevo=0;
-                              $sql = "SELECT a.`idtarea`,max(a.`tiempotarea`) as tiempot,(TIMESTAMPDIFF(DAY, b.`fini`,b.`ffin`)+1)*1440 AS tiempo 
+                              $sql = "SELECT a.`idtarea`,max(a.`tiempotarea`) as tiempot,TIMESTAMPDIFF(MINUTE, b.`fini`,b.`ffin`) AS tiempo 
                                       FROM tareas a inner join detalleorden b on (a.`idtarea`=b.`idtarea`)
                                       WHERE a.`idtarea`=". $idtarea ."
                                       GROUP BY a.`idtarea`;";

@@ -1,7 +1,8 @@
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
   include "configuracion/conexion.php";
-
+  date_default_timezone_set("America/Argentina/Tucuman");
+  
   session_start();
   
   if (isset($_SESSION['id']))
@@ -213,7 +214,7 @@
                             <tr>
                               <td>".$fil."</td>
                               <td>".$row['descripciontarea']."</td>
-                              <td>".$row['tiempotarea']."</td>
+                              <td>".date("H:i:s",$row['tiempotarea'])."</td>
                               <td><a href='crudtarea.php?idtarea=".$row['idtarea']."&accion=M'><img src='./assets/img/buscar.png' alt='Ver registro' srcset=''></a></td>
                               <td><a href='crudtarea.php?idtarea=".$row['idtarea']."&accion=B'><img src='./assets/img/eliminar.png' alt='Eliminar registro' srcset=''></a></td>
                             </tr>
