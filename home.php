@@ -6,11 +6,13 @@
 
   session_start();
   
-  function obtenermes($opcion)
+  function obtenermes($opcion,$mesdeseado)
   {
     $resp="";
     $mesActual = date('n'); // Obtiene el número del mes actual
 
+    if ($mesdeseado==1) $mesActual=$mesActual-1; //PERMITE OBTENER EL MES ANTERIOR AL ACTUAL
+      
     if ($opcion=="C")
     {//NOMBRE CORTO DEL MES  
       $meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -32,10 +34,13 @@
     $tipousu=$_SESSION['tipo'];
     $foto=$_SESSION['foto'];
     $nombrecorto=$_SESSION['nombrecorto'];
-    $fechaasistencia=date("Y-m-d"); 
+    $fechahoy=date("Y-m-d");
+    $fechaayer=date("Y-m-d", strtotime($fechahoy. "-1 day")); 
     $anioC=date("y");
     $anioL=date("Y");
     $mes=date("M");
+
+
   }
   else
   {
@@ -240,7 +245,7 @@
               ?>
 
             <div class="card-body">
-              <h5 class="card-title">Total Ordenes<span>| <?php echo obtenermes('C') ." ". $anioC; ?></span></h5>
+              <h5 class="card-title">Total Ordenes<span>| <?php echo obtenermes('C',0) ." ". $anioC; ?></span></h5>
 
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -257,7 +262,7 @@
                     if ($cantact<$cantant) echo "-".$porctarea."%";
                     else echo "+".$porctarea."%";
                   ?>
-                  </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('L') ." ". $anioL; ?></span>
+                  </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('C',1) ." ". $anioL; ?></span>
 
                 </div>
               </div>
@@ -286,16 +291,58 @@
             </div-->
 
             <div class="card-body">
-              <h5 class="card-title">Demoradas <span>| <?php echo obtenermes('C') ." ". $anioC; ?> </span></h5>
+              <h5 class="card-title">Demoradas <span>| <?php echo obtenermes('C',0) ." ". $anioC; ?> </span></h5>
 
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                   <i class="bi bi-clock"></i>
                 </div>
                 <div class="ps-3">
-                  <h6>45</h6>
+                <?php
+                
+                  $sql = "SELECT COUNT(DATEDIFF(a.`fechaentrega`,CURDATE())*-1) AS demoradaact,
+                            (SELECT COUNT(DATEDIFF(a.`fechaentrega`,CURDATE())*-1)
+                            FROM numeroorden a
+                            WHERE a.`accion`!='B' AND ((DATEDIFF(a.`fechaentrega`,CURDATE())*-1)>0) AND MONTH(a.`fecha`)=". $mesant .") AS demoraant
+                          FROM numeroorden a
+                          WHERE a.`accion`!='B' AND ((DATEDIFF(a.`fechaentrega`,CURDATE())*-1)>0) AND MONTH(a.`fecha`)=". $mesact .";";
+
+                  $con=conectar();
+
+                  $result = $cnx->query($sql);
+
+                  if (!$result) 
+                  {
+                      die('Invalid query: ' . $cnx->error);
+                  }
+
+                  if (!$result) 
+                  {
+                      die('Invalid query: ' . $mysqli->error);
+                  }
+                  else
+                  {
+                    while($row = mysqli_fetch_array($result))
+                    {
+                        $cantant=$row['demoraant'];
+                        $cantact=$row['demoradaact'];
+                    }
+                  }
+
+                  desconectar($con);
+                ?>
+
+                  <h6><?php echo $cantact; ?></h6>
                   <h5>Ordenes</h5>
-                  <span class="text-success small pt-1 fw-bold">-2%</span> <span class="text-muted small pt-2 ps-1">Feb 2025</span>
+                  <span class="text-success small pt-1 fw-bold">
+                  <?php
+                    //Analizo porcentaje
+                    $porctarea=($cantant*$cantact)/100;
+
+                    if ($cantact<$cantant) echo "-".$porctarea."%";
+                    else echo "+".$porctarea."%";
+                  ?>
+                  </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('C',1) ." ". $anioL; ?></span>
 
                 </div>
               </div>
@@ -324,16 +371,62 @@
             </div-->
 
             <div class="card-body">
-              <h5 class="card-title">Terminadas <span>| <?php echo obtenermes('C') ." ". $anioC; ?></span></h5>
+              <h5 class="card-title">Terminadas <span>| <?php echo obtenermes('C',0) ." ". $anioC; ?></span></h5>
 
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                   <i class="bi bi-hand-thumbs-up-fill"></i>
                 </div>
                 <div class="ps-3">
-                  <h6>100</h6>
+
+                <?php
+                
+                $cantant=0;
+                $cantact=100;
+
+                $sql = "SELECT 
+                            (SELECT COUNT(b.`numorden`) FROM numeroorden b WHERE b.`accion`!='B' AND MONTH(b.`fecha`)=".$mesant." AND b.estado='F') AS ant,
+                            COUNT(a.`numorden`) AS act
+                        FROM numeroorden a
+                        WHERE a.`accion`!='B' AND MONTH(a.`fecha`)=".$mesact." AND a.`estado`='F';";
+
+                $con=conectar();
+
+                $result = $cnx->query($sql);
+
+                if (!$result) 
+                {
+                    die('Invalid query: ' . $cnx->error);
+                }
+
+                if (!$result) 
+                {
+                    die('Invalid query: ' . $mysqli->error);
+                }
+                else
+                {
+                  while($row = mysqli_fetch_array($result))
+                  {
+                      $cantant=$row['ant'];
+                      $cantact=$row['act'];
+                  }
+                }
+
+                desconectar($con);
+              ?>
+
+                  <h6><?php echo $cantact; ?></h6>
                   <h5>Ordenes</h5>
-                  <span class="text-success small pt-1 fw-bold">+20%</span> <span class="text-muted small pt-2 ps-1">Feb 2025</span>
+                  <span class="text-success small pt-1 fw-bold">
+                  <?php
+                    //Analizo porcentaje
+                    $porctarea=($cantant*$cantact)/100;
+
+                    if ($cantact<$cantant) echo "-".$porctarea."%";
+                    else echo "+".$porctarea."%";
+                  ?>  
+                  </span> 
+                  <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('C',1) ." ". $anioL; ?></span>
 
                 </div>
               </div>
@@ -369,9 +462,53 @@
                   <i class="bi bi-headset"></i>
                 </div>
                 <div class="ps-3">
-                  <h6>5</h6>
+                <?php
+                
+                $cantant=0;
+                $cantact=100;
+
+                $sql = "SELECT 
+                            (SELECT COUNT(b.`numorden`) FROM numeroorden b WHERE b.`accion`!='B' AND MONTH(b.`fecha`)=".$mesant." AND b.estado='P') AS ant,
+                            COUNT(a.`numorden`) AS act
+                        FROM numeroorden a
+                        WHERE a.`accion`!='B' AND MONTH(a.`fecha`)=".$mesact." AND a.`estado`='P';";
+
+                $con=conectar();
+
+                $result = $cnx->query($sql);
+
+                if (!$result) 
+                {
+                    die('Invalid query: ' . $cnx->error);
+                }
+
+                if (!$result) 
+                {
+                    die('Invalid query: ' . $mysqli->error);
+                }
+                else
+                {
+                  while($row = mysqli_fetch_array($result))
+                  {
+                      $cantant=$row['ant'];
+                      $cantact=$row['act'];
+                  }
+                }
+
+                desconectar($con);
+              ?>
+
+                  <h6><?php echo $cantact; ?></h6>
                   <h5>Ordenes</h5>
-                  <span class="text-success small pt-1 fw-bold">+10%</span> <span class="text-muted small pt-2 ps-1">Feb <?php echo $anioL; ?></span>
+                  <span class="text-success small pt-1 fw-bold">
+                  <?php
+                    //Analizo porcentaje
+                    $porctarea=($cantant*$cantact)/100;
+
+                    if ($cantact<$cantant) echo "-".$porctarea."%";
+                    else echo "+".$porctarea."%";
+                  ?>  
+                  </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('C',1) ." ". $anioL; ?></span>
 
                 </div>
               </div>
@@ -406,7 +543,7 @@
               </div-->
 
               <div class="card-body">
-                <h5 class="card-title">Designación Ordenes<span>| <?php echo obtenermes('L') ." ". $anioL; ?></span></h5>
+                <h5 class="card-title">Designación Ordenes<span>| <?php echo obtenermes('L',0) ." ". $anioL; ?></span></h5>
 
                 <div class="d-flex align-items-center">
                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -414,7 +551,7 @@
                   </div>
                   <div class="ps-3">
                     <h6>40 Min</h6>
-                    <span class="text-danger small pt-1 fw-bold">-25%</span> <span class="text-muted small pt-2 ps-1">Febrero <?php echo $anioL; ?></span>
+                    <span class="text-danger small pt-1 fw-bold">-25%</span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('L',1) ." ". $anioL; ?></span>
 
                   </div>
                 </div>
@@ -444,7 +581,7 @@
               </div-->
 
               <div class="card-body">
-                <h5 class="card-title">Tiempo Muerto <span>| <?php echo obtenermes('L') ." ". $anioL; ?></span></h5>
+                <h5 class="card-title">Tiempo Muerto <span>| <?php echo obtenermes('L',0) ." ". $anioL; ?></span></h5>
 
                 <div class="d-flex align-items-center">
                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -452,7 +589,7 @@
                   </div>
                   <div class="ps-3">
                     <h6>2:30 hs</h6>
-                    <span class="text-danger small pt-1 fw-bold">+12%</span> <span class="text-muted small pt-2 ps-1">Febrero <?php echo $anioL; ?></span>
+                    <span class="text-danger small pt-1 fw-bold">+12%</span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('L',1) ." ". $anioL; ?></span>
 
                   </div>
                 </div>
