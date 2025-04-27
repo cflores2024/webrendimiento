@@ -11,9 +11,7 @@
     $apenomb=$_SESSION['apenomb'];
     $tipousu=$_SESSION['tipo'];
     $foto=$_SESSION['foto'];
-    $nombrecorto=$_SESSION['nombrecorto'];
-
-    $fechaasistencia=date("Y-m-d");           
+    $nombrecorto=$_SESSION['nombrecorto'];      
   }
   else
   {
@@ -28,7 +26,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Gestión de mantenimiento</title>
+  <title>SMATE</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -242,55 +240,64 @@
 
   $con=conectar();
 
-  if ($tipousu=="Mecanico")
-  {
-    $sql="-- ORDENES DISPONIBLES
-          SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`fecha`,(TIMESTAMPDIFF(DAY, xx2.`fecha`,xx2.`fechaaccion`)+1)*1440 AS tiempo,
-                '' AS foto,'' AS empleado,'' AS descripciontarea,
-                xx2.`estado`,
-                (SELECT CASE WHEN COUNT(tt.numorden)<=0 THEN 'N' ELSE 'S' END FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.numorden) historial,  
-                xx2.numchasis
-          FROM numeroorden xx2 
-          WHERE xx2.accion!='B' AND xx2.estado='D' 
-          UNION
-          -- ORDENES EN OTROS ESTADOS
-          SELECT a.`numorden`,b.`tituloorden`,b.`fecha`,(TIMESTAMPDIFF(DAY, b.`fecha`,b.`fechaaccion`)+1)*1440 AS tiempo,
-                (SELECT xx.urlfoto FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=a.idempleado) AS foto,
-                (SELECT CONCAT(xx.apellido,',',xx.nombre) FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=a.idempleado) AS empleado,c.`descripciontarea`,b.`estado`,
-                (SELECT CASE WHEN COUNT(tt.numorden)<=0 THEN 'N' ELSE 'S' END FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=b.`numchasis` AND tt.numorden!=a.numorden) historial, 
-                b.numchasis
+    $sql="-- TRAE LAS ORDEN DONDE SOLO FIGURA QUIEN LA PUSO DISPONIBLE
+          SELECT a.`numorden`,b.idpersonadisp AS idempleado,b.`tituloorden`,0 AS tiempo,b.fecha,
+          (SELECT xx.urlfoto FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=b.idpersonadisp) AS foto,
+          (SELECT CONCAT(xx.apellido,',',xx.nombre) FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=b.idpersonadisp) AS empleado,
+          'Orden disponible para su tratamiento' AS descripciontarea,
+          'I' AS estado,
+          0 AS demorada
           FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                                INNER JOIN tareas c ON (c.`idtarea`=a.`idtarea` AND c.`accion`!='B')
-          WHERE a.idempleado=". $id ." GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,c.`descripciontarea`,b.`estado`,b.numchasis
-          ORDER BY 3 DESC;";
-  }
-  else
-  {
-    $sql="-- ORDENES DISPONIBLES
-        SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`fecha`,(TIMESTAMPDIFF(DAY, xx2.`fecha`,xx2.`fechaaccion`)+1)*1440 AS tiempo,
-              '' AS foto,'' AS empleado,'' AS descripciontarea,
-              xx2.`estado`,
-              (SELECT CASE WHEN COUNT(tt.numorden)<=0 THEN 'N' ELSE 'S' END FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.numorden) historial,  
-              xx2.numchasis
-        FROM numeroorden xx2 
-        WHERE xx2.accion!='B' AND xx2.estado='D' AND xx2.`numorden` NOT IN  
-        (
+          GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.fechaentrega
+          UNION
+          -- ORDENES DISPONIBLES
+          SELECT xx2.`numorden`,xx2.`idpersonadisp` AS idempleado,xx2.`tituloorden`,
+          0 AS tiempo,
+          xx2.fecha,
+          zz1.urlfoto AS foto, 
+          CONCAT(zz1.`apellido`,', ',zz1.`nombre`) empleado,
+          'Orden disponible para su tratamiento' AS descripciontarea,
+          'D' AS estado,
+          0 AS demorada          
+          FROM numeroorden xx2 INNER JOIN personas zz1 ON (xx2.idpersonadisp=zz1.`idpersona` AND zz1.`accion`!='B')
+          WHERE xx2.accion!='B' AND xx2.estado='D' AND xx2.`numorden` NOT IN  
+          (
           SELECT aa.`numorden`
           FROM autorizaraccorden aa
-          WHERE aa.`accion`!='B' AND aa.`idpersona`=".$id." AND aa.`estado` IN ('P','A')
-        )
-        UNION
-        -- ORDENES EN OTROS ESTADOS
-        SELECT a.`numorden`,b.`tituloorden`,b.`fecha`,(TIMESTAMPDIFF(DAY, b.`fecha`,b.`fechaaccion`)+1)*1440 AS tiempo,
-              (SELECT xx.urlfoto FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=a.idempleado) AS foto,
-              (SELECT CONCAT(xx.apellido,',',xx.nombre) FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=a.idempleado) AS empleado,c.`descripciontarea`,b.`estado`,
-              (SELECT CASE WHEN COUNT(tt.numorden)<=0 THEN 'N' ELSE 'S' END FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=b.`numchasis` AND tt.numorden!=a.numorden) historial, 
-              b.numchasis
-        FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                               INNER JOIN tareas c ON (c.`idtarea`=a.`idtarea` AND c.`accion`!='B')
-        GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,c.`descripciontarea`,b.`estado`,b.numchasis
-        ORDER BY 3 DESC;";
-  }
+          WHERE aa.`accion`!='B' AND aa.`estado` IN ('P','A')
+          )
+          UNION
+          -- ORDENES PENDIENTES
+          SELECT xx2.`numorden`,yy.idpersona AS idempleado,xx2.`tituloorden`,
+          (TIMESTAMPDIFF(DAY, xx2.`fecha`,xx2.fechaentrega)+1)*1440 AS tiempo,
+          xx2.fecha,
+          yy.`urlfoto` AS foto, 
+          CONCAT(yy.apellido,',',yy.nombre) AS empleado,
+          'Orden pendiente para su tratamiento' AS `descripciontarea`,
+          'P' AS estado,
+          DATEDIFF(xx2.`fechaentrega`,CURDATE())*-1 AS demorada
+
+          FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
+              INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
+          WHERE xx2.accion!='B' AND zz.estado='P'
+          UNION
+          -- ORDENES AUTORIZAS
+          SELECT xx2.`numorden`,yy.idpersona AS idempleado,xx2.`tituloorden`,
+          (TIMESTAMPDIFF(DAY, xx2.`fecha`,xx2.fechaentrega)+1)*1440 AS tiempo,
+          xx2.fecha,
+          yy.`urlfoto` AS foto, 
+          CONCAT(yy.apellido,',',yy.nombre) AS empleado,
+          (SELECT t.`descripciontarea` 
+          FROM tareas t INNER JOIN afectadostareas h ON (t.`idtarea`=h.`idtarea` AND t.`accion`!='B') 
+          WHERE h.`numorden`=xx2.numorden AND h.`idempleado`=zz.idpersona AND h.`estado`='P' 
+          GROUP BY t.`descripciontarea`) AS `descripciontarea`,
+          xx2.`estado`,
+          CASE WHEN xx2.estado='F' then 0 else DATEDIFF(xx2.`fechaentrega`,curdate())*-1 end demorada
+          FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
+              INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
+          WHERE xx2.accion!='B' AND zz.estado='A'
+          ORDER BY 1,2;";
+ 
 
   //echo $sql;
 
@@ -316,6 +323,8 @@
     $estadoorden="";
     $color="";
     $numchasis="";
+    $canttareas=0;
+    $demorada=0;
   
     while($row = mysqli_fetch_array($result))
     {
@@ -323,7 +332,7 @@
       {
           if (strlen($row['foto'])>0)
           {
-            if ($estadoorden=="P") //EN PROGRESO
+            if ($row['estado']=="P") //EN PROGRESO
             {
                $lsfotos=$lsfotos."<a href='#'><img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle activo' width='35' height='35' title='".$row['empleado'].": ".$row['descripciontarea']."'></a>";
             }
@@ -336,6 +345,11 @@
           {
               $lsfotos=$lsfotos."&nbsp;";
           }
+      
+          $fecha=$row['fecha'];
+          $tiempo=$row['tiempo'];
+          $estadoorden=$row['estado'];
+          $demorada=$row['demorada'];
       }
       else
       {
@@ -349,35 +363,20 @@
                           <td>".$tiempo." min</td>";
               
               //ANALIZO PORCENTAJE DE AVANCE DE LA ORDEN
-              $avance=AvanceOrden($orden);
+              $canttareas=AvanceOrden($orden);
 
-              switch ($estadoorden)
-              {
-                case "F": //ORDEN FINALIZADA
-                        $fila=$fila." <td>
-                                        <div class='progress'>
-                                          <div class='progress-bar' role='progressbar' style='width: 100%' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100'>100%</div>
-                                        </div>
-                                      </td>";
-                break;
-                case "P": //ORDEN EN PROCESO 
-                        $fila=$fila." <td>
-                                        <div class='progress'>
-                                          <div class='progress-bar' role='progressbar' style='width: 50%' aria-valuenow='50' aria-valuemin='0' aria-valuemax='50'>50%</div>
-                                        </div>
-                                      </td>";
-                break;
-                default: //ORDEN DEMORADA
-                        $fila=$fila." <td>
-                                        <div class='progress'>
-                                          <div class='progress-bar' role='progressbar' style='width: 70%' aria-valuenow='70' aria-valuemin='0' aria-valuemax='70'>70%</div>
-                                        </div>
-                                      </td>";
-                break;
-              }
+              
+              $fila=$fila." <td>
+                              <div class='progress'>
+                                <div class='progress-bar' role='progressbar' style='width: ".$canttareas."%' aria-valuenow='".$canttareas."' aria-valuemin='0' aria-valuemax='".$canttareas."'>".$canttareas."%</div>
+                              </div>
+                            </td>";
+           
 
               $fila=$fila."<td>".$lsfotos."</td>";
               
+              if ($demorada>0) $estadoorden="M"; //ORDEN DEMORADA
+
               switch ($estadoorden)
               {
                 case "P": //ORDEN EN PROCESO - VERDE
@@ -396,16 +395,15 @@
 
               $fila=$fila ."<td>".$color."</td>";
               
-              if ($tienehisto=="N") $fila=$fila."<td>&nbsp</td></tr>";
+              if ($tienehisto<=0) $fila=$fila."<td>&nbsp</td></tr>";
               else $fila=$fila."<td><a href='#'>
-                                  <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='verhistorial(\"$numchasis\")'>
+                                  <img src='assets/img/tarea_historia.png' data-bs-toggle='tooltip' data-bs-placement='top' title='Ver Historial Patente 1' onclick='verhistorial(\"$numchasis\")'>
                                 </a></td></tr>";            
           }
 
           if (strlen($orden)>0) 
           {
-            //$filasproy=$filasproy."".$fila;
-
+            
             echo $fila;
 
             $fila="";
@@ -418,6 +416,7 @@
           $estadoorden=$row['estado'];
           $tienehisto=$row['historial'];
           $numchasis=$row['numchasis'];
+          $demorada=$row['demorada'];
                           
           if (strlen($row['foto'])>0)
           {
@@ -437,59 +436,51 @@
       }   
     }
 
-    $fila="
-            <tr>
-                <th scope='row'><a href='#'>#".$orden."</a></th>
-                <td>".$titulo."</td>
-                <td>".$fecha."</td>
-                <td>".$tiempo." min</td>";
+    if (strlen($orden)>0)
+    {
+      $fila="
+              <tr>
+                  <th scope='row'><a href='#'>#".$orden."</a></th>
+                  <td>".$titulo."</td>
+                  <td>".$fecha."</td>
+                  <td>".$tiempo." min</td>";
+
+      //ANALIZO PORCENTAJE DE AVANCE DE LA ORDEN
+      $canttareas=AvanceOrden($orden);
       
-    switch ($estadoorden)
-    {
-      case "F": //ORDEN FINALIZADA
-              $fila=$fila." <td>
-                              <div class='progress'>
-                                <div class='progress-bar' role='progressbar' style='width: 100%' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100'>100%</div>
-                              </div>
-                            </td>";
-      break;
-      case "P": //ORDEN EN PROCESO 
-              $fila=$fila." <td>
-                              <div class='progress'>
-                                <div class='progress-bar' role='progressbar' style='width: 50%' aria-valuenow='50' aria-valuemin='0' aria-valuemax='50'>50%</div>
-                              </div>
-                            </td>";
-      break;
-      default: //ORDEN DEMORADA
-              $fila=$fila." <td>
-                              <div class='progress'>
-                                <div class='progress-bar' role='progressbar' style='width: 70%' aria-valuenow='70' aria-valuemin='0' aria-valuemax='70'>70%</div>
-                              </div>
-                            </td>";
-      break;
+                $fila=$fila." <td>
+                                <div class='progress'>
+                                  <div class='progress-bar' role='progressbar' style='width: ".$canttareas."%' aria-valuenow='".$canttareas."' aria-valuemin='0' aria-valuemax='".$canttareas."'>".$canttareas."%</div>
+                                </div>
+                              </td>";
+      
+      $fila=$fila."<td>".$lsfotos."</td>";
+
+      switch ($estadoorden)
+      {
+        case "P": //ORDEN EN PROCESO - VERDE
+                $color="<span class='badge bg-success'>En proceso</span>";
+        break;
+        case "F": //ORDEN FINALIZADA - AZUL
+                $color="<span class='badge bg-primary'>Finalizada</span>";
+        break;
+        case "D": //ORDEN DISPONIBLE A SER TRATADA - AMARILLO
+                $color="<span class='badge bg-warning'>Disponible</span>";
+        break;
+        default: //ORDEN DEMORADA - ROJO
+                $color="<span class='badge bg-danger'>Atrazado</span>";
+        break;
+      }
+
+      $fila=$fila ."<td>".$color."</td>";     
+
+      if ($tienehisto<=0) $fila=$fila."<td>&nbsp</td></tr>";
+      else $fila=$fila."<td><a href='#'>
+                          <img src='assets/img/tarea_historia.png' data-bs-toggle='tooltip' data-bs-placement='top' title='Ver Historial Patente 2' onclick='verhistorial(\"$numchasis\")'>
+                        </a></td></tr>";  
+
     }
-
-    $fila=$fila."<td>".$lsfotos."</td>";
-
-    switch ($estadoorden)
-    {
-      case "P": //ORDEN EN PROCESO - AMARILLO bg-warning
-              $color="<span class='badge bg-warning'>En proceso</span>";
-      break;
-      case "F": //ORDEN FINALIZADA - VERDE bg-success 
-              $color="<span class='badge bg-success'>Finalizada</span>";
-      break;
-      default: //ORDEN DEMORADA - ROJO bg-danger 
-              $color="<span class='badge bg-danger'>Atrazado</span>";
-      break;
-    }
-
-    $fila=$fila ."<td>".$color."</td>";     
-
-    if ($tienehisto=="N") $fila=$fila."<td>&nbsp</td></tr>";
-    else $fila=$fila."<td><a href='#'>
-                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente' onclick='verhistorial(\"$numchasis\")'>
-                      </a></td></tr>";     
+    else $fila="<tr><td colspan='7' style='text-align: center;'>Sin información a mostrar</td></tr>";   
   }
 
   desconectar($con);
@@ -543,7 +534,7 @@
 </html>
 
 <?php
-  function fff()
+  function AvanceOrden($num)
   {
     //SE DETERMINA LA CANTIDAD DE TAREAS QUE TIENE EN CURSO VS FINALIZADAS
     $totaltareas=0;
@@ -553,7 +544,7 @@
                                                     FROM detalleorden b 
                                                     WHERE b.`accion`!='B' AND b.`estado`='F' AND b.`numeroorden`=a.numeroorden) AS totalfin
           FROM detalleorden a
-          WHERE a.`accion`!='B' AND a.`numeroorden`=". $numorden;
+          WHERE a.`accion`!='B' AND a.`numeroorden`=". $num;
 
     $con=conectar();
 
@@ -579,6 +570,9 @@
           desconectar($con);
     }
 
-    if ($totalfin<$totaltareas) $estado="P";
+    if ($totalfin==$totaltareas) $totalfin=100;
+    else $totalfin=$totalfin*10;
+
+    return ($totalfin);
   }
 ?>

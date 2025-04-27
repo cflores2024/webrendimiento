@@ -6,25 +6,6 @@
 
   session_start();
   
-  function obtenermes($opcion)
-  {
-    $resp="";
-    $mesActual = date('n'); // Obtiene el número del mes actual
-
-    if ($opcion=="C")
-    {//NOMBRE CORTO DEL MES  
-      $meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-      $resp=$meses[$mesActual - 1]; // Resta 1
-    }
-    else
-    {//NOMBRE LARGO DEL MES
-      $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-      $resp=$meses[$mesActual - 1]; // Resta 1
-    }
-
-    return $resp;
-  }
-
   if (isset($_SESSION['id']))
   {  
     $id=$_SESSION['id'];
@@ -32,10 +13,8 @@
     $tipousu=$_SESSION['tipo'];
     $foto=$_SESSION['foto'];
     $nombrecorto=$_SESSION['nombrecorto'];
-    $fechaasistencia=date("Y-m-d"); 
-    $anioC=date("y");
-    $anioL=date("Y");
-    $mes=date("M");
+
+    $fechaasistencia=date("Y-m-d");            
   }
   else
   {
@@ -50,7 +29,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>SMATE</title>
+  <title>Sistema Administrativo de Mantenimiento</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -99,13 +78,13 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SMATE</span>
+        <span class="d-none d-lg-block">SAM</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
     <div class="search-bar">
-      <strong>Sistema De Mantenimiento Técnico</strong>
+      <strong>Mantenimiento</strong>
     </div><!-- End Search Bar -->
 
     <nav class="header-nav ms-auto">
@@ -175,11 +154,11 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Panel metricas</h1>
+      <h1>Mantenimiento</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item active">Metricas</li>
+          <li class="breadcrumb-item active">Mantenimiento</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -192,7 +171,7 @@
 
           <div class="card info-card sales-card">
 
-            <!--div class="filter">
+            <div class="filter">
               <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li class="dropdown-header text-start">
@@ -203,61 +182,19 @@
                 <li><a class="dropdown-item" href="#">Este Mes</a></li>
                 <li><a class="dropdown-item" href="#">Este Año</a></li>
               </ul>
-            </div-->
-              <?php
-                $mesact=date("n");
-                $mesant=$mesact-1;
-
-                $sql = "SELECT 
-                            (SELECT COUNT(b.`numorden`) FROM numeroorden b WHERE b.`accion`!='B' AND MONTH(b.`fecha`)=". $mesant .") AS ant,
-                            COUNT(a.`numorden`) AS act
-                        FROM numeroorden a
-                        WHERE a.`accion`!='B' AND MONTH(a.`fecha`)=". $mesact .";";
-
-                $con=conectar();
-
-                $result = $cnx->query($sql);
-
-                if (!$result) 
-                {
-                    die('Invalid query: ' . $cnx->error);
-                }
-
-                if (!$result) 
-                {
-                    die('Invalid query: ' . $mysqli->error);
-                }
-                else
-                {
-                  while($row = mysqli_fetch_array($result))
-                  {
-                      $cantant=$row['ant'];
-                      $cantact=$row['act'];
-                  }
-                }
-
-                desconectar($con);
-              ?>
+            </div>
 
             <div class="card-body">
-              <h5 class="card-title">Total Ordenes<span>| <?php echo obtenermes('C') ." ". $anioC; ?></span></h5>
+              <h5 class="card-title">Total Ordenes<span>| Mar 25</span></h5>
 
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                   <i class="bi bi-car-front"></i>
                 </div>
                 <div class="ps-3">
-                  <h6><?php echo $cantact; ?></h6>
+                  <h6>150</h6>
                   <h5>Ordenes</h5>
-                  <span class="text-success small pt-1 fw-bold">
-                  <?php
-                    //Analizo porcentaje
-                    $porctarea=($cantant*$cantact)/100;
-
-                    if ($cantact<$cantant) echo "-".$porctarea."%";
-                    else echo "+".$porctarea."%";
-                  ?>
-                  </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('L') ." ". $anioL; ?></span>
+                  <span class="text-success small pt-1 fw-bold">+12%</span> <span class="text-muted small pt-2 ps-1">Feb 2025</span>
 
                 </div>
               </div>
@@ -272,7 +209,7 @@
 
           <div class="card info-card sales-card">
 
-            <!--div class="filter">
+            <div class="filter">
               <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li class="dropdown-header text-start">
@@ -283,10 +220,10 @@
                 <li><a class="dropdown-item" href="#">Este Mes</a></li>
                 <li><a class="dropdown-item" href="#">Este Año</a></li>
               </ul>
-            </div-->
+            </div>
 
             <div class="card-body">
-              <h5 class="card-title">Demoradas <span>| <?php echo obtenermes('C') ." ". $anioC; ?> </span></h5>
+              <h5 class="card-title">Demoradas <span>| Mar 25</span></h5>
 
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -310,7 +247,7 @@
 
           <div class="card info-card sales-card">
 
-            <!--div class="filter">
+            <div class="filter">
               <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li class="dropdown-header text-start">
@@ -321,10 +258,10 @@
                 <li><a class="dropdown-item" href="#">Este Mes</a></li>
                 <li><a class="dropdown-item" href="#">Este Año</a></li>
               </ul>
-            </div-->
+            </div>
 
             <div class="card-body">
-              <h5 class="card-title">Terminadas <span>| <?php echo obtenermes('C') ." ". $anioC; ?></span></h5>
+              <h5 class="card-title">Terminadas <span>| Mar 25</span></h5>
 
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -348,7 +285,7 @@
 
           <div class="card info-card sales-card">
 
-            <!--div class="filter">
+            <div class="filter">
               <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
               <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li class="dropdown-header text-start">
@@ -359,7 +296,7 @@
                 <li><a class="dropdown-item" href="#">Este Mes</a></li>
                 <li><a class="dropdown-item" href="#">Este Año</a></li>
               </ul>
-            </div-->
+            </div>
 
             <div class="card-body">
               <h5 class="card-title">En curso <span>| Hoy</span></h5>
@@ -371,7 +308,7 @@
                 <div class="ps-3">
                   <h6>5</h6>
                   <h5>Ordenes</h5>
-                  <span class="text-success small pt-1 fw-bold">+10%</span> <span class="text-muted small pt-2 ps-1">Feb <?php echo $anioL; ?></span>
+                  <span class="text-success small pt-1 fw-bold">+10%</span> <span class="text-muted small pt-2 ps-1">Feb 2025</span>
 
                 </div>
               </div>
@@ -392,7 +329,7 @@
           <!-- Customers Card -->
             <div class="card info-card customers-card">
 
-              <!--div class="filter">
+              <div class="filter">
                 <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                   <li class="dropdown-header text-start">
@@ -403,10 +340,10 @@
                   <li><a class="dropdown-item" href="#">Este Mes</a></li>
                   <li><a class="dropdown-item" href="#">Este Año</a></li>
                 </ul>
-              </div-->
+              </div>
 
               <div class="card-body">
-                <h5 class="card-title">Designación Ordenes<span>| <?php echo obtenermes('L') ." ". $anioL; ?></span></h5>
+                <h5 class="card-title">Designación Ordenes<span>| Marzo 2025</span></h5>
 
                 <div class="d-flex align-items-center">
                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -414,7 +351,7 @@
                   </div>
                   <div class="ps-3">
                     <h6>40 Min</h6>
-                    <span class="text-danger small pt-1 fw-bold">-25%</span> <span class="text-muted small pt-2 ps-1">Febrero <?php echo $anioL; ?></span>
+                    <span class="text-danger small pt-1 fw-bold">-25%</span> <span class="text-muted small pt-2 ps-1">Febrero 2025</span>
 
                   </div>
                 </div>
@@ -430,7 +367,7 @@
           <!-- Customers Card -->
             <div class="card info-card customers-card">
 
-              <!--div class="filter">
+              <div class="filter">
                 <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                   <li class="dropdown-header text-start">
@@ -441,10 +378,10 @@
                   <li><a class="dropdown-item" href="#">Este Mes</a></li>
                   <li><a class="dropdown-item" href="#">Este Año</a></li>
                 </ul>
-              </div-->
+              </div>
 
               <div class="card-body">
-                <h5 class="card-title">Tiempo Muerto <span>| <?php echo obtenermes('L') ." ". $anioL; ?></span></h5>
+                <h5 class="card-title">Tiempo Muerto <span>| Marzo 2025</span></h5>
 
                 <div class="d-flex align-items-center">
                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -452,7 +389,7 @@
                   </div>
                   <div class="ps-3">
                     <h6>2:30 hs</h6>
-                    <span class="text-danger small pt-1 fw-bold">+12%</span> <span class="text-muted small pt-2 ps-1">Febrero <?php echo $anioL; ?></span>
+                    <span class="text-danger small pt-1 fw-bold">+12%</span> <span class="text-muted small pt-2 ps-1">Febrero 2025</span>
 
                   </div>
                 </div>

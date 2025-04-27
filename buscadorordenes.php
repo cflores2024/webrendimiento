@@ -26,7 +26,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Gestión de mantenimiento</title>
+  <title>SMATE</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -73,15 +73,17 @@
 
     function vertabla(num)
     {
-      //alert("Se muestra historial de la orden " + num);
-
-      if (num<=0) {
+      if (num="") {
+        //alert("Se requiere que ingrese un múmero de orden!!!");
+        document.getElementById("lblproceso").innerHTML="Se requiere que ingrese un número de orden";
+        document.getElementById("lsinfo").innerHTML="";
         return;
       } else {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             //alert ('numero orden='+num);
+            document.getElementById("lblproceso").innerHTML="";
             document.getElementById("tbldetalleorden").innerHTML=this.responseText;
           }
         };
@@ -100,17 +102,24 @@
     function verorden() {
       var num=document.getElementById('txtnumorden').value;
      
-      if (num<=0) {
+      if (num=="") {
+        document.getElementById("lblproceso").innerHTML="Se requiere que ingrese un número de orden";
+        document.getElementById("lsinfo").innerHTML="";
         return;
       } else {
+        document.getElementById("lblproceso").innerHTML="Procesando...";
+        document.getElementById("lsinfo").innerHTML="";
+
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             //alert ('numero orden='+num);
+            document.getElementById("lblproceso").innerHTML="";
+
             document.getElementById("lsinfo").innerHTML=this.responseText;
           }
         };
-        xmlhttp.open('GET', 'detalleorden.php?num='+num, false);
+        xmlhttp.open('GET', 'detalleorden.php?num='+num, true);
         xmlhttp.send();
       }
     }
@@ -118,13 +127,16 @@
     function verhistorial() {
       var num=document.getElementById('txtnumpatente').value;
     
-      if (num<=0) {
+      if (num=="") {
+        document.getElementById("lblproceso").innerHTML="Se requiere que ingrese un número de chasis";
+        document.getElementById("lsinfo").innerHTML="";
         return;
       } else {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             //alert ('numero patente='+num);
+            document.getElementById("lblproceso").innerHTML="";
             document.getElementById("lsinfo").innerHTML=this.responseText;
           }
         };
@@ -138,6 +150,7 @@
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             //alert("Se envia la orden numero=>"+orden+" y se lo pasa al estado de =>"+estado+", con el titulo "+titulo);
+            document.getElementById("lblproceso").innerHTML="";
             document.getElementById("lsinfo").innerHTML=this.responseText;
           }
         };
@@ -252,7 +265,7 @@
                           <!-- General Form Elements -->
                             <form action="">
                               <div class="row mb-3">
-                                <label for="txtorden" class="col-sm-2 col-form-label">N° Patente</label>
+                                <label for="txtorden" class="col-sm-2 col-form-label">N° Chasis</label>
                                 <div class="col-sm-10">
                                     <input name="txtnumpatente" type="text" class="form-control" id="txtnumpatente" value="">
                                 </div>
@@ -270,9 +283,11 @@
                                       &nbsp;&nbsp;&nbsp;&nbsp;
                                       <input type="button" id="btnGestionar" class="btn btn-primary" value="Gestionar Ordenes" onclick="organizartareas(0,'')">
                                       &nbsp;&nbsp;&nbsp;&nbsp;
-                                      <input type="button" id="btnHistorial" class="btn btn-primary" value="Ver Historial Patente" onclick="verhistorial()">
+                                      <input type="button" id="btnHistorial" class="btn btn-primary" value="Ver Historial Chasis" onclick="verhistorial()">
                                   </div>
                               </div>
+
+                              <span id="lblproceso"></span>
                             </form>
                            
                           <!-- End General Form Elements -->

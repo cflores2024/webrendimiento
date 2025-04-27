@@ -11,12 +11,12 @@ switch ($tipousu)
 
                                   <ul class='sidebar-nav' id='sidebar-nav'>
 
-                                    <li class='nav-item'>
+                                    <!--li class='nav-item'>
                                       <a class='nav-link ' href='home.php'>
                                         <i class='bi bi-reception-4'></i>
                                         <span>Metricas</span>
                                       </a>
-                                    </li>
+                                    </li-->
                                     <li class='nav-item'>
                                       <a class='nav-link collapsed' href='avancestareas.php'>
                                         <i class='bi bi-grid'></i>
@@ -54,11 +54,11 @@ switch ($tipousu)
                                             <i class='bi bi-circle'></i><span>Atender Ordenes</span>
                                           </a>
                                         </li>
-                                        <li>
+                                        <!--li>
                                           <a href='autorizarpedido.php'>
                                             <i class='bi bi-circle'></i><span>Autorizar Acceso Orden</span>
                                           </a>
-                                        </li>
+                                        </li-->
                                         
                                       </ul>
                                     </li><!-- End Tables Nav -->
@@ -105,12 +105,12 @@ switch ($tipousu)
 
                               <ul class='sidebar-nav' id='sidebar-nav'>
 
-                                <li class='nav-item'>
+                                <!--li class='nav-item'>
                                   <a class='nav-link ' href='home.php'>
                                     <i class='bi bi-reception-4'></i>
                                     <span>Metricas</span>
                                   </a>
-                                </li>
+                                </li-->
                                 <li class='nav-item'>
                                   <a class='nav-link collapsed' href='avancestareas.php'>
                                     <i class='bi bi-grid'></i>
@@ -133,11 +133,11 @@ switch ($tipousu)
                                         <i class='bi bi-circle'></i><span>Estimar Tiempos Tareas</span>
                                       </a>
                                     </li>
-                                    <li>
+                                    <!--li>
                                       <a href='autorizarpedido.php'>
                                         <i class='bi bi-circle'></i><span>Autorizar Acceso Orden</span>
                                       </a>
-                                    </li>
+                                    </li-->
                                     
                                   </ul>
                                 </li><!-- End Tables Nav -->
@@ -170,12 +170,12 @@ switch ($tipousu)
 
                             <ul class='sidebar-nav' id='sidebar-nav'>
 
-                              <li class='nav-item'>
+                              <!--li class='nav-item'>
                                 <a class='nav-link ' href='home.php'>
                                   <i class='bi bi-reception-4'></i>
                                   <span>Metricas</span>
                                 </a>
-                              </li>
+                              </li-->
                               <li class='nav-item'>
                                 <a class='nav-link collapsed' href='avancestareas.php'>
                                   <i class='bi bi-grid'></i>

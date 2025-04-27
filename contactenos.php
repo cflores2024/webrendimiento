@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Gestión de mantenimientos</title>
+  <title>SMATE</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -103,7 +103,7 @@
               <div class="info-box card">
                 <i class="bi bi-geo-alt"></i>
                 <h3>Dirección</h3>
-                <p>Av. Roque Saenz Peña y Lamadrid</p>
+                <p>Av. San Martin</p>
               </div>
             </div>
             <div class="col-lg-6">

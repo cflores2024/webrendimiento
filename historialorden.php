@@ -4,6 +4,7 @@
 
     $info="";
     $verbtn=""; 
+    $tienedatos="";
 
     if (isset($_GET["num"]))
     {
@@ -43,10 +44,10 @@
       }
       else
       {
-        $info="";
-
+       
         while($row = mysqli_fetch_array($result))
         {
+          $tienedatos=$row['numchasis'];
           $info="
                   <section class='section'>
                       <div class='row'>
@@ -124,115 +125,125 @@
 
       desconectar($con);
 
-      $sql = "SELECT a.`numorden`,a.`fecha`,a.`estado`
-              FROM numeroorden a INNER JOIN detalleorden b ON (a.`numorden`=b.`numeroorden` AND b.`accion`!='B')
-              WHERE a.`accion`!='B' AND a.`numchasis`='".$numchasis."'
-              GROUP BY a.`numorden`,a.`fecha`,a.`estado`
-              ORDER BY a.`fecha` DESC;";
-
-      $con=conectar();
-
-      $result = $cnx->query($sql);
-
-      if (!$result) 
+      if ($tienedatos!=null)
       {
-        die('Invalid query: ' . $cnx->error);
-      }
+        $sql = "SELECT a.`numorden`,a.`fecha`,a.`estado`
+                FROM numeroorden a INNER JOIN detalleorden b ON (a.`numorden`=b.`numeroorden` AND b.`accion`!='B')
+                WHERE a.`accion`!='B' AND a.`numchasis`='".$numchasis."'
+                GROUP BY a.`numorden`,a.`fecha`,a.`estado`
+                ORDER BY a.`fecha` DESC;";
 
-      if (!$result) 
-      {
-        die('Invalid query: ' . $mysqli->error);
+        $con=conectar();
+
+        $result = $cnx->query($sql);
+
+        if (!$result) 
+        {
+          die('Invalid query: ' . $cnx->error);
+        }
+
+        if (!$result) 
+        {
+          die('Invalid query: ' . $mysqli->error);
+        }
+        else
+        {
+          $histo="";
+          $msn="";
+          while($row = mysqli_fetch_array($result))
+          {
+            $histo=$histo."
+                            <div class='activity-item d-flex'>
+                              <div class='activite-label'>". date("d/m/Y", strtotime($row['fecha'])) ."</div>";
+
+            switch ($row['estado'])
+            {
+              case "S": //ORDEN PENDIENTE A SER ASIGNADA PARA ESTAR DISPONIBLE - GRIS text-muted
+                      $histo=$histo."<i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>";
+                      $msn="Orden pendiente de aceptación";
+              break;
+              case "D": //ORDEN DISPONIBLE - AMARILLO text-warning
+                      $histo=$histo."<i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>";
+                      $msn="Orden disponible para ser trabajada";
+              break;
+              case "P": //ORDEN EN PROCESO - VERDE text-success 
+                      $histo=$histo."<i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>";
+                      $msn="Orden en tratamiento";
+              break;
+              case "F": //ORDEN FINALIZADA - CELESTE text-info
+                      $histo=$histo."<i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>";
+                      $msn="Orden finalizada";
+              break;
+            }
+            $histo=$histo."
+                              <div class='activity-content'>
+                                Número de orden <a href='#' class='fw-bold text-dark' title='".$msn."' onclick='vertabla(".$row['numorden'].")'>#".$row['numorden']."</a>
+                              </div>
+                            </div><!-- End activity item-->
+                          ";
+          }
+        }
+              
+        desconectar($con);
+
+        $info=$info."
+                      <section class='section dashboard'>
+                        <div class='row'>
+
+                          <!-- Left side columns -->
+                          <div class='col-lg-8'>
+                            <div class='row'>
+
+                              <!-- Recent Sales -->
+                              <div class='col-12'>
+                                <div class='card recent-sales overflow-auto'>
+
+                                  <div class='card-body'>
+                                    <span id='tbldetalleorden'>
+                                      <h5 class='card-title'>Listado de tareas</h5>
+
+                                      Seleccione alguna orden para ver su información
+                                    </span>
+
+                                  </div>
+
+                                </div>
+                              </div><!-- End Recent Sales -->
+
+                            </div>
+                          </div><!-- End Left side columns -->
+
+                          <!-- Right side columns -->
+                          <div class='col-lg-4'>
+
+                            <!-- Recent Activity -->
+                            <div class='card'>
+                              <div class='card-body'>
+                                <h5 class='card-title'>Historial Mantenimieto". $verbtn ."</h5>
+
+                                <div class='activity'>".
+
+                                  $histo
+
+                                ."</div>
+
+                              </div>
+                            </div><!-- End Recent Activity -->
+                          </div><!-- End Right side columns -->
+
+                        </div>
+                      </section>
+        ";
+
+        echo $info;
       }
       else
       {
-        $histo="";
-        $msn="";
-        while($row = mysqli_fetch_array($result))
-        {
-          $histo=$histo."
-                          <div class='activity-item d-flex'>
-                            <div class='activite-label'>". date("d/m/Y", strtotime($row['fecha'])) ."</div>";
-
-          switch ($row['estado'])
-          {
-            case "S": //ORDEN PENDIENTE A SER ASIGNADA PARA ESTAR DISPONIBLE - GRIS text-muted
-                    $histo=$histo."<i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>";
-                    $msn="Orden pendiente de aceptación";
-            break;
-            case "D": //ORDEN DISPONIBLE - AMARILLO text-warning
-                    $histo=$histo."<i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>";
-                    $msn="Orden disponible para ser trabajada";
-            break;
-            case "P": //ORDEN EN PROCESO - VERDE text-success 
-                    $histo=$histo."<i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>";
-                    $msn="Orden en tratamiento";
-            break;
-            case "F": //ORDEN FINALIZADA - CELESTE text-info
-                    $histo=$histo."<i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>";
-                    $msn="Orden finalizada";
-            break;
-          }
-          $histo=$histo."
-                            <div class='activity-content'>
-                              Número de orden <a href='#' class='fw-bold text-dark' title='".$msn."' onclick='vertabla(".$row['numorden'].")'>#".$row['numorden']."</a>
-                            </div>
-                          </div><!-- End activity item-->
-                        ";
-        }
+        echo "<p style='text-align: center;'>Sin datos para mostrar</p>";
       }
-            
-      desconectar($con);
-
     }
-
-    $info=$info."
-                  <section class='section dashboard'>
-                    <div class='row'>
-
-                      <!-- Left side columns -->
-                      <div class='col-lg-8'>
-                        <div class='row'>
-
-                          <!-- Recent Sales -->
-                          <div class='col-12'>
-                            <div class='card recent-sales overflow-auto'>
-
-                              <div class='card-body'>
-                                <span id='tbldetalleorden'>
-                                  <h5 class='card-title'>Listado de tareas</h5>
-
-                                  Seleccione alguna orden para ver su información
-                                </span>
-
-                              </div>
-
-                            </div>
-                          </div><!-- End Recent Sales -->
-
-                        </div>
-                      </div><!-- End Left side columns -->
-
-                      <!-- Right side columns -->
-                      <div class='col-lg-4'>
-
-                        <!-- Recent Activity -->
-                        <div class='card'>
-                          <div class='card-body'>
-                            <h5 class='card-title'>Historial Mantenimieto". $verbtn ."</h5>
-
-                            <div class='activity'>".
-
-                              $histo
-
-                            ."</div>
-
-                          </div>
-                        </div><!-- End Recent Activity -->
-                      </div><!-- End Right side columns -->
-
-                    </div>
-                  </section>
-    ";
-
-    echo $info;
+    else
+    {
+      echo "<p style='text-align: center;'>Debe de ingresar un número de chasis</p>";
+    }
 ?>

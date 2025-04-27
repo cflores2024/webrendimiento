@@ -55,7 +55,7 @@ if (isset($_SESSION['id']))
                           <div class='row mb-3'>
                                 <label for='inputEmail' class='col-sm-3 col-form-label'>Titulo</label>
                                 <div class='col-sm-9'>
-                                <input type='text' class='form-control' value='".$row['tituloorden']."'>
+                                  <input type='text' class='form-control' value='".$row['tituloorden']."'>
                                 </div>
                             </div>
                         </div>
@@ -75,14 +75,13 @@ if (isset($_SESSION['id']))
                               </div>
                           </div>
                           <div class='row mb-3'>
-                                <label for='inputEmail' class='col-sm-3 col-form-label'>Modelo</label>
-                                <div class='col-sm-9'>
-                                  <input type='text' class='form-control' value='".$row['modelo']."'>
-                                </div>
+                              <label for='inputEmail' class='col-sm-3 col-form-label'>Modelo</label>
+                              <div class='col-sm-9'>
+                                <input type='text' class='form-control' value='".$row['modelo']."'>
+                              </div>
                             </div>
                         </div>
                       </div>
-
                     </div>
                   </div>
                 </section>";
@@ -123,46 +122,32 @@ if (isset($_SESSION['id']))
           {
             $idtarea=$row['idtarea'];
             $datos=$datos ."
-                            <div class='accordion accordion-flush' id='". $idtarea ."'>
-                              <div class='accordion-item'>
-                                <h2 class='accordion-header' id='flush-headingTwo'>
-                                  <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapseTwo' aria-expanded='false' aria-controls='flush-collapseTwo'>
-                                    ". $row['descripciontarea'] ."&nbsp;&nbsp;". $row['idtarea'] ."        
-                                  </button>
-                                </h2>
-                                <div id='flush-collapseTwo' class='accordion-collapse collapse' aria-labelledby='flush-headingTwo' data-bs-parent='#". $row['idtarea'] ."'>
-                                  <div class='accordion-body'>
-                                    
-                                      ". $row['nombrecortousu'] ." 
-                                      <p>
-                                        <code data-bs-toggle='tooltip' data-bs-placement='top' title='Da entrada a la tarea para su atención.'>". $row['fechaautoriza'] ."</code>
-                                      </p>
-                                        <button type='button' class='btn btn-primary' onclick='aprocesar(\"$numorden\",\"$idtarea\",\"$idusuario\")'>
-                                        Iniciar
-                                    </button>
-                                  
-                                  </div>
-                                </div>
+                            <a href='#' data-bs-toggle='tooltip' data-bs-placement='top' title='Da entrada a la tarea para su atención.' onclick='aprocesar(\"$numorden\",\"$idtarea\",\"$idusuario\")'>
+                              <div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                               ". $row['descripciontarea'] ."
+                              <p>
+                                <code>Usuario: ". $row['nombrecortousu'] ." <br/> ". $row['fechaobs'] ."</code>
+                              </p>
                               </div>
-                            </div>";
+                            </a>
+                          ";
           }
 
-          $opdisponibles="<div class='col-lg-4'>
-                            <!-- Card with header and footer -->
+          $opdisponibles="
+                          <div class='col-lg-4'>
                             <div class='card'>
-                              <div class='card-header'><Data>Tareas Disponibles</Data></div>
-                              
                               <div class='card-body'>
-                                <!-- Lista De Tareas -->
-                                ". $datos ."
-                                <!-- End Accordion without outline borders -->
-                              </div>
                               
-                              <div class='card-footer'>
-                                Tareas Disponibles
+                                <h5 class='card-title'>Tareas Disponibles</h5>
+
+                                <!-- Lista De Tareas Disponibles-->
+                                ". $datos ."
+                                <!-- Fin Lista De Tareas Disponibles -->
+                                              
                               </div>
-                            </div><!-- End Card with header and footer -->
-                          </div>";
+                            </div>
+                          </div>
+                        ";
 
           desconectar($con);
 
@@ -201,71 +186,55 @@ if (isset($_SESSION['id']))
             {
               $idtarea=$row['idtarea'];
               $datos=$datos ."
-                              <div class='accordion accordion-flush' id='". $idtarea ."'>
-                                <div class='accordion-item'>
-                                  <h2 class='accordion-header' id='flush-headingTwo'>
-                                    <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapseTwo' aria-expanded='false' aria-controls='flush-collapseTwo'>
-                                      ". $row['descripciontarea'] ."&nbsp;&nbsp;". $row['idtarea'] ."        
-                                    </button>
-                                  </h2>
-                                  <div id='flush-collapseTwo' class='accordion-collapse collapse' aria-labelledby='flush-headingTwo' data-bs-parent='#". $row['idtarea'] ."'>
-                                    <div class='accordion-body'>
-                                      
-                                        ". $row['nombrecortousu'] ." 
-                                        <p>
-                                          <code data-bs-toggle='tooltip' data-bs-placement='top' title='". $row['observacion'] ."'>". $row['fechaobs'] ."</code>
-                                        </p>
-                                        
-                                        <button type='button' class='btn btn-primary' onclick='iniciar(\"$numorden\",\"$idtarea\",\"$idusuario\")'>
-                                          Disponible
-                                        </button>
-                                        <button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#basicModal'>
-                                          Finalizar
-                                        </button>
-
-                                        <div class='card-body'>
-                                          <!-- Cambio Estado a Finalizar Modal -->
-                                          <div class='modal fade' id='basicModal' tabindex='-1'>
-                                            <div class='modal-dialog'>
-                                              <div class='modal-content'>
-                                                <div class='modal-header'>
-                                                  <h5 class='modal-title'>Finalizar Tarea</h5>
-                                                  <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-                                                </div>
-                                                <div class='modal-body'>
-                                                  <input name='txtobservacion' type='text' class='form-control' id='txtobservacion' placeholder='Ingrese una observación sobre la tarea a finalizar'>
-                                                </div>
-                                                <div class='modal-footer'>
-                                                  <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cerrar</button>
-                                                  <button type='button' class='btn btn-primary' onclick='finalizar(\"$numorden\",\"$idtarea\",\"$idusuario\")' data-bs-dismiss='modal'>Aceptar</button>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div><!-- Finalizar Cambio Estado a Finalizar Modal-->
-                                        </div>
-
+                              <a href='#' data-bs-placement='top' title='". $row['observacion'] ."' data-bs-toggle='modal' data-bs-target='#basicModal'>
+                                <div class='alert alert-warning alert-dismissible fade show' role='alert'>
+                                  ". $row['descripciontarea'] ."
+                                  <p>
+                                    <code>Usuario: ". $row['nombrecortousu'] ." <br/> ". $row['fechaobs'] ."</code>
+                                  </p>
+                                </div>
+                              </a>
+                              
+                              <div class='card-body'>
+                                <!-- Cambio Estado a Finalizar Modal -->
+                                <div class='modal fade' id='basicModal' tabindex='-1'>
+                                  <div class='modal-dialog'>
+                                    <div class='modal-content'>
+                                      <div class='modal-header'>
+                                        <h5 class='modal-title'>Finalizar Tarea</h5>
+                                        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                                      </div>
+                                      <div class='modal-body'>
+                                        <input name='txtobservacion' type='text' class='form-control' id='txtobservacion' placeholder='Ingrese una observación sobre la tarea a finalizar'>
+                                      </div>
+                                      <div class='modal-footer'>
+                                        <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
+                                        <button type='button' class='btn btn-primary' onclick='iniciar(\"$numorden\",\"$idtarea\",\"$idusuario\")' data-bs-dismiss='modal'>Disponible</button>
+                                        <button type='button' class='btn btn-primary' onclick='finalizar(\"$numorden\",\"$idtarea\",\"$idusuario\")' data-bs-dismiss='modal'>Finalizar</button>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </div>";
+                                </div><!-- Finalizar Cambio Estado a Finalizar Modal-->
+                              </div>
+                            ";
             }
 
-            $opprocesos="<div class='col-lg-4'>
-                              <!-- Card with header and footer -->
-                              <div class='card'>
-                                <div class='card-header'><Data>Tareas En Proceso</Data></div>
-                                
-                                <div class='card-body'>
-                                  <!-- Lista De Tareas -->
+            $opprocesos="
+            
+                          <div class='col-lg-4'>
+                            <div class='card'>
+                              <div class='card-body'>
+                              
+                                <h5 class='card-title'>Tareas En Procesos</h5>
+
+                                <!-- Lista De Tareas En Proceso -->
                                   ". $datos ."
-                                  <!-- End Accordion without outline borders -->
-                                </div>
-                                
-                                <div class='card-footer'>
-                                  Tareas En Proceso
-                                </div>
-                              </div><!-- End Card with header and footer -->
-                            </div>";
+                                <!-- Fin Lista De Tareas En Proceso -->
+
+                              </div>
+                            </div>
+                          </div>
+                        ";
 
             desconectar($con);
 
@@ -304,43 +273,32 @@ if (isset($_SESSION['id']))
               {
                 $idtarea=$row['idtarea'];
                 $datos=$datos ."
-                                <div class='accordion accordion-flush' id='". $idtarea ."'>
-                                  <div class='accordion-item'>
-                                    <h2 class='accordion-header' id='flush-headingTwo'>
-                                      <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapseTwo' aria-expanded='false' aria-controls='flush-collapseTwo'>
-                                        ". $row['descripciontarea'] ."&nbsp;&nbsp;". $row['idtarea'] ."        
-                                      </button>
-                                    </h2>
-                                    <div id='flush-collapseTwo' class='accordion-collapse collapse' aria-labelledby='flush-headingTwo' data-bs-parent='#". $row['idtarea'] ."'>
-                                      <div class='accordion-body'>
-                                        
-                                          ". $row['nombrecortousu'] ." 
-                                          <p>
-                                            <code data-bs-toggle='tooltip' data-bs-placement='top' title='". $row['observacion'] ."'>". $row['fechaobs'] ."</code>
-                                          </p>
-                      
-                                      </div>
-                                    </div>
+                                <a href='#' data-bs-toggle='tooltip' data-bs-placement='top' title='". $row['observacion'] ."'>
+                                    <div class='alert alert-info alert-dismissible fade show' role='alert'>
+                                    ". $row['descripciontarea'] ."
+                                    <p>
+                                      <code>Usuario: ". $row['nombrecortousu'] ." <br/> ". $row['fechaobs'] ."</code>
+                                    </p>
                                   </div>
-                                </div>";
+                                </a>
+                              ";
               }
 
-              $opfinalizar="<div class='col-lg-4'>
-                                <!-- Card with header and footer -->
-                                <div class='card'>
-                                  <div class='card-header'><Data>Tareas Finalizadas</Data></div>
-                                  
-                                  <div class='card-body'>
-                                    <!-- Lista De Tareas -->
-                                    ". $datos ."
-                                    <!-- End Accordion without outline borders -->
-                                  </div>
-                                  
-                                  <div class='card-footer'>
-                                    Tareas Finalizadas
-                                  </div>
-                                </div><!-- End Card with header and footer -->
-                              </div>";
+              $opfinalizar="
+              
+                            <div class='col-lg-4'>
+                              <div class='card'>
+                                <div class='card-body'>
+
+                                  <h5 class='card-title'>Tareas Finalizadas</h5>
+
+                                  <!-- Lista De Tareas Finalizadas -->
+                                  ". $datos ."
+                                  <!-- Fin Lista De Tareas Finalizadas -->
+                                </div>
+                              </div>
+                            </div>
+                          ";
 
               desconectar($con);
 
@@ -353,7 +311,8 @@ if (isset($_SESSION['id']))
       
       echo "
           <section class='section'>
-            <div class='row align-items-top'>
+            <div class='row'>
+             
               ".
               $opdisponibles
               ."

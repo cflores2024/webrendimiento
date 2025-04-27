@@ -190,6 +190,52 @@
                         $resp=mysqli_stmt_execute($sentencia);
 
                         desconectar($con);
+
+                        //SE ACTUALIZA TIEMPOS DE TAREAS GUARDANDO LOS MEJORES
+                              $ttarea=0;
+                              $tnuevo=0;
+                              $sql = "SELECT a.`idtarea`,max(a.`tiempotarea`) as tiempot,(TIMESTAMPDIFF(DAY, b.`fini`,b.`ffin`)+1)*1440 AS tiempo 
+                                      FROM tareas a inner join detalleorden b on (a.`idtarea`=b.`idtarea`)
+                                      WHERE a.`idtarea`=". $idtarea ."
+                                      GROUP BY a.`idtarea`;";
+
+                              $con=conectar();
+
+                              $result = $con->query($sql);
+
+                              if (!$result) 
+                              {
+                                    die('Invalid query: ' . $con->error);
+                              }
+
+                              if (!$result) 
+                              {
+                                    die('Invalid query: ' . $mysqli->error);
+                              }
+                              else
+                              {
+                                    while($row = mysqli_fetch_array($result))
+                                    {
+                                          $ttarea=$row['tiempot'];
+                                          $tnuevo=$row['tiempo'];
+                                    }
+
+                                    desconectar($con);
+                              }
+
+                              if (($ttarea==0)||($tnuevo<$ttarea))  
+                              {
+                                    $sql="UPDATE tareas SET tiempotarea=?,accion=?,idempleadoaccion=?,fechaaccion=?
+                                          WHERE idtarea=?;";
+                              
+                                    $con=conectar();
+                                    $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+                                    mysqli_stmt_bind_param($sentencia,'sssss',$tnuevo,$accion,$idmecanico,$fechaaccion,$idtarea);
+                                    $resp=mysqli_stmt_execute($sentencia);
+
+                                    desconectar($con);
+                              }
+                        //FIN ACTUALIZA TIEMPO DE TAREAS
                     
                         echo "0"; //Se realizo la accion correctamente
                     }

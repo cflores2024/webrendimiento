@@ -64,6 +64,8 @@ $txtpass=$_GET['password'];
         if ($id>0)
         {
           header('Location: home.php');
+          //header('Location: avancestareas.php');
+          
           exit;
         }
       }
@@ -81,7 +83,7 @@ $txtpass=$_GET['password'];
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Login - Gestión de mantenimiento</title>
+  <title>Login - SMATE</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -132,8 +134,8 @@ $txtpass=$_GET['password'];
                 <div class="card-body">
 
                 <div class="pt-4 pb-2">
-                <h5 class="card-title text-center pb-0 fs-4">SAM</h5>
-                <p class="text-center small">Sistema Administrativo de Mantenimiento</p>
+                <h5 class="card-title text-center pb-0 fs-4">SMATE</h5>
+                <p class="text-center small">Sistema Mantenimiento Técnico</p>
               </div>
                   
 
