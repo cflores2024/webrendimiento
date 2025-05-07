@@ -58,10 +58,16 @@
     function disponible(num)
     {
       var desc=document.getElementById("txttitulo" + num).value;
-
-      //alert("Se cambia estado orden " + num + " a disponible y con el titulo "+ desc);
-
-      organizartareas(num,'D',desc);
+      
+      if (desc.length === 0) 
+      {
+        alert ("Se debe de indicar un nombre de orden");
+      }
+      else
+      {
+         //alert("Se cambia estado orden " + num + " a disponible y con el titulo "+ desc);
+        organizartareas(num,'D',desc);
+      }
     }
 
     function nodisponible(num)

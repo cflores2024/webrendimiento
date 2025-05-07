@@ -29,7 +29,7 @@ CREATE TABLE `afectadostareas` (
   `observacion` varchar(100) DEFAULT NULL,
   `fechaobs` datetime DEFAULT NULL,
   PRIMARY KEY (`idafectadotarea`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `autorizaraccorden` */
 
@@ -46,7 +46,7 @@ CREATE TABLE `autorizaraccorden` (
   `fechaaccion` datetime DEFAULT NULL,
   `idempleadoaccion` int(11) DEFAULT NULL,
   PRIMARY KEY (`idautorizar`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `detalleorden` */
 
@@ -65,7 +65,7 @@ CREATE TABLE `detalleorden` (
   `idempleadoaccion` int(11) DEFAULT NULL,
   `fechaaccion` datetime DEFAULT NULL,
   PRIMARY KEY (`iddetalleorden`)
-) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=152 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `disciplinas` */
 
@@ -89,6 +89,7 @@ CREATE TABLE `numeroorden` (
   `idnumorden` int(11) NOT NULL AUTO_INCREMENT,
   `numorden` varchar(30) DEFAULT NULL,
   `fecha` datetime DEFAULT NULL,
+  `fechaentrega` date DEFAULT NULL,
   `idcliente` int(11) DEFAULT NULL,
   `modelo` varchar(30) DEFAULT NULL,
   `numchasis` varchar(30) DEFAULT NULL,
@@ -102,7 +103,7 @@ CREATE TABLE `numeroorden` (
   `fechaaccion` datetime DEFAULT NULL,
   `idempleadoaccion` int(11) DEFAULT NULL,
   PRIMARY KEY (`idnumorden`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `oficinas` */
 
@@ -140,7 +141,7 @@ CREATE TABLE `personas` (
   `idempleadoaccion` int(11) DEFAULT NULL,
   `fechaaccion` datetime DEFAULT NULL,
   PRIMARY KEY (`idpersona`)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `personasvsdisciplinas` */
 
@@ -154,7 +155,7 @@ CREATE TABLE `personasvsdisciplinas` (
   `idempleadoaccion` int(11) DEFAULT NULL,
   `fechaaccion` datetime DEFAULT NULL,
   PRIMARY KEY (`idpersonavsdisciplina`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `tareas` */
 
@@ -163,12 +164,12 @@ DROP TABLE IF EXISTS `tareas`;
 CREATE TABLE `tareas` (
   `idtarea` int(11) NOT NULL AUTO_INCREMENT,
   `descripciontarea` varchar(100) DEFAULT NULL,
-  `tiempotarea` time DEFAULT NULL,
+  `tiempotarea` decimal(10,0) DEFAULT NULL,
   `accion` varchar(1) DEFAULT NULL,
   `idempleadoaccion` int(11) DEFAULT NULL,
   `fechaaccion` datetime DEFAULT NULL,
   PRIMARY KEY (`idtarea`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `tipopersona` */
 

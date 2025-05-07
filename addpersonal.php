@@ -293,12 +293,12 @@
                       </div>
                     </div>
 
-                    <div class="row mb-3">
+                    <!--div class="row mb-3">
                       <label for="txtnumsocio" class="col-md-4 col-lg-3 col-form-label">Identificación</label>
-                      <div class="col-md-8 col-lg-9">
-                        <input name="txtnumsocio" type="text" class="form-control" id="txtnumsocio" placeholder="Ingrese número identificación" <?php if (strlen($txtnumsocio)>0) echo "value=".$txtnumsocio; else echo ""; ?>>
-                      </div>
-                    </div>
+                      <div class="col-md-8 col-lg-9"-->
+                        <input name="txtnumsocio" type="hidden" class="form-control" id="txtnumsocio" placeholder="Ingrese número identificación" <?php if (strlen($txtnumsocio)>0) echo "value=1".$txtnumsocio; else echo ""; ?>>
+                      <!--/div>
+                    </div-->
 
                     <div class="row mb-3">
                       <label for="txtdni" class="col-md-4 col-lg-3 col-form-label">N° Documento</label>

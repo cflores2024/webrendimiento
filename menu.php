@@ -105,12 +105,12 @@ switch ($tipousu)
 
                               <ul class='sidebar-nav' id='sidebar-nav'>
 
-                                <!--li class='nav-item'>
+                                <li class='nav-item'>
                                   <a class='nav-link ' href='home.php'>
                                     <i class='bi bi-reception-4'></i>
                                     <span>Metricas</span>
                                   </a>
-                                </li-->
+                                </li>
                                 <li class='nav-item'>
                                   <a class='nav-link collapsed' href='avancestareas.php'>
                                     <i class='bi bi-grid'></i>

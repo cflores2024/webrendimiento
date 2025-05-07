@@ -228,7 +228,7 @@
                           <th scope="col">Orden</th>
                           <th scope="col">Titulo Orden</th>
                           <th scope="col" data-type="date" data-format="MM/DD/YYYY">Fecha inicio</th>
-                          <th scope="col">Tiempo</th>
+                          <!--th scope="col">Tiempo</th-->
                           <th scope="col">Avance %</th>
                           <th scope="col">Afectados</th>
                           <th scope="col">Estado</th>
@@ -269,7 +269,7 @@
           UNION
           -- ORDENES PENDIENTES
           SELECT xx2.`numorden`,yy.idpersona AS idempleado,xx2.`tituloorden`,
-          (TIMESTAMPDIFF(DAY, xx2.`fecha`,xx2.fechaentrega)+1)*1440 AS tiempo,
+          TIMESTAMPDIFF(MINUTE, xx2.`fecha`,xx2.fechaentrega) AS tiempo,
           xx2.fecha,
           yy.`urlfoto` AS foto, 
           CONCAT(yy.apellido,',',yy.nombre) AS empleado,
@@ -283,18 +283,20 @@
           UNION
           -- ORDENES AUTORIZAS
           SELECT xx2.`numorden`,yy.idpersona AS idempleado,xx2.`tituloorden`,
-          (TIMESTAMPDIFF(DAY, xx2.`fecha`,xx2.fechaentrega)+1)*1440 AS tiempo,
+          TIMESTAMPDIFF(MINUTE, xx2.`fecha`,xx2.fechaentrega) AS tiempo,
           xx2.fecha,
           yy.`urlfoto` AS foto, 
           CONCAT(yy.apellido,',',yy.nombre) AS empleado,
           (SELECT t.`descripciontarea` 
-          FROM tareas t INNER JOIN afectadostareas h ON (t.`idtarea`=h.`idtarea` AND t.`accion`!='B') 
-          WHERE h.`numorden`=xx2.numorden AND h.`idempleado`=zz.idpersona AND h.`estado`='P' 
-          GROUP BY t.`descripciontarea`) AS `descripciontarea`,
+           FROM tareas t 
+           WHERE t.`accion`!='B' AND t.`idtarea`=aa.idtarea
+           GROUP BY 1) AS `descripciontarea`,
+          -- aa.idtarea as realizatarea,
           xx2.`estado`,
           CASE WHEN xx2.estado='F' then 0 else DATEDIFF(xx2.`fechaentrega`,curdate())*-1 end demorada
           FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
               INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
+              LEFT JOIN afectadostareas	aa ON (aa.numorden=xx2.numorden AND aa.idempleado=yy.idpersona)
           WHERE xx2.accion!='B' AND zz.estado='A'
           ORDER BY 1,2;";
  
@@ -360,7 +362,7 @@
                           <th scope='row'><a href='#'>#".$orden."</a></th>
                           <td>".$titulo."</td>
                           <td>".$fecha."</td>
-                          <td>".$tiempo." min</td>";
+                          <!--td>".$tiempo." min</td-->";
               
               //ANALIZO PORCENTAJE DE AVANCE DE LA ORDEN
               $canttareas=AvanceOrden($orden);
@@ -368,7 +370,7 @@
               
               $fila=$fila." <td>
                               <div class='progress'>
-                                <div class='progress-bar' role='progressbar' style='width: ".$canttareas."%' aria-valuenow='".$canttareas."' aria-valuemin='0' aria-valuemax='".$canttareas."'>".$canttareas."%</div>
+                                <div class='progress-bar' role='progressbar' style='width: ".$canttareas."%' aria-valuenow='".$canttareas."' aria-valuemin='0' aria-valuemax='".$totaltareas."'>".$canttareas."%</div>
                               </div>
                             </td>";
            
@@ -443,14 +445,14 @@
                   <th scope='row'><a href='#'>#".$orden."</a></th>
                   <td>".$titulo."</td>
                   <td>".$fecha."</td>
-                  <td>".$tiempo." min</td>";
+                  <!--td>".$tiempo." min</td-->";
 
       //ANALIZO PORCENTAJE DE AVANCE DE LA ORDEN
       $canttareas=AvanceOrden($orden);
       
                 $fila=$fila." <td>
                                 <div class='progress'>
-                                  <div class='progress-bar' role='progressbar' style='width: ".$canttareas."%' aria-valuenow='".$canttareas."' aria-valuemin='0' aria-valuemax='".$canttareas."'>".$canttareas."%</div>
+                                  <div class='progress-bar' role='progressbar' style='width: ".$canttareas."%' aria-valuenow='".$canttareas."' aria-valuemin='0' aria-valuemax='".$totaltareas."'>".$canttareas."%</div>
                                 </div>
                               </td>";
       
@@ -480,7 +482,11 @@
                         </a></td></tr>";  
 
     }
-    else $fila="<tr><td colspan='7' style='text-align: center;'>Sin información a mostrar</td></tr>";   
+    else 
+    {
+      //$fila="<tr><td colspan='7' style='text-align: center;'>Sin información a mostrar</td></tr>";   
+      $fila="<tr><td colspan='6' style='text-align: center;'>Sin información a mostrar</td></tr>";   
+    }
   }
 
   desconectar($con);
@@ -534,10 +540,12 @@
 </html>
 
 <?php
+  $totaltareas=0;
+
   function AvanceOrden($num)
   {
     //SE DETERMINA LA CANTIDAD DE TAREAS QUE TIENE EN CURSO VS FINALIZADAS
-    $totaltareas=0;
+    GLOBAL $totaltareas;
     $totalfin=0;
 
     $sql = "SELECT COUNT(a.`idtarea`) AS totaltareas,(SELECT COUNT(b.`idtarea`) 

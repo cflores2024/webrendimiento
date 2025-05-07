@@ -160,7 +160,7 @@
                                   <div class='row mb-3'>
                                     <label for='txttitulo' class='col-md-4 col-lg-3 col-form-label'>Titulo orden:</label>
                                     <div class='col-md-8 col-lg-9'>
-                                      <input name='txttitulo' type='text' class='form-control' id='txttitulo".$numorden."' placeholder='Ingrese un titulo para esta orden' value='Orden de trabajo N° ".$numorden."'>
+                                      <input name='txttitulo' type='text' class='form-control' id='txttitulo".$numorden."' placeholder='Ingrese un titulo para esta orden' value=''>
                                     </div>
                                   </div>
                                 </form>
