@@ -1,24 +1,6 @@
-<!--// CHEQUEO DATOS LOGIN -->
-<?php
-  include "configuracion/conexion.php";
-
-  session_start();
-  
-  if (isset($_SESSION['id']))
-  {  
-    $id=$_SESSION['id'];
-    $apenomb=$_SESSION['apenomb'];
-    $tipousu=$_SESSION['tipo'];
-    $foto=$_SESSION['foto'];
-    $nombrecorto=$_SESSION['nombrecorto'];
-  }
-  else
-  {
-    header('Location: index.php');
-    exit;
-  }   
+<?php 
+  session_start(); 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,6 +43,23 @@
 </head>
 
 <body>
+<!--// CHEQUEO DATOS LOGIN -->
+<?php
+  include "configuracion/conexion.php";
+  
+  if (isset($_SESSION['id']))
+  {  
+    $id=$_SESSION['id'];
+    $apenomb=$_SESSION['apenomb'];
+    $tipousu=$_SESSION['tipo'];
+    $foto=$_SESSION['foto'];
+    $nombrecorto=$_SESSION['nombrecorto'];
+  }
+  else
+  {
+    echo "<script> window.location.href='index.html'</script>";
+  }   
+?>
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -68,7 +67,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SAM</span>
+        <span class="d-none d-lg-block">SMATE</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -89,14 +88,14 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="assets/img/<? echo $foto; ?>" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2"><? echo $nombrecorto; ?></span>
+            <img src="assets/img/<?php echo $foto; ?>" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $nombrecorto; ?></span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6><? echo $apenomb; ?></h6>
-              <span><? echo $tipousu; ?></span>
+              <h6><?php echo $apenomb; ?></h6>
+              <span><?php echo $tipousu; ?></span>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -144,11 +143,11 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Especialidad</h1>
+      <h1>Perfil</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
-          <li class="breadcrumb-item"><a href="buscadordisciplinas.php">Buscador especialidades</a></li>
+          <li class="breadcrumb-item"><a href="buscadordisciplinas.php">Buscador perfil</a></li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -159,11 +158,11 @@
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Buscador Especialidades</h5>
-              <p>Permite realizar todas las operaciones correspondiete a Crear, Leer, Modificar y Eliminar una ESPECIALIDAD.</p>
+              <h5 class="card-title">Buscador Perfiles</h5>
+              <p>Permite realizar todas las operaciones correspondiete a Crear, Leer, Modificar y Eliminar un PERFIL.</p>
                 <div class="text-center">
                   <a href="adddisciplina.php">
-                    <i class="btn btn-primary">Nuevo Especialidad</i>
+                    <i class="btn btn-primary">Nuevo Perfil</i>
                   </a>
                 </div>
               <!-- Table with stripped rows -->
@@ -195,7 +194,7 @@
                 <thead>
                   <tr>
                     <th>N° Orden</th>
-                    <th>Nombre Especialidad</th>
+                    <th>Nombre Perfil</th>
                     <th>Observación</th>
                     <th>&nbsp;</th>
                     <th>&nbsp;</th>

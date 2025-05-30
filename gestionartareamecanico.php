@@ -1,8 +1,8 @@
 <?php
+  session_start();
+
   include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
-
-  session_start();
   
   if (isset($_SESSION['id']))
   {  
@@ -72,7 +72,7 @@
                     
                     //ALTA DEL NUEVO PEDIDO DE LA ORDEN VS MECANICO
                     
-                    $sql="INSERT INTO afectadostareas (numorden,idtarea,estado,idempleado,observacion,fechaobs)
+                    $sql="INSERT INTO afectadostareas (numorden,idtarea,estado,idempleado,observacion,fechaini)
                           VALUES (?,?,?,?,?,?);";
 
                     $con=conectar();
@@ -196,8 +196,8 @@
                               $tnuevo=0;
                               $sql = "SELECT a.`idtarea`,max(a.`tiempotarea`) as tiempot,TIMESTAMPDIFF(MINUTE, b.`fini`,b.`ffin`) AS tiempo 
                                       FROM tareas a inner join detalleorden b on (a.`idtarea`=b.`idtarea`)
-                                      WHERE a.`idtarea`=". $idtarea ."
-                                      GROUP BY a.`idtarea`;";
+                                      WHERE a.`idtarea`=". $idtarea ." AND TIMESTAMPDIFF(MINUTE, b.`fini`,b.`ffin`) IS NOT NULL
+                                      GROUP BY a.`idtarea`,b.`fini`,b.`ffin`;";
 
                               $con=conectar();
 
@@ -244,11 +244,59 @@
                         echo "1"; //La acción dio error
                     }
             break;
+            case "C": //COLABORA MECANICO NUEVA A UNA TAREA EN PROCESO
+                  $abandona="N";
+                  $fechaini=date("Y-m-d H:i:s"); 
+                  $obs="COLABORA";
+
+                  //ALTA DEL NUEVO COLABORADOR A LA TAREA
+                  $sql="INSERT INTO afectadostareas (numorden,idtarea,idempleado,abandona,observacion,fechaini)
+                        VALUES (?,?,?,?,?,?);";
+
+                  $con=conectar();
+                  $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+                  mysqli_stmt_bind_param($sentencia,'ssssss',$numorden,$idtarea,$idmecanico,$abandona,$obs,$fechaini);
+                  $resp=mysqli_stmt_execute($sentencia);
+
+                  desconectar($con);
+                 
+                  if ($resp)  
+                  {
+                        echo "0"; //Se realizo la accion correctamente
+                  }
+                  else
+                  {
+                        echo "1"; //La acción dio error
+                  }
+            break;
+            case "B": //SE SALE MECANICO DE LA TAREA DONDE COLABORA
+                  $abandona="S";
+                  $fechaobs=date("Y-m-d H:i:s"); 
+                  $obs=$_GET['obs'];
+                  //BAJA DE UN COLABORADOR A LA TAREA
+                  $sql="UPDATE afectadostareas SET observacion=?,fechaobs=?,abandona=?
+                        WHERE (numorden=? AND idtarea=? AND idempleado=?);";
+
+                  $con=conectar();
+                  $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+                  mysqli_stmt_bind_param($sentencia,'ssssss',$obs,$fechaobs,$abandona,$numorden,$idtarea,$idmecanico);
+                  $resp=mysqli_stmt_execute($sentencia);
+
+                  desconectar($con);
+                  
+                  if ($resp)  
+                  {
+                        echo "0"; //Se realizo la accion correctamente
+                  }
+                  else
+                  {
+                        echo "1"; //La acción dio error
+                  }
+            break;
       }
   }
   else
   {
-      header('Location: index.php');
-      exit;
+      echo "<script> window.location.href='index.html'</script>";
   }   
 ?>

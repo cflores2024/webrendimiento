@@ -1,23 +1,5 @@
-<!--// CHEQUEO DATOS LOGIN -->
-<?php
-  include "configuracion/conexion.php";
-  date_default_timezone_set("America/Argentina/Tucuman");
-
-  session_start();
-  
-  if (isset($_SESSION['id']))
-  {  
-    $id=$_SESSION['id'];
-    $apenomb=$_SESSION['apenomb'];
-    $tipousu=$_SESSION['tipo'];
-    $foto=$_SESSION['foto'];
-    $nombrecorto=$_SESSION['nombrecorto'];      
-  }
-  else
-  {
-    header('Location: index.php');
-    exit;
-  }   
+<?php 
+  session_start(); 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -119,6 +101,24 @@
 </head>
 
 <body onload="deshabilitaRetroceso()">
+<!--// CHEQUEO DATOS LOGIN -->
+<?php
+  include "configuracion/conexion.php";
+  date_default_timezone_set("America/Argentina/Tucuman");
+  
+  if (isset($_SESSION['id']))
+  {  
+    $id=$_SESSION['id'];
+    $apenomb=$_SESSION['apenomb'];
+    $tipousu=$_SESSION['tipo'];
+    $foto=$_SESSION['foto'];
+    $nombrecorto=$_SESSION['nombrecorto'];      
+  }
+  else
+  {
+    echo "<script> window.location.href='index.html'</script>";
+  }   
+?>
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -126,7 +126,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SAM</span>
+        <span class="d-none d-lg-block">SMATE</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -246,9 +246,11 @@
           (SELECT CONCAT(xx.apellido,',',xx.nombre) FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=b.idpersonadisp) AS empleado,
           'Orden disponible para su tratamiento' AS descripciontarea,
           'I' AS estado,
-          0 AS demorada
+          0 AS demorada,
+          b.numchasis,
+          (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.numchasis=b.numchasis AND tt.numorden!=a.`numorden`) AS historial
           FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-          GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.fechaentrega
+          GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.idpersonadisp,b.numchasis
           UNION
           -- ORDENES DISPONIBLES
           SELECT xx2.`numorden`,xx2.`idpersonadisp` AS idempleado,xx2.`tituloorden`,
@@ -258,7 +260,9 @@
           CONCAT(zz1.`apellido`,', ',zz1.`nombre`) empleado,
           'Orden disponible para su tratamiento' AS descripciontarea,
           'D' AS estado,
-          0 AS demorada          
+          0 AS demorada,
+          xx2.numchasis,
+          (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.numchasis=xx2.numchasis AND tt.numorden!=xx2.`numorden`) AS historial          
           FROM numeroorden xx2 INNER JOIN personas zz1 ON (xx2.idpersonadisp=zz1.`idpersona` AND zz1.`accion`!='B')
           WHERE xx2.accion!='B' AND xx2.estado='D' AND xx2.`numorden` NOT IN  
           (
@@ -275,8 +279,9 @@
           CONCAT(yy.apellido,',',yy.nombre) AS empleado,
           'Orden pendiente para su tratamiento' AS `descripciontarea`,
           'P' AS estado,
-          DATEDIFF(xx2.`fechaentrega`,CURDATE())*-1 AS demorada
-
+          DATEDIFF(xx2.`fechaentrega`,CURDATE())*-1 AS demorada,
+          xx2.numchasis,
+          (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.numchasis=xx2.numchasis AND tt.numorden!=xx2.`numorden`) AS historial
           FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
               INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
           WHERE xx2.accion!='B' AND zz.estado='P'
@@ -293,14 +298,15 @@
            GROUP BY 1) AS `descripciontarea`,
           -- aa.idtarea as realizatarea,
           xx2.`estado`,
-          CASE WHEN xx2.estado='F' then 0 else DATEDIFF(xx2.`fechaentrega`,curdate())*-1 end demorada
+          CASE WHEN xx2.estado='F' THEN 0 ELSE DATEDIFF(xx2.`fechaentrega`,CURDATE())*-1 END demorada,
+          xx2.numchasis,
+          (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.numchasis=xx2.numchasis AND tt.numorden!=xx2.`numorden`) AS historial
           FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
               INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
               LEFT JOIN afectadostareas	aa ON (aa.numorden=xx2.numorden AND aa.idempleado=yy.idpersona)
           WHERE xx2.accion!='B' AND zz.estado='A'
           ORDER BY 1,2;";
  
-
   //echo $sql;
 
   $result = $con->query($sql);

@@ -416,6 +416,10 @@
                     <li class="nav-item">
                       <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Actualizar Clave</button>
                     </li>
+
+                    <!--li class="nav-item">
+                      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-apto">Apto Ingreso</button>
+                    </li-->
                 <?php
                   }
                 ?>
@@ -603,14 +607,14 @@
                               if ($encontrado==true)
                               {
                                 echo "
-                                      <input type='radio' id='op".$id."' name='lsdisciplinas[]' value='".$row['iddisciplina']."' checked>
+                                      <input type='checkbox' id='op".$id."' name='lsdisciplinas[]' value='".$row['iddisciplina']."' checked>
                                       <label for='op'>".$row['disciplina']."</label><br>
                                     ";
                               }
                               else
                               {
                                 echo "
-                                      <input type='radio' id='op".$id."' name='lsdisciplinas[]' value='".$row['iddisciplina']."'>
+                                      <input type='checkbox' id='op".$id."' name='lsdisciplinas[]' value='".$row['iddisciplina']."'>
                                       <label for='op'>".$row['disciplina']."</label><br>
                                     ";
                               }
@@ -668,12 +672,12 @@
                     
                     <input type="hidden" id="idpersonapass" name="idpersona" value="<?php echo $idsocio; ?>">
                     <input type="hidden" id="accionpass" name="accion" value="<?php echo $accion; ?>">
-                    <!--div class="row mb-3">
+                    <div class="row mb-3">
                       <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Actual Clave</label>
                       <div class="col-md-8 col-lg-9">
                         <input name="password" type="password" class="form-control" id="currentPassword" <?php if (strlen((string)$txtpass)>0) echo "value=".$txtpass; else echo ""; ?>>
                       </div>
-                    </div-->
+                    </div>
                     
                     <div class="row mb-3">
                       <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">Nuevo Clave</label>
@@ -718,6 +722,66 @@
                     ?>
                     </div>
                   </form><!-- End Change Password Form -->
+
+                </div>
+
+                <div class="tab-pane fade profile-change-apto pt-3" id="profile-change-apto">
+                  <!-- ACTUALIZAR SITUACIÓN PERSONAL PARA EL INGRESO Y FECHA DE DURACIÓN DEL CARNET -->
+                  <form>
+                    
+                    <input type="hidden" id="idpersona" name="idpersona" value="<?php echo $idsocio; ?>">
+                    <input type="hidden" id="accion" name="accion" value="<?php echo $accion; ?>">
+                    <div class="row mb-3">
+                      <label for="cbapto" class="col-md-4 col-lg-3 col-form-label">Estado Ingreso</label>
+                      <div class="col-md-8 col-lg-9">
+                        <select id="cbapto" name="cbapto"  class="form-control">
+                          <?php
+                            if ($txtapto=="S")
+                            {
+                              echo "<option value='S' selected>AUTORIZADO</option>";
+                              echo "<option value='N'>NO AUTORIZADO</option>";
+                            }
+                            else
+                            {
+                              echo "<option value='S'>AUTORIZADO</option>";
+                              echo "<option value='N' selected>NO AUTORIZADO</option>";
+                            }
+                          ?>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                      <label for="fini" class="col-md-4 col-lg-3 col-form-label">Fecha Inicio</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="fini" type="date" class="form-control" id="fini" value="<?php echo $txtfini; ?>">
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <label for="ffin" class="col-md-4 col-lg-3 col-form-label">Fecha Fin</label>
+                      <div class="col-md-8 col-lg-9">
+                        <input name="ffin" type="date" class="form-control" id="ffin" value="<?php echo $txtffin; ?>">
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                    <?php
+                    
+                        if (isset($_GET['btn']))
+                        {
+                          if ($_GET['btn']=="ActApto")
+                          {
+                            if ($accion=="OK") echo "Acción realizada satisfacoriamente!!!!"; 
+                            else echo "<p>Error en la actualización de los datos!!!!</p>"; 
+                          }
+                          elseif ($accion!="B") echo  "<button id='btn' name='btn' value='ActApto' type='submit' class='btn btn-primary'>Actualizar Estado/Fecha</button>";
+                        }
+                        elseif ($accion!="B") echo  "<button id='btn' name='btn' value='ActApto' type='submit' class='btn btn-primary'>Actualizar Estado/Fecha</button>";
+     
+                    ?>
+                    </div>
+                  </form><!-- End Change Estado/Fecha Form -->
 
                 </div>
               </div><!-- End Bordered Tabs -->

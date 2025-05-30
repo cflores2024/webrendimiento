@@ -1,24 +1,6 @@
-<!--// CHEQUEO DATOS LOGIN -->
-<?php
-  include "configuracion/conexion.php";
-
-  session_start();
-  
-  if (isset($_SESSION['id']))
-  {  
-    $id=$_SESSION['id'];
-    $apenomb=$_SESSION['apenomb'];
-    $tipousu=$_SESSION['tipo'];
-    $foto=$_SESSION['foto'];
-    $nombrecorto=$_SESSION['nombrecorto'];
-  }
-  else
-  {
-    header('Location: index.php');
-    exit;
-  }   
+<?php 
+  session_start(); 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,6 +43,23 @@
 </head>
 
 <body>
+<!--// CHEQUEO DATOS LOGIN -->
+<?php
+  include "configuracion/conexion.php";
+  
+  if (isset($_SESSION['id']))
+  {  
+    $id=$_SESSION['id'];
+    $apenomb=$_SESSION['apenomb'];
+    $tipousu=$_SESSION['tipo'];
+    $foto=$_SESSION['foto'];
+    $nombrecorto=$_SESSION['nombrecorto'];
+  }
+  else
+  {
+    echo "<script> window.location.href='index.html'</script>";
+  }   
+?>
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -68,7 +67,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SAM</span>
+        <span class="d-none d-lg-block">SMATE</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -168,9 +167,10 @@
                 </div>
               <!-- Table with stripped rows -->
 <?php
-    $sql = "SELECT a.idpersona,a.nrosocio,CONCAT(a.apellido,', ',a.`nombre`) AS usuario,a.tel,a.`domicilio`,a.`aptoingreso`
+    $sql = "SELECT a.idpersona,a.nrosocio,CONCAT(a.apellido,', ',a.`nombre`) AS usuario,a.tel,a.`domicilio`,c.`disciplina`
             FROM personas a INNER JOIN personasvsdisciplinas b ON (a.`idpersona`=b.`idpersona` AND b.accion!='B')
-            WHERE a.`accion`!='B'
+                            INNER JOIN disciplinas c ON (c.`iddisciplina`=b.`iddisciplina` AND c.`accion`!='B')
+            WHERE a.`accion`!='B' AND a.idtipopersona!=2
             GROUP BY a.idpersona,a.nrosocio,a.tel,a.`domicilio`,a.`aptoingreso`
             ORDER BY a.`apellido`,a.`nombre`;";
 
@@ -199,7 +199,7 @@
                 </th>
                 <th>Tel</th>
                 <th>Domicilio</th>
-                <th>Apto Ingreso</th>
+                <th>Tipo Usuario</th>
                 <th>&nbsp;</th>
                 <th>&nbsp;</th>
               </tr>
@@ -209,14 +209,14 @@
 <?php
       while($row = mysqli_fetch_array($result))
       {
-        $situacion= $row['aptoingreso']=='N'? "Rechazado": "Aprobado";
+        //$situacion= $row['aptoingreso']=='N'? "Rechazado": "Aprobado";
         echo "
               <tr>
                 <td>".$row['nrosocio']."</td>
                 <td>".$row['usuario']."</td>
                 <td>".$row['tel']."</td>
                 <td>".$row['domicilio']."</td>
-                <td>". $situacion ."</td>
+                <td>". $row['disciplina'] ."</td>
                 <td><a href='crudpersonal.php?idpersona=".$row['idpersona']."&accion=M'><img src='./assets/img/buscar.png' alt='Ver registro' srcset=''></a></td>
                 <td><a href='crudpersonal.php?idpersona=".$row['idpersona']."&accion=B'><img src='./assets/img/eliminar.png' alt='Eliminar registro' srcset=''></a></td>
               </tr>

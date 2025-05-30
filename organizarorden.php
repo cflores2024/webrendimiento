@@ -1,9 +1,10 @@
-<!--// CHEQUEO DATOS LOGIN -->
+<?php 
+  session_start(); 
+?>
+
 <?php
   include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
-
-  session_start();
   
   if (isset($_SESSION['id']))
   {  
@@ -87,7 +88,7 @@
             FROM numeroorden a INNER JOIN detalleorden b ON (a.`numorden`=b.`numeroorden` AND b.`accion`!='B')
                                INNER JOIN tareas c ON (c.`idtarea`=b.`idtarea` AND c.`accion`!='B')
             WHERE a.`estado`='S'
-            ORDER BY A.`fechaaccion`;";
+            ORDER BY a.`fechaaccion`;";
 
     $con=conectar();
 
@@ -205,7 +206,7 @@
               FROM numeroorden a INNER JOIN detalleorden b ON (a.`numorden`=b.`numeroorden` AND b.`accion`!='B')
                                   INNER JOIN tareas c ON (c.`idtarea`=b.`idtarea` AND c.`accion`!='B')
               WHERE a.`estado`='D'
-              ORDER BY A.`fechaaccion`;";
+              ORDER BY a.`fechaaccion`;";
 
       $con=conectar();
 
@@ -325,7 +326,6 @@
 }
 else
 {
-    header('Location: index.php');
-    exit;
+    echo "<script> window.location.href='index.html'</script>";
 }   
 ?>

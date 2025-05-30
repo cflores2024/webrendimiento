@@ -202,7 +202,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SAM</span>
+        <span class="d-none d-lg-block">SMATE</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -223,14 +223,14 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-          <img src="assets/img/<? echo $foto; ?>" alt="Profile" class="rounded-circle">
-          <span class="d-none d-md-block dropdown-toggle ps-2"><? echo $nombrecorto; ?></span>
+          <img src="assets/img/<?php echo $foto; ?>" alt="Profile" class="rounded-circle">
+          <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $nombrecorto; ?></span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-            <h6><? echo $apenomb; ?></h6>
-            <span><? echo $tipousu; ?>r</span>
+            <h6><?php echo $apenomb; ?></h6>
+            <span><?php echo $tipousu; ?>r</span>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -278,12 +278,12 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Especialidades</h1>
+      <h1>Perfiles</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="home.php">Home</a></li>
-          <li class="breadcrumb-item"><a href="buscadordisciplinas.php">Buscador Especialidad</a></li>
-          <li class="breadcrumb-item active">CRUD Especialidad</li>
+          <li class="breadcrumb-item"><a href="buscadordisciplinas.php">Buscador Perfil</a></li>
+          <li class="breadcrumb-item active">CRUD Perfiles</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -300,27 +300,27 @@
                 <ul class="nav nav-tabs nav-tabs-bordered">
 
                   <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Descripción</button>
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Perfil</button>
                   </li>
 
                   <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Editar Descripción</button>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Editar Perfil</button>
                   </li>
 
                 </ul>
                 <div class="tab-content pt-2">
 
                   <div class="tab-pane fade show active profile-overview" id="profile-overview">
-                    <h5 class="card-title">Detalle Especialidad</h5>
+                    <h5 class="card-title">Detalle Perfil</h5>
 
                     <div class="row">
                       <div class="col-lg-3 col-md-4 label ">Nombre</div>
-                      <div class="col-lg-9 col-md-8"><? echo $txtdisciplina; ?></div>
+                      <div class="col-lg-9 col-md-8"><?php echo $txtdisciplina; ?></div>
                     </div>
                     </br>
                     <div class="row">
                       <div class="col-lg-3 col-md-4 label ">Observación</div>
-                      <div class="col-lg-9 col-md-8"><? echo $txtobservacion; ?></div>
+                      <div class="col-lg-9 col-md-8"><?php echo $txtobservacion; ?></div>
                     </div>
                   </div>
 
@@ -379,7 +379,7 @@
                           }
                           else 
                           {
-                            if ($accion=="B") echo "<button id='btn' name='btn' value='EliDis' type='submit' class='btn btn-primary'>Eliminar Especialidad</button>";
+                            if ($accion=="B") echo "<button id='btn' name='btn' value='EliDis' type='submit' class='btn btn-primary'>Eliminar Perfil</button>";
                             else echo "<button id='btn' name='btn' value='ActDatos' type='submit' class='btn btn-primary'>Actualizar Datos</button>";
                           }
                           

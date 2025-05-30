@@ -1,133 +1,6 @@
-<!--// CHEQUEO DATOS LOGIN -->
-<?php
-  include "configuracion/conexion.php";
-  date_default_timezone_set("America/Argentina/Tucuman");
-
-  session_start();
-  
-  $txtapellido=$txtnombre=$txtnombcorto=$txtnumsocio="";
-  $txtdni=$txtfnac=$txtdire="";
-  $txttel=$txtemail="";
-  
-  if (isset($_SESSION['id']))
-  {  
-    $id=$_SESSION['id'];
-    $apenomb=$_SESSION['apenomb'];
-    $tipousu=$_SESSION['tipo'];
-    $foto=$_SESSION['foto'];
-    $nombrecorto=$_SESSION['nombrecorto'];
-    $idsocio="0";
-    $accion="...";
-    
-    //SE RECUPERAN LOS DATOS DEL NUEVO SOCIO
-    if (isset($_GET['txtnumsocio']))
-    {
-      //OBTENIENDO DATOS DEL GET
-      $apto="S";
-      $txtapellido=$_GET["txtapellido"];
-      $txtnombre=$_GET["txtnombre"];
-      $txtnombcorto=$_GET["txtnombcorto"];
-      $txtnumsocio=$_GET["txtnumsocio"];
-      $txtdni=$_GET["txtdni"];
-      $txtfnac=$_GET["txtfnac"];
-      $txtdire=$_GET["txtdire"];
-      $txttel=$_GET["txttel"];
-      $txtemail=$_GET["txtemail"];
-      $accion="N";
-      $fechaaccion=date("Y-m-d H:i:s"); 
-      $idtipoper="";
-      $idarea="4";
-      $txtfini=date('Y-m-d'); 
-      $txtffin=date('Y-m-d', strtotime(' + 1 months'));
-
-
-      //ALTA DEL NUEVO SOCIO
-     /* switch ($_GET['lsdisciplinas'])
-      {
-        case "Administrador":
-          $idtipoper="2";
-          break;
-        case "Mecanico":
-          $idtipoper="3";
-          break;
-        case "Gerencia":
-          $idtipoper="4";
-          break;
-      }*/
-      foreach($_GET['lsdisciplinas'] as $idtipoper)
-      {
-        $sql="INSERT INTO personas (apellido,nombre,nombrecortousu,dni,nrosocio,domicilio,fnacimiento,idtipopersona,emailusuario,tel,idoficina,aptoingreso,finiapto,ffinapto,accion,idempleadoaccion,fechaaccion)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-
-        $con=conectar();
-        $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-        mysqli_stmt_bind_param($sentencia,'sssssssssssssssss',$txtapellido,$txtnombre,$txtnombcorto,$txtdni,$txtnumsocio,$txtdire,$txtfnac,$idtipoper,$txtemail,$txttel,$idarea,$apto,$txtfini,$txtffin,$accion,$id,$fechaaccion);
-        $respsoc=mysqli_stmt_execute($sentencia);
-               
-        desconectar($con);
-        
-        if ($respsoc)  
-        {
-          //RECUPERO ID DEL NUEVO SOCIO
-          
-          $sql = "SELECT a.`idpersona` FROM personas a WHERE `accion`!='B' AND a.dni='".$txtdni."';";
-          $respact="";
-
-          $con=conectar();
-
-          $result = $cnx->query($sql);
-
-          if (!$result) 
-          {
-            die('Invalid query: ' . $cnx->error);
-          }
-
-          if (!$result) 
-          {
-            die('Invalid query: ' . $mysqli->error);
-          }
-          else
-          {
-            while($row = mysqli_fetch_array($result))
-            {
-              $idsocio=$row['idpersona'];
-            }
-          }
-
-          desconectar($con);
-      
-          //ALTA EN LAS DISCIPLINAS DONDE SE INSCRIBE
-          /*foreach($_GET['lsdisciplinas'] as $i)
-          {*/
-            $sql="INSERT INTO personasvsdisciplinas (idpersona,iddisciplina,accion,idempleadoaccion,fechaaccion)
-                  VALUES (?,?,?,?,?);";
-
-            $con=conectar();
-            $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-            mysqli_stmt_bind_param($sentencia,'sssss',$idsocio,$idtipoper,$accion,$id,$fechaaccion);
-            $respact=mysqli_stmt_execute($sentencia);
-            desconectar($con);
-        // }
-              
-          if ($respact)  
-          {
-            $accion="OK";
-          }
-          else
-          {
-            $accion="ERROR";
-          }
-        }
-      }
-    }
-  }
-  else
-  {
-    header('Location: index.php');
-    exit;
-  }   
+<?php 
+  session_start(); 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -169,6 +42,167 @@
 </head>
 
 <body>
+<!--// CHEQUEO DATOS LOGIN -->
+<?php
+  include "configuracion/conexion.php";
+  date_default_timezone_set("America/Argentina/Tucuman");
+  
+  $txtapellido=$txtnombre=$txtnombcorto=$txtnumsocio="";
+  $txtdni=$txtfnac=$txtdire="";
+  $txttel=$txtemail="";
+  
+  if (isset($_SESSION['id']))
+  {  
+    $id=$_SESSION['id'];
+    $apenomb=$_SESSION['apenomb'];
+    $tipousu=$_SESSION['tipo'];
+    $foto=$_SESSION['foto'];
+    $nombrecorto=$_SESSION['nombrecorto'];
+    $idsocio="0";
+    $accion="...";
+    
+    //SE RECUPERAN LOS DATOS DEL NUEVO SOCIO
+    if (isset($_GET['txtnumsocio']))
+    {
+      //OBTENIENDO DATOS DEL GET
+      $apto="S";
+      $txtapellido=$_GET["txtapellido"];
+      $txtnombre=$_GET["txtnombre"];
+      $txtnombcorto=$_GET["txtnombcorto"];
+      $txtnumsocio=$_GET["txtnumsocio"];
+      $txtdni=$_GET["txtdni"];
+      $txtfnac=$_GET["txtfnac"];
+      $txtdire=$_GET["txtdire"];
+      $txttel=$_GET["txttel"];
+      $txtemail=$_GET["txtemail"];
+      $accion="N";
+      $fechaaccion=date("Y-m-d H:i:s"); 
+      $idtipoper="";
+      $idarea="4";
+      $txtfini=date('Y-m-d'); 
+      $txtffin=date('Y-m-d', strtotime(' + 1 months'));
+
+
+      //CHEQUEO EXISTE DNI EN BASE DE DATOS
+      $sql = "SELECT a.`idpersona` FROM personas a WHERE `accion`!='B' AND a.dni='".$txtdni."';";
+      $respact="";
+
+      $con=conectar();
+
+      $result = $cnx->query($sql);
+
+      if (!$result) 
+      {
+        die('Invalid query: ' . $cnx->error);
+      }
+
+      if (!$result) 
+      {
+        die('Invalid query: ' . $mysqli->error);
+      }
+      else
+      {
+        while($row = mysqli_fetch_array($result))
+        {
+          $idsocio=$row['idpersona'];
+        }
+      }
+
+      desconectar($con);
+
+      if ($idsocio!="0")
+      {
+        $accion="ERRORDNI";
+      }
+      else 
+      {  
+        //ALTA DEL NUEVO SOCIO
+        /* switch ($_GET['lsdisciplinas'])
+        {
+          case "Administrador":
+            $idtipoper="2";
+            break;
+          case "Mecanico":
+            $idtipoper="3";
+            break;
+          case "Gerencia":
+            $idtipoper="4";
+            break;
+        }*/
+
+        foreach($_GET['lsdisciplinas'] as $idtipoper)
+        {
+          $sql="INSERT INTO personas (apellido,nombre,nombrecortousu,dni,nrosocio,domicilio,fnacimiento,idtipopersona,emailusuario,tel,idoficina,aptoingreso,finiapto,ffinapto,accion,idempleadoaccion,fechaaccion)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+
+          $con=conectar();
+          $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+          mysqli_stmt_bind_param($sentencia,'sssssssssssssssss',$txtapellido,$txtnombre,$txtnombcorto,$txtdni,$txtnumsocio,$txtdire,$txtfnac,$idtipoper,$txtemail,$txttel,$idarea,$apto,$txtfini,$txtffin,$accion,$id,$fechaaccion);
+          $respsoc=mysqli_stmt_execute($sentencia);
+                
+          desconectar($con);
+          
+          if ($respsoc)  
+          {
+            //RECUPERO ID DEL NUEVO SOCIO
+            
+            $sql = "SELECT a.`idpersona` FROM personas a WHERE `accion`!='B' AND a.dni='".$txtdni."';";
+            $respact="";
+
+            $con=conectar();
+
+            $result = $cnx->query($sql);
+
+            if (!$result) 
+            {
+              die('Invalid query: ' . $cnx->error);
+            }
+
+            if (!$result) 
+            {
+              die('Invalid query: ' . $mysqli->error);
+            }
+            else
+            {
+              while($row = mysqli_fetch_array($result))
+              {
+                $idsocio=$row['idpersona'];
+              }
+            }
+
+            desconectar($con);
+        
+            //ALTA EN LAS DISCIPLINAS DONDE SE INSCRIBE
+            /*foreach($_GET['lsdisciplinas'] as $i)
+            {*/
+              $sql="INSERT INTO personasvsdisciplinas (idpersona,iddisciplina,accion,idempleadoaccion,fechaaccion)
+                    VALUES (?,?,?,?,?);";
+
+              $con=conectar();
+              $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+              mysqli_stmt_bind_param($sentencia,'sssss',$idsocio,$idtipoper,$accion,$id,$fechaaccion);
+              $respact=mysqli_stmt_execute($sentencia);
+              desconectar($con);
+          // }
+                
+            if ($respact)  
+            {
+              $accion="OK";
+            }
+            else
+            {
+              $accion="ERROR";
+            }
+          }
+        }
+      }
+    }
+  }
+  else
+  {
+    echo "<script> window.location.href='index.html'</script>";
+  }   
+?>
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -176,7 +210,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SAM</span>
+        <span class="d-none d-lg-block">SMATE</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -342,7 +376,7 @@
 
                           $sql = "SELECT a.`iddisciplina`,a.`disciplina`
                                   FROM disciplinas a
-                                  WHERE a.`accion`!='B'
+                                  WHERE a.`accion`!='B' AND a.iddisciplina!='2'
                                   ORDER BY a.`disciplina`;";
 
                           $con=conectar();
@@ -377,14 +411,14 @@
                               if ($encontrado==true)
                               {
                                 echo "
-                                      <input type='checkbox' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."' checked>
+                                      <input type='radio' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."' checked>
                                       <label for='op'>".$row['disciplina']."</label><br>
                                     ";
                               }
                               else
                               {
                                 echo "
-                                      <input type='checkbox' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."'>
+                                      <input type='radio' id='op' name='lsdisciplinas[]' value='".$row['iddisciplina']."'>
                                       <label for='op'>".$row['disciplina']."</label><br>
                                     ";
                               }
@@ -400,7 +434,8 @@
                       <?php 
                         if ($accion=="OK") echo "Acción realizada satisfacoriamente!!!!"; 
                         elseif ($accion=="ERROR") echo "Error en la acción!!!!"; 
-                            else echo  "<button type='submit' class='btn btn-primary'>Guardar Cambios</button>";
+                            elseif ($accion=="ERRORDNI") echo "<p>Error en la acción. Número de DNI ingresado ya existe en base de datos. Corrija!!!!</p><button type='submit' class='btn btn-primary'>Guardar Cambios</button>"; 
+                                else echo  "<button type='submit' class='btn btn-primary'>Guardar Cambios</button>";
                       ?>
                     </div>
                   </form>

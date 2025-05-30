@@ -1,13 +1,60 @@
+<?php 
+  session_start(); 
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>SMATE</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <!--link href="https://fonts.gstatic.com" rel="preconnect"-->
+  <link href="assets/font/Open_Sans.css" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Updated: Apr 20 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+  <script>
+    function deshabilitaRetroceso()
+    {
+      window.location.hash="no-back-button";
+      window.location.hash="Again-No-back-button" //chrome
+      window.onhashchange=function(){window.location.hash="";}
+    }
+  </script>
+</head>
+
+<body onload="deshabilitaRetroceso()">
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
-  //include "/configuracion/conexion.php";
   include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
-
-  session_start();
-  
-  //$mesesabreviados = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-  //$mesescompleto = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+ 
   $ffin=date("Y-m-d H:i:s");
   $ffineti=date("d-m-Y"); 
   $fini=date("Y-m-d H:i:s",strtotime($ffin . "-5 days"));
@@ -60,59 +107,10 @@
   }
   else
   {
-    header('Location: index.php');
-    exit;
+    echo "<script> window.location.href='index.html'</script>";
   }   
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-  <title>SMATE</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <!--link href="https://fonts.gstatic.com" rel="preconnect"-->
-  <link href="assets/font/Open_Sans.css" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="assets/css/style.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-  <script>
-    function deshabilitaRetroceso()
-    {
-      window.location.hash="no-back-button";
-      window.location.hash="Again-No-back-button" //chrome
-      window.onhashchange=function(){window.location.hash="";}
-    }
-  </script>
-</head>
-
-<body onload="deshabilitaRetroceso()">
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -600,7 +598,7 @@
                           {
                               $promant=$row['promant'];
                               $promact=$row['promact'];
-                              $hora=explode('.',$row['hora']);
+                              $hora=explode('.',(string)$row['hora']);
                           }
                         }
 
@@ -689,7 +687,7 @@
                           {
                               $promant=$row['promant'];
                               $promact=$row['promact'];
-                              $hora=explode('.',$row['hora']);
+                              $hora=explode('.',(string)$row['hora']);
                           }
                         }
 
@@ -744,7 +742,7 @@
                     ROUND(AVG(TIMESTAMPDIFF(MINUTE,a.`fecha`,b.`fechaautoriza`)/60),0) AS hora
                   FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
                   WHERE a.`accion`!='B' AND a.`estado`='F' AND a.fecha BETWEEN '".$fini."' AND '".$ffin."'
-                  GROUP BY 1
+                  GROUP BY a.`fecha`
                   ORDER BY 1;";
 
           $con=conectar();
@@ -1042,7 +1040,7 @@
                         COUNT(a.`numorden`) AS cantdemoradas
                   FROM numeroorden a
                   WHERE a.`accion`!='B' AND a.`estado`='F' AND DATE(a.`fechaentrega`)<DATE(a.`fechaaccion`) AND a.fecha BETWEEN '".$finimes."' AND '".$ffin."'
-                  GROUP BY 1
+                  GROUP BY a.`fecha`,a.`numorden`
                   ORDER BY 1 ASC;";
 
             $con=conectar();
@@ -1354,226 +1352,7 @@
           ?>
         </div>
         <!-- Fin Tareas Realizadas -->
-
-        <!-- Total Services x Modelo -->
-        <div class="col-lg-6">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Total Services x Modelo</h5>
-
-                <div id="barChart48"></div>
-                <script>
-                  document.addEventListener("DOMContentLoaded", () => {
-                    new ApexCharts(document.querySelector("#barChart48"), {
-                      series: [{
-                                name: 'Servicios',
-                                data: [12, 10, 5, 8]
-                              }],
-                                
-                              chart: {
-                                height: 350,
-                                type: 'bar',
-                              },
-                              plotOptions: {
-                                bar: {
-                                  borderRadius: 0,
-                                  columnWidth: '50%',
-                                }
-                              },
-                              dataLabels: {
-                                enabled: false
-                              },
-                              stroke: {
-                                width: 0
-                              },
-                              grid: {
-                                row: {
-                                  colors: ['#fff', '#f2f2f2']
-                                }
-                              },
-                              xaxis: {
-                                labels: {
-                                  rotate: -45
-                                },
-                                categories: ['Fiat Argo', 'Fiat Cronos', 'Fiat Fullback', 'Fiat Toro'
-                                ],
-                                tickPlacement: 'on'
-                              },
-                              colors: ["#2b908f", "#2b908f", "#2b908f", "#2b908f"],
-                              yaxis: {
-                                title: {
-                                  text: 'Servicios',
-                                },
-                              },
-                              fill: {
-                                type: 'gradient',
-                                gradient: {
-                                  shade: 'light',
-                                  type: "horizontal",
-                                  shadeIntensity: 0.25,
-                                  gradientToColors: undefined,
-                                  inverseColors: true,
-                                  opacityFrom: 0.85,
-                                  opacityTo: 0.85,
-                                  stops: [50, 0, 100]
-                                },
-                              }
-                      }).render();
-                    });
-                  </script>
-  
-              </div>
-            </div>
-        </div>
-        <!-- Fin Total Services x Modelo -->
-
-        <!-- Comparativas Mecanicos x Tareas -->
-        <!--div class="col-lg-6"-->
-          <?php    
-             /* $sql = "SELECT MONTH(DATE(a.`fechaobs`)) AS mes, a.`idempleado`,CONCAT(b.`apellido`,', ',b.`nombre`) AS emple , CASE MONTH(DATE(a.`fechaobs`))
-                                                              WHEN 1 THEN 'Enero'
-                                                              WHEN 2 THEN 'Febrero'
-                                                              WHEN 3 THEN 'Marzo'
-                                                              WHEN 4 THEN 'Abril'
-                                                              WHEN 5 THEN 'Mayo'
-                                                              WHEN 6 THEN 'Junio'
-                                                              WHEN 7 THEN 'Julio'
-                                                              WHEN 8 THEN 'Agosto'
-                                                              WHEN 9 THEN 'Septiembre'
-                                                              WHEN 10 THEN 'Octubre'
-                                                              WHEN 11 THEN 'Noviembre'
-                                                              WHEN 12 THEN 'Diciembre'
-                                                      ELSE 'ERROR'END AS mesnomb,
-                              COUNT(a.numorden) AS cant
-                      FROM afectadostareas a INNER JOIN personas b ON (a.`idempleado`=b.`idpersona` AND b.`accion`!='B')
-                      WHERE a.`estado`='F' AND a.fechaobs BETWEEN '".$finimes."' AND '".$ffin."'
-                      GROUP BY 1,2
-                      ORDER BY 1,2;";
-
-            $con=conectar();
-
-            $result = $con->query($sql);
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $con->error);
-            }
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
-              $idmecanico="";
-              $mecanico="";
-              $cant="";
-              $idmes="";
-              $mes="";
-              $lsmeses="";
-              $elementos="";
-              
-              while($row = mysqli_fetch_array($result))
-              {
-                $idmes=$row['mes'];
-                $idmecanico=$row['idempleado'];
-                $cant=$row['cant'];
-                $mes=$row['mesnomb'];
-                $mecanico=$row['emple'];
-              }
-
-              desconectar($con);
-            }
-                    
-            echo "<div class='card'>
-                    <div class='card-body'>
-                      <h5 class='card-title'>Comparativas Mecanicos x Tareas</h5>
-
-                        <div id='barChart49'></div>
-                        <script>
-                          document.addEventListener('DOMContentLoaded', () => {
-                            new ApexCharts(document.querySelector('#barChart49'), {
-                              series: [{
-                                        name: 'Mecanico 1',
-                                        data: [10, 5, 4, 7, 2, 4]
-                                      }, {
-                                        name: 'Mecanico 2',
-                                        data: [3, 2, 3, 5, 3, 4]
-                                      }, {
-                                        name: 'Mecanico 3',
-                                        data: [2, 7, 1, 9, 5, 1]
-                                      }, {
-                                        name: 'Mecanico 4',
-                                        data: [9, 7, 5, 8, 6, 9]
-                                      }, {
-                                        name: 'Mecanico 5',
-                                        data: [2, 2, 9, 3, 5, 2]
-                                      }],
-                                        chart: {
-                                        type: 'bar',
-                                        height: 350,
-                                        stacked: true,
-                                      },
-                                      plotOptions: {
-                                        bar: {
-                                          horizontal: true,
-                                          dataLabels: {
-                                            total: {
-                                              enabled: true,
-                                              offsetX: 0,
-                                              style: {
-                                                fontSize: '13px',
-                                                fontWeight: 900
-                                              }
-                                            }
-                                          }
-                                        },
-                                      },
-                                      stroke: {
-                                        width: 1,
-                                        colors: ['#fff']
-                                      },
-                                      title: {
-                                        text: ''
-                                      },
-                                      xaxis: {
-                                        categories: ['Enero', 'Febrero', 'Marzo','Abril','Mayo','Junio'],
-                                        labels: {
-                                          formatter: function (val) {
-                                            return val + ''
-                                          }
-                                        }
-                                      },
-                                      yaxis: {
-                                        title: {
-                                          text: undefined
-                                        },
-                                      },
-                                      tooltip: {
-                                        y: {
-                                          formatter: function (val) {
-                                            return val + ''
-                                          }
-                                        }
-                                      },
-                                      fill: {
-                                        opacity: 1
-                                      },
-                                      legend: {
-                                        position: 'top',
-                                        horizontalAlign: 'left',
-                                        offsetX: 40
-                                      }
-                              }).render();
-                            });
-                          </script>
-                    </div>
-                  </div>";
-                  */
-          ?>
-        <!--/div-->
-        <!-- Fin Comparativas Mecanicos x Tareas -->
-
+      
         <!-- Total Revisitas x Mes -->
         <div class="col-lg-6">
           <?php    
@@ -1595,7 +1374,7 @@
                             COUNT(a.numchasis) AS cant
                       FROM numeroorden a
                       WHERE a.`accion`!='B' AND a.estado!='S' AND a.fecha BETWEEN '".$finimes."' AND '".$ffin."'
-                      GROUP BY 1
+                      GROUP BY a.numchasis,a.`fecha`
                       ORDER BY 2,3;";
 
             $con=conectar();
@@ -1903,156 +1682,399 @@
                       GROUP BY 1
                       ORDER BY 1;";
 
-            $con=conectar();
+              $con=conectar();
 
-            $result = $con->query($sql);
+              $result = $con->query($sql);
 
-            if (!$result) 
-            {
-              die('Invalid query: ' . $con->error);
-            }
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
-              for ($dia = 1; $dia <= $ultimoDiaMes; $dia++) {
-                  $fechaActual = "$anio-$mes-$dia";
-                  $diaSemana = date('N', strtotime($fechaActual));
-                  if ($diaSemana < 6) { // 6 representa el viernes, por lo que los días menores a 6 son de lunes a viernes
-                      $contadorDiasSemana++;
-                  }
-              }
-            
-              $jornada = ($contadorDiasSemana*570)/60; //570 EQUIVA A 9 HORAS 30 MIN JORNADA DE UN MECANICO
-            
-              //echo "dias=".$contadorDiasSemana."-min=".$jornada;
-              
-              $datos="";
-              $mecanico="";
-              $colores="";
-              
-              while($row = mysqli_fetch_array($result))
+              if (!$result) 
               {
-                $datos=strlen($datos)<=0? ($jornada-$row['horas']): $datos.",". ($jornada-$row['horas']);
-                $mecanico=strlen($mecanico)<=0? "'".$row['emple']."'": $mecanico.",'".$row['emple']."'";
-                $color = substr(md5(time()), 0, 6);
-                $colores=strlen($colores)<=0? "'".randomColor()."'" : $colores.",'".randomColor()."'";
+                die('Invalid query: ' . $con->error);
               }
 
-              desconectar($con);
-            }
+              if (!$result) 
+              {
+                die('Invalid query: ' . $mysqli->error);
+              }
+              else
+              {
+                for ($dia = 1; $dia <= $ultimoDiaMes; $dia++) {
+                    $fechaActual = "$anio-$mes-$dia";
+                    $diaSemana = date('N', strtotime($fechaActual));
+                    if ($diaSemana < 6) { // 6 representa el viernes, por lo que los días menores a 6 son de lunes a viernes
+                        $contadorDiasSemana++;
+                    }
+                }
+              
+                $jornada = ($contadorDiasSemana*570)/60; //570 EQUIVA A 9 HORAS 30 MIN JORNADA DE UN MECANICO
+              
+                //echo "dias=".$contadorDiasSemana."-min=".$jornada;
+                
+                $datos="";
+                $mecanico="";
+                $colores="";
+                
+                while($row = mysqli_fetch_array($result))
+                {
+                  if (strlen($datos)<=0)
+                  {
+                    if (($jornada-$row['horas'])<0) $datos=0;
+                    else $datos=$jornada-$row['horas'];
+                  }
+                  else
+                  {
+                    if (($jornada-$row['horas'])<0) $datos=$datos.",0";
+                    else $datos=$datos.",".($jornada-$row['horas']);
+                  }
+                  //$datos=strlen($datos)<=0? ($jornada-$row['horas'])<0?0:($jornada-$row['horas']) : $datos.",". ($jornada-$row['horas'])<0?0:($jornada-$row['horas']);
+                  $mecanico=strlen($mecanico)<=0? "'".$row['emple']."'": $mecanico.",'".$row['emple']."'";
+                  $color = substr(md5(time()), 0, 6);
+                  $colores=strlen($colores)<=0? "'".randomColor()."'" : $colores.",'".randomColor()."'";
+                }
 
-            //echo "Datos=".$datos."-mes".$mes;
-                    
-            echo "<div class='card'>
-                    <div class='card-body'>
-                      <h5 class='card-title'>Tiempo Muerto Mecanicos - ". obtenermes('L',0) ." ". $anioL ."</h5>
+                desconectar($con);
+              }
 
-                      <div id='barChart52'></div>
-                      <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                          new ApexCharts(document.querySelector('#barChart52'), {
-                            series: [{
-                                    data: [".$datos."]
-                                  }],
-                                    chart: {
-                                    type: 'bar',
-                                    height: 380
-                                  },
-                                  plotOptions: {
-                                    bar: {
-                                      barHeight: '100%',
-                                      distributed: true,
-                                      horizontal: true,
-                                      dataLabels: {
-                                        position: 'bottom'
+              //echo "Datos=".$datos."-mes".$mes;
+                      
+              echo "<div class='card'>
+                      <div class='card-body'>
+                        <h5 class='card-title'>Tiempo Muerto Mecanicos - ". obtenermes('L',0) ." ". $anioL ."</h5>
+
+                        <div id='barChart52'></div>
+                        <script>
+                          document.addEventListener('DOMContentLoaded', () => {
+                            new ApexCharts(document.querySelector('#barChart52'), {
+                              series: [{
+                                      data: [".$datos."]
+                                    }],
+                                      chart: {
+                                      type: 'bar',
+                                      height: 380
+                                    },
+                                    plotOptions: {
+                                      bar: {
+                                        barHeight: '100%',
+                                        distributed: true,
+                                        horizontal: true,
+                                        dataLabels: {
+                                          position: 'bottom'
+                                        },
+                                      }
+                                    },
+                                    colors: [".$colores."],
+                                    dataLabels: {
+                                      enabled: true,
+                                      textAnchor: 'start',
+                                      style: {
+                                        colors: ['#fff']
                                       },
-                                    }
-                                  },
-                                  colors: [".$colores."],
-                                  dataLabels: {
-                                    enabled: true,
-                                    textAnchor: 'start',
-                                    style: {
+                                      formatter: function (val, opt) {
+                                        return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
+                                      },
+                                      offsetX: 0,
+                                      dropShadow: {
+                                        enabled: true
+                                      }
+                                    },
+                                    stroke: {
+                                      width: 1,
                                       colors: ['#fff']
                                     },
-                                    formatter: function (val, opt) {
-                                      return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
+                                    xaxis: {
+                                      categories: [".$mecanico."],
                                     },
-                                    offsetX: 0,
-                                    dropShadow: {
-                                      enabled: true
-                                    }
-                                  },
-                                  stroke: {
-                                    width: 1,
-                                    colors: ['#fff']
-                                  },
-                                  xaxis: {
-                                    categories: [".$mecanico."],
-                                  },
-                                  yaxis: {
-                                    labels: {
-                                      show: false
-                                    }
-                                  },
-                                  title: {
-                                      text: '',
-                                      align: 'center',
-                                      floating: true
-                                  },
-                                  subtitle: {
-                                      text: 'Tiempo Muerto',
-                                      align: 'center',
-                                  },
-                                  tooltip: {
-                                    theme: 'dark',
-                                    x: {
-                                      show: false
+                                    yaxis: {
+                                      labels: {
+                                        show: false
+                                      }
                                     },
-                                    y: {
-                                      title: {
-                                        formatter: function () {
-                                          return ''
+                                    title: {
+                                        text: '',
+                                        align: 'center',
+                                        floating: true
+                                    },
+                                    subtitle: {
+                                        text: 'Tiempo Muerto',
+                                        align: 'center',
+                                    },
+                                    tooltip: {
+                                      theme: 'dark',
+                                      x: {
+                                        show: false
+                                      },
+                                      y: {
+                                        title: {
+                                          formatter: function () {
+                                            return ''
+                                          }
                                         }
                                       }
                                     }
-                                  }
-                            }).render();
-                          });
-                        </script>
-                    </div>
-                  </div>";
-                  
-          ?>
+                              }).render();
+                            });
+                          </script>
+                      </div>
+                    </div>";
+                    
+            ?>
         </div>
         <!-- Fin Total Tiempo Muerto x Mecanicos -->
 
+        
+        <!-- Total Services x Modelo -->
+        <!--div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Total Services x Modelo</h5>
+
+                <div id="barChart48"></div>
+                <script>
+                  document.addEventListener("DOMContentLoaded", () => {
+                    new ApexCharts(document.querySelector("#barChart48"), {
+                      series: [{
+                                name: 'Servicios',
+                                data: [12, 10, 5, 8]
+                              }],
+                                
+                              chart: {
+                                height: 350,
+                                type: 'bar',
+                              },
+                              plotOptions: {
+                                bar: {
+                                  borderRadius: 0,
+                                  columnWidth: '50%',
+                                }
+                              },
+                              dataLabels: {
+                                enabled: false
+                              },
+                              stroke: {
+                                width: 0
+                              },
+                              grid: {
+                                row: {
+                                  colors: ['#fff', '#f2f2f2']
+                                }
+                              },
+                              xaxis: {
+                                labels: {
+                                  rotate: -45
+                                },
+                                categories: ['Fiat Argo', 'Fiat Cronos', 'Fiat Fullback', 'Fiat Toro'
+                                ],
+                                tickPlacement: 'on'
+                              },
+                              colors: ["#2b908f", "#2b908f", "#2b908f", "#2b908f"],
+                              yaxis: {
+                                title: {
+                                  text: 'Servicios',
+                                },
+                              },
+                              fill: {
+                                type: 'gradient',
+                                gradient: {
+                                  shade: 'light',
+                                  type: "horizontal",
+                                  shadeIntensity: 0.25,
+                                  gradientToColors: undefined,
+                                  inverseColors: true,
+                                  opacityFrom: 0.85,
+                                  opacityTo: 0.85,
+                                  stops: [50, 0, 100]
+                                },
+                              }
+                      }).render();
+                    });
+                  </script>
+  
+              </div>
+            </div>
+        </div-->
+        <!-- Fin Total Services x Modelo -->
+
+        <!-- Origen Conoce gráfico barra-->
+        <div class="col-lg-6">
+          <?php
+            $sql = "SELECT a.`conocio`,COUNT(a.`numorden`) AS cant
+                    FROM numeroorden a
+                    WHERE a.`accion`!='B' AND a.fecha BETWEEN '".$fini."' AND '".$ffin."'
+                    GROUP BY a.`conocio`
+                    ORDER BY 1;";
+
+            $con=conectar();
+
+            $result = $con->query($sql);
+
+            if (!$result) 
+            {
+                  die('Invalid query: ' . $con->error);
+            }
+
+            if (!$result) 
+            {
+                  die('Invalid query: ' . $mysqli->error);
+            }
+            else
+            {
+                $datos="";
+                $origen="";
+                $colores="";
+                while($row = mysqli_fetch_array($result))
+                {
+                  $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
+                  $origen=strlen($dias)<=0? "'".$row['conocio']."'": $origen.",'".$row['conocio']."'";
+                  $colores=strlen($colores)<=0? "'#33b2df'": $colores.",'#33b2df'";
+                }
+
+                desconectar($con);
+            }
+
+            // echo $datos."=".$dias."=".$colores;
+
+            echo "<div class='card'>
+              <div class='card-body'>
+                <h5 class='card-title'>Desde Donde Nos Conoce <p>".$finieti." al ".$ffineti."</p></h5>
+
+                <div id='barChart49'></div>
+                <script>
+                  document.addEventListener('DOMContentLoaded', () => {
+                    new ApexCharts(document.querySelector('#barChart49'), {
+                      series: [{
+                                name: 'Fuentes',
+                                data: [".$datos."]
+                              }],
+                                
+                              chart: {
+                                height: 350,
+                                type: 'bar',
+                              },
+                              plotOptions: {
+                                bar: {
+                                  borderRadius: 0,
+                                  columnWidth: '50%',
+                                }
+                              },
+                              dataLabels: {
+                                enabled: false
+                              },
+                              stroke: {
+                                width: 0
+                              },
+                              grid: {
+                                row: {
+                                  colors: ['#fff', '#f2f2f2']
+                                }
+                              },
+                              xaxis: {
+                                labels: {
+                                  rotate: -45
+                                },
+                                categories: [".$origen."],
+                                tickPlacement: 'on'
+                              },
+                              colors: [".$colores."],
+                              yaxis: {
+                                title: {
+                                  text: 'Fuentes',
+                                },
+                              },
+                              fill: {
+                                type: 'gradient',
+                                gradient: {
+                                  shade: 'light',
+                                  type: 'horizontal',
+                                  shadeIntensity: 0.25,
+                                  gradientToColors: undefined,
+                                  inverseColors: true,
+                                  opacityFrom: 0.85,
+                                  opacityTo: 0.85,
+                                  stops: [50, 0, 100]
+                                },
+                              }
+                      }).render();
+                    });
+                  </script>
+  
+              </div>
+            </div>";
+          ?>
+        </div>
+        <!-- Fin Total Services x Modelo -->
+
+        <!-- Origen Conoce gráfico torta-->
+        <div class="col-lg-6">
+          <?php
+            
+            $sql = "SELECT a.`conocio`,COUNT(a.`numorden`) AS cant
+                    FROM numeroorden a
+                    WHERE a.`accion`!='B' AND a.fecha BETWEEN '".$fini."' AND '".$ffin."'
+                    GROUP BY a.`conocio`
+                    ORDER BY 1;";
+
+            $con=conectar();
+
+            $result = $con->query($sql);
+
+            if (!$result) 
+            {
+                  die('Invalid query: ' . $con->error);
+            }
+
+            if (!$result) 
+            {
+                  die('Invalid query: ' . $mysqli->error);
+            }
+            else
+            {
+                $datos="";
+                $origen="";
+                while($row = mysqli_fetch_array($result))
+                {
+                  $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
+                  $origen=strlen($dias)<=0? "'".$row['conocio']."'": $origen.",'".$row['conocio']."'";
+                }
+
+                desconectar($con);
+            }
+
+          // echo $datos."=".$dias."=".$colores;
+
+            echo "<div class='card'>
+              <div class='card-body'>
+                <h5 class='card-title'>Origen Desde Donde Nos Conoce <p>".$finieti." al ".$ffineti."</p></h5>
+
+                <div id='donutChart2'></div>
+                  <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                      new ApexCharts(document.querySelector('#donutChart2'), {
+                        series: [".$datos."],
+                        chart: {
+                          height: 350,
+                          type: 'donut',
+                          toolbar: {
+                            show: true
+                          }
+                        },
+                        labels: [".$origen."],
+                      }).render();
+                    });
+                  </script>
+                </div>
+            </div>";
+          ?>
+        </div>
+        <!-- Fin Origen Conoce -->
+
         <!-- Total Ordenes Finalizadas x Mecanico -->
         <div class="col-lg-12">
-            <?php    
-              $sql = "SELECT CASE MONTH(DATE(a.`fecha`))
-                                        WHEN 1 THEN 'Enero'
-                                        WHEN 2 THEN 'Febrero'
-                                        WHEN 3 THEN 'Marzo'
-                                        WHEN 4 THEN 'Abril'
-                                        WHEN 5 THEN 'Mayo'
-                                        WHEN 6 THEN 'Junio'
-                                        WHEN 7 THEN 'Julio'
-                                        WHEN 8 THEN 'Agosto'
-                                        WHEN 9 THEN 'Septiembre'
-                                        WHEN 10 THEN 'Octubre'
-                                        WHEN 11 THEN 'Noviembre'
-                                        WHEN 12 THEN 'Diciembre'
-                                ELSE 'ERROR'END AS mesnomb,b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS emple,COUNT(a.`numorden`) AS cant
-                      FROM numeroorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
-                                        INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
-                      WHERE a.`accion`!='B' AND a.`estado`='F' -- AND MONTH(a.`fecha`)=".$mes." 
-                      GROUP BY 1,2
-                      ORDER BY 2,1;";
+          <?php    
+            $sql = "SELECT MONTH(DATE(a.`fecha`))as mes,b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS emple,COUNT(a.`numorden`) AS cant
+                    FROM numeroorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
+                                       INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
+                    WHERE a.`accion`!='B' AND a.`estado`='F' AND MONTH(a.`fecha`)=".$mes." 
+                    GROUP BY 1,2
+                    ORDER BY 2,1;";
 
             $con=conectar();
 
@@ -2069,57 +2091,38 @@
             }
             else
             {
-              $datos="";
+              $cant=0;
               $mes="";
-              $idmecanico="";
               $mecanico="";
+              $item="";
               
               while($row = mysqli_fetch_array($result))
               {
-                if (strlen($idmecanico)>0)
-                {
-                  if ($idmecanico==$row['idempleado'])
-                  {
-                    $datos=$datos.",".$row['cant'];
-                    $mes=$mes.",".$row['mesnomb'];
-                  }
-                }
-                else
-                {
-                  $idmecanico=$row['idempleado'];
                   $mecanico=$row['emple'];
-                  $datos=$row['cant'];
-                  $mes=$row['mesnomb'];
-                }
-              }
+                  $cant=$row['cant'];
+                  $mes=obtenermes('L',0);
 
+                  $item=strlen($item)<=0? "{
+                                            name: '".$mecanico."',
+                                            data: [".$cant."]
+                                          }":$item.",{
+                                                      name: '".$mecanico."',
+                                                      data: [".$cant."]
+                                                    }";
+              }              
+            
               desconectar($con);
             }
                     
             echo "<div class='card'>
                     <div class='card-body'>
-                      <h5 class='card-title'>Total Ordenes Finalizadas x Mecanico</h5>
+                      <h5 class='card-title'>Total Ordenes Finalizadas x Mecanico - ". obtenermes('L',0) ." ". $anioL ."</h5>
 
                       <div id='barChart53'></div>
                       <script>
                         document.addEventListener('DOMContentLoaded', () => {
                           new ApexCharts(document.querySelector('#barChart53'), {
-                            series: [{
-                                      name: 'Mecanco 1',
-                                      data: [44, 55, 57]
-                                    }, {
-                                      name: 'Mecanico 2',
-                                      data: [76, 85, 10]
-                                    }, {
-                                      name: 'Mecanico 3',
-                                      data: [35, 41, 36]
-                                    }, {
-                                      name: 'Mecanico 4',
-                                      data: [16, 5, 11]
-                                    }, {
-                                      name: 'Mecanico 5',
-                                      data: [26, 8, 12]
-                                    }],
+                            series: [".$item."],
                                       chart: {
                                       type: 'bar',
                                       height: 350
@@ -2141,7 +2144,7 @@
                                       colors: ['transparent']
                                     },
                                     xaxis: {
-                                      categories: ['Ene', 'Feb', 'Mar'],
+                                      categories: ['".$mes."'],
                                     },
                                     yaxis: {
                                       title: {
@@ -2154,7 +2157,7 @@
                                     tooltip: {
                                       y: {
                                         formatter: function (val) {
-                                          return '$ ' + val + ' Ordenes'
+                                          return val + ' Ordenes'
                                         }
                                       }
                                     }

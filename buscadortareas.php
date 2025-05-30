@@ -1,9 +1,10 @@
+<?php 
+  session_start(); 
+?>
 <!--// CHEQUEO DATOS LOGIN -->
 <?php
   include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
-  
-  session_start();
   
   if (isset($_SESSION['id']))
   {  
@@ -15,8 +16,7 @@
   }
   else
   {
-    header('Location: index.php');
-    exit;
+    echo "<script> window.location.href='index.html'</script>";
   }   
 ?>
 
@@ -69,7 +69,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SAM</span>
+        <span class="d-none d-lg-block">SMATE</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->

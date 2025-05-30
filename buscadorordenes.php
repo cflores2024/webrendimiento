@@ -1,24 +1,6 @@
-<!--// CHEQUEO DATOS LOGIN -->
-<?php
-  include "configuracion/conexion.php";
-
-  session_start();
-  
-  if (isset($_SESSION['id']))
-  {  
-    $id=$_SESSION['id'];
-    $apenomb=$_SESSION['apenomb'];
-    $tipousu=$_SESSION['tipo'];
-    $foto=$_SESSION['foto'];
-    $nombrecorto=$_SESSION['nombrecorto'];
-  }
-  else
-  {
-    header('Location: index.php');
-    exit;
-  }   
+<?php 
+  session_start(); 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -168,6 +150,23 @@
 </head>
 
 <body>
+<!--// CHEQUEO DATOS LOGIN -->
+<?php
+  include "configuracion/conexion.php";
+  
+  if (isset($_SESSION['id']))
+  {  
+    $id=$_SESSION['id'];
+    $apenomb=$_SESSION['apenomb'];
+    $tipousu=$_SESSION['tipo'];
+    $foto=$_SESSION['foto'];
+    $nombrecorto=$_SESSION['nombrecorto'];
+  }
+  else
+  {
+    echo "<script> window.location.href='index.html'</script>";
+  }   
+?>
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -175,7 +174,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SAM</span>
+        <span class="d-none d-lg-block">SMATE</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->

@@ -1,8 +1,325 @@
+<?php 
+  session_start(); 
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>SMATE</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <!--link href="https://fonts.gstatic.com" rel="preconnect"-->
+  <link href="assets/font/Open_Sans.css" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  POR OTRO LADO LAS TAREAS PUEDEN TENER LOS SIGUIENTES ESTADOS
+  * D => DISPONIBLES PARA SU ATENCION
+  * P => EN PROCESO SE ESTA ATENDIENDO
+  * F => TAREA TERMINADA
+  ======================================================== -->
+  <script>
+    function abandonar(num,idtarea,idmecanico) 
+    {
+      let obs=document.getElementById("txtobservacionmec").value;// "Se finaliza por prueba de CESAR"; 
+           
+      if (num<=0 && idtarea<=0 && idmecanico<=0) {
+        return;
+      } else {
+        
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+          
+            //alert("SE BAJA DE LA TAREA=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico+"-obs="+obs);
+            
+            let resp=this.responseText;
+ 
+            if (resp=="0") 
+            {//SE REALIZA LA ACTUALIZACION DE LA VISTA
+              atendertareas(num,idmecanico);
+            }
+            else
+            {
+              alert("ERROR EN LA DESVINCULACION DEL MECANICO A LA TAREA=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
+            }
+          }
+        };
+        
+        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=B&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico+'&obs='+obs, false);
+        //xmlhttp.open('GET', 'crudcolaboratarea.php?estado=S&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico+'&obs='+obs, false);
+        xmlhttp.send();
+      }
+    }
+
+    function addcolaborartarea(num,idtarea,idmecanico) 
+    {
+      if (num<=0 && idtarea<=0 && idmecanico<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            //alert("COLABORA A LA TAREA=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
+            
+            let resp=this.responseText;
+ 
+            if (resp=="0") 
+            {//SE REALIZLA ACTUALIZACION DE LA VISTA
+              atendertareas(num,idmecanico);
+              //alert("ALTA REALIZADA=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
+            }
+            else
+            {
+              alert("ERROR EN LA VINCULACION DE LA TAREA CON EL MECANICO=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
+            }
+          }
+        };
+        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=C&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico, false);
+        //xmlhttp.open('GET', 'crudcolaboratarea.php?estado=P&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico, false);
+        xmlhttp.send();
+      }
+    }
+
+    function iniciar(num,idtarea,idmecanico) 
+    {
+      if (num<=0 && idtarea<=0 && idmecanico<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            //alert("VALORES INICIALES=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
+            
+            let resp=this.responseText;
+ 
+            if (resp=="0") 
+            {
+              //alert ("El valor de respesta fue: "+resp);
+          
+              atendertareas(num,idmecanico);
+            }
+          }
+        };
+        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=I&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico, false);
+        xmlhttp.send();
+      }
+    }
+
+    function aprocesar(num,idtarea,idmecanico) 
+    {
+      if (num<=0 && idtarea<=0 && idmecanico<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+           // alert("VALORES INICIALES=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
+            
+            let resp=this.responseText;
+ 
+            if (resp=="0") 
+            {
+              //alert ("El valor de respesta fue: "+resp);
+          
+              atendertareas(num,idmecanico);
+            }
+          }
+        };
+        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=P&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico, false);
+        xmlhttp.send();
+      }
+    }
+
+    function finalizar(num,idtarea,idmecanico) 
+    {
+      let obs=document.getElementById("txtobservacion").value;// "Se finaliza por prueba de CESAR";
+
+      if ((num<=0)&&(idtarea<=0)&&(idmecanico<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ("VINCULAR orden ="+num+" y tarea ="+idtarea+" y idempleado="+idmecanico);
+            let resp=this.responseText;
+ 
+            if (resp=="0") 
+            {
+              //alert("FINALIZAR=>Orden:"+num+"-Tarea:"+idtarea+"-Mecanico:"+idmecanico+"-Observacion:"+obs);
+ 
+              atendertareas(num,idmecanico);
+            }
+          }
+        };
+        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=F&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico+'&obs='+obs, false);
+        xmlhttp.send();
+      }
+    }
+
+    function vermovimientostareasvsempledos() 
+    {
+      location.reload();
+    }
+
+    function vincularordentrabajo(num,id) 
+    {
+      if (num<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ('vincular numero orden='+num+" con idempleado="+id);
+            let resp=this.responseText;
+            //var bandera=this.responseText;
+            
+            if (resp==0) 
+            {
+              autoriza(num,id);
+            
+              //alert ('Se realizo la autorización de lo pedido por el mecanico sobre la orden='+num+" y idempleado="+id+". Con respuesta igual=>"+resp);
+           
+              if (resp==0) 
+              {
+                vermovimientostareasvsempledos();
+              }
+            }
+            
+          }
+        };
+        xmlhttp.open('GET', 'vincularusuarioordentrabajo.php?num='+num+'&id='+id, false);
+        xmlhttp.send();
+      }
+    }
+
+    function desvincularordentrabajo(num,id) 
+    {
+      if (num<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ('DESVINCULAR numero orden='+num+" y idempleado="+id);
+            let resp=this.responseText;
+
+            if (resp==0) 
+            {
+              vermovimientostareasvsempledos();
+            }
+          }
+        };
+        xmlhttp.open('GET', 'desvincularordentrabajo.php?num='+num+'&id='+id, false);
+        xmlhttp.send();
+      }
+    }
+
+    function atendertareas(num,id) 
+    {
+      if (num<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ('se atiende la tarea numero orden='+num);
+            document.getElementById("lsdetalles").innerHTML=this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'atendertareas.php?num='+num+'&id='+id, false);
+        xmlhttp.send();
+      }
+    }
+
+    function historial(num) 
+    {
+      if (num<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ('numero chasis='+num);
+            document.getElementById("lsdetalles").innerHTML=this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'historialorden.php?num='+num+"&ver=S", false);
+        xmlhttp.send();
+      }
+    }
+
+    function vertabla(num)
+    {
+      //alert("Se muestra historial de la orden " + num);
+
+      if (num<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ('numero orden='+num);
+            document.getElementById("tbldetalleorden").innerHTML=this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'vertablatareas.php?num='+num, false);
+        xmlhttp.send();
+      }
+    }
+
+    function deshabilitaRetroceso()
+    {
+      window.location.hash="no-back-button";
+      window.location.hash="Again-No-back-button" //chrome
+      window.onhashchange=function(){window.location.hash="";}
+    }
+
+    function autoriza(num,id) 
+    {
+      if (num<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("lsinfo").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'autoriza.php?num='+num+'&id='+id, false);
+        xmlhttp.send();
+      }
+    }
+  </script>
+</head>
+
+<body>
 <?php
   include "configuracion/conexion.php";
 
-  session_start();
-  
   if (isset($_SESSION['id']))
   {  
     $id=$_SESSION['id'];
@@ -14,14 +331,15 @@
     $idusuario=$_SESSION['id'];
     $apenomb=$_SESSION['apenomb'];
     $idempleado="0";
-    $lsfotos="0";
-    $orden="0";
+    $lsfotos="";
+    $orden="";
     $titulo="0";
     $numchasis="0";
     $fila="0";
-    $filasproydis="0";
-    $filasap="0";
+    $filasproydis="";
+    $filasap="";
     $bandera="";
+    $estado="";
     $estadoorden="0";
     $color="0";
    
@@ -31,11 +349,11 @@
             b.idpersonadisp AS idempleado,
               (SELECT xx.urlfoto FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=b.idpersonadisp) AS foto,
               (SELECT CONCAT(xx.apellido,',',xx.nombre) FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=b.idpersonadisp) AS empleado,
-              'I' AS `estado`,b.fechaentrega,'I' AS situacionorden, 
+              'I' AS `estado`,b.fechaentrega,'DI' AS situacionorden, 
               (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=b.`numchasis` AND tt.numorden!=b.`numorden`) historial,
                           b.numchasis  
             FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-            GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,b.`estado`,b.numchasis
+            GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,b.`estado`,b.numchasis,b.patente,b.idpersonadisp,b.fechaentrega
             UNION
             -- ORDENES EN PROCESOS
             SELECT xx1.`numorden`,xx1.`tituloorden`,xx1.patente,
@@ -127,33 +445,40 @@
     }
     else
     {
+      
       while($row = mysqli_fetch_array($result))
       {
         if ($orden==$row['numorden'])
         {
-            if (strlen($row['foto'])>0)
-            {
-                $lsfotos=$lsfotos."<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='30' height='30'>";
-            }
-            else
-            {
-                $lsfotos=$lsfotos."&nbsp;";
-            }
+          if (strlen($row['foto'])>0)
+          {
+              $lsfotos=$lsfotos."<img src='./assets/img/".$row['foto']."' alt='Profile' class='rounded-circle' width='30' height='30'>";
+          }
+          else
+          {
+              $lsfotos=$lsfotos."&nbsp;";
+          }
 
-            $idempleado=$row['idempleado'];
-            $estado=$row['situacionorden'];
-            $estadoorden=$row['estado'];
-            if (($idempleado==$idusuario)&&(strlen($bandera)<=0)) $bandera="del";
+          $idempleado=$row['idempleado'];
+          $estado=$row['situacionorden'];
+          $estadoorden=$row['estado'];
+          if (($idempleado==$idusuario)&&(strlen($bandera)<=0)) $bandera="del";
         }
         else
         {
+          if ($estadoorden=="F")
+          {//SE TRATANDAN LAS ORDENES FINALIZADAS
+
+          }
+          else
+          {//SE TRATAN LAS ORDENESD QUE NO ESTAN FINALIZADAS
             if (strlen($orden)>0)
             {
-                 $fila="
-                        <tr>
-                            <th scope='row'><a href='#'>#".$orden."</a></th>
-                            <td>".$titulo."</td>
-                            <td>".$lsfotos."</td>";
+                $fila="
+                      <tr>
+                          <th scope='row'><a href='#'>#".$orden."</a></th>
+                          <td>".$titulo."</td>
+                          <td>".$lsfotos."</td>";
                 
                 switch ($estadoorden)
                 {
@@ -175,83 +500,83 @@
                 {
                   case "FI"://ORDEN FINALIZADA
                             $fila=$fila."
-                                          <td>".$color."</td>
-                                          <td>
-                                              &nbsp;
-                                          </td>
-                                          <td> 
-                                              &nbsp;
-                                          </td>
-                                          <td>"; 
-                                          
-                                          if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                          else $fila=$fila."<a href='#'>
-                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
-                                                            </a></td></tr>";
-                          $bandera="";
+                                        <td>".$color."</td>
+                                        <td>
+                                            &nbsp;
+                                        </td>
+                                        <td> 
+                                            &nbsp;
+                                        </td>
+                                        <td>"; 
+                                        
+                                        if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                        else $fila=$fila."<a href='#'>
+                                                            <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
+                                                          </a></td></tr>";
+                            $bandera="";
                   break;
                   case "DI": //ORDEN DISPONIBLE
                   case "PR"://ORDEN EN PROCESO
                   case "AU"://ORDEN AUTORIZADA POR SUPERVISOR AL MECANICO
                           if ($bandera=="del")
                           {//BORRA EMPLEADO ORDEN
-                              $fila=$fila."
-                                            <td>".$color."</td>
-                                            <td>
-                                                <a href='#'>
-                                                    <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                                </a>
-                                            </td>
-                                           <td>
-                                                <a href='#'>
-                                                  <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\",\"$idusuario\")'>
-                                                </a>
-                                            </td>
-                                            <td>"; 
-                                            
-                                            if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                            else $fila=$fila."<a href='#'>
-                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
-                                                              </a></td></tr>";
+                            $fila=$fila."
+                                        <td>".$color."</td>
+                                        <td>
+                                            <a href='#'>
+                                                <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href='#'>
+                                              <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\",\"$idusuario\")'>
+                                            </a>
+                                        </td>
+                                        <td>"; 
+                                        
+                                        if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                        else $fila=$fila."<a href='#'>
+                                                            <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
+                                                          </a></td></tr>";
                           }
                           else
                           {//SE SUMA EMPLEADO ORDEN
-                              $fila=$fila."
-                                            <td>".$color."</td>
-                                            <td>
-                                                <a href='#'>
-                                                    <img src='assets/img/usu_add.png' alt='Sumarse a tarea' onclick='vincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                                </a>
-                                            </td>
-                                            <td> 
-                                                &nbsp;
-                                            </td>
-                                            <td>"; 
+                            $fila=$fila."
+                                        <td>".$color."</td>
+                                        <td>
+                                            <a href='#'>
+                                                <img src='assets/img/usu_add.png' alt='Sumarse a tarea' onclick='vincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                            </a>
+                                        </td>
+                                        <td> 
+                                            &nbsp;
+                                        </td>
+                                        <td>"; 
 
-                                            if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                            else $fila=$fila."<a href='#'>
-                                                                <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
-                                                              </a></td></tr>";
+                                        if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                        else $fila=$fila."<a href='#'>
+                                                            <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
+                                                          </a></td></tr>";
                           }
 
                           $bandera="";
                   break;
                   case "PE"://ORDEN PENDIENTE DE APROBACION POR PARTE DE RESPONSABLE
                             $fila=$fila."
-                                          <td>".$color."</td>
-                                          <td>
-                                              <a href='#'>
-                                                <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
-                                              </a>
-                                          </td>
-                                          <td> 
-                                              &nbsp;
-                                          </td>
-                                          <td>";
-                                          if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
-                                          else $fila=$fila."<a href='#'>
-                                                              <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
-                                                            </a></td></tr>";
+                                        <td>".$color."</td>
+                                        <td>
+                                            <a href='#'>
+                                              <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
+                                            </a>
+                                        </td>
+                                        <td> 
+                                            &nbsp;
+                                        </td>
+                                        <td>";
+                                        if ($tienehisto<=0) $fila=$fila."&nbsp</td></tr>";
+                                        else $fila=$fila."<a href='#'>
+                                                            <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
+                                                          </a></td></tr>";
                             $bandera="";
                     break;
                 }
@@ -291,37 +616,43 @@
             {
               $lsfotos="&nbsp;";
             }
+          }
         }   
       }
-
-      if (strlen($orden)>0)
+      
+      if ($orden>0)
       {
-        $fila="
+        if ($estadoorden=="F")
+        {//SE TRATANDAN LAS ORDENES FINALIZADAS
+        }
+        else
+        {
+          $fila="
                 <tr>
                     <th scope='row'><a href='#'>#".$orden."</a></th>
                     <td>".$titulo."</td>
                     <td>".$lsfotos."</td>";
-        
-        switch ($estadoorden)
-        {
-          case "F": //ORDEN FINALIZADA - AZUL
-                  $color="<span class='badge bg-primary'>Finalizada</span>";
-          break;
-          case "D": //ORDEN DISPONIBLE - AMARILLO bg-warning
-                  $color="<span class='badge bg-warning'>Disponible</span>";
-          break;
-          case "P": //ORDEN EN PROCESO - VERDE bg-success 
-                  $color="<span class='badge bg-success'>En proceso</span>";
-          break;
-          default: //ORDEN DEMORADA - ROJO bg-danger 
-                  $color="<span class='badge bg-danger'>Atrazado</span>";
-          break;
-        }
+          
+          switch ($estadoorden)
+          {
+            case "F": //ORDEN FINALIZADA - AZUL
+                    $color="<span class='badge bg-primary'>Finalizada</span>";
+            break;
+            case "D": //ORDEN DISPONIBLE - AMARILLO bg-warning
+                    $color="<span class='badge bg-warning'>Disponible</span>";
+            break;
+            case "P": //ORDEN EN PROCESO - VERDE bg-success 
+                    $color="<span class='badge bg-success'>En proceso</span>";
+            break;
+            default: //ORDEN DEMORADA - ROJO bg-danger 
+                    $color="<span class='badge bg-danger'>Atrazado</span>";
+            break;
+          }
 
-        switch($estado)
-        {
-          case "FI"://ORDEN FINALIZADA
-                    $fila=$fila."
+          switch($estado)
+          {
+            case "FI"://ORDEN FINALIZADA
+                      $fila=$fila."
                                   <td>".$color."</td>
                                   <td>
                                       &nbsp;
@@ -335,21 +666,21 @@
                                   else $fila=$fila."<a href='#'>
                                                       <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                     </a></td></tr>";
-                  $bandera="";
-          break;
-          case "DI": //ORDEN DISPONIBLE
-          case "PR"://ORDEN EN PROCESO
-          case "AU"://ORDEN AUTORIZADA POR SUPERVISOR AL MECANICO
-                  if ($bandera=="del")
-                  {//BORRA EMPLEADO ORDEN
-                      $fila=$fila."
+                    $bandera="";
+            break;
+            case "DI"://ORDEN DISPONIBLE
+            case "PR"://ORDEN EN PROCESO
+            case "AU"://ORDEN AUTORIZADA POR SUPERVISOR AL MECANICO
+                    if ($bandera=="del")
+                    {//BORRA EMPLEADO ORDEN
+                        $fila=$fila."
                                     <td>".$color."</td>
                                     <td>
                                         <a href='#'>
                                             <img src='assets/img/usu_dele.png' alt='Desvincularse de tarea' onclick='desvincularordentrabajo(\"$orden\",\"$idusuario\")'>
                                         </a>
                                     </td>
-                                   <td>
+                                    <td>
                                         <a href='#'>
                                           <img src='assets/img/atender_tarea.png' alt='Continuar con tarea' onclick='atendertareas(\"$orden\",\"$idusuario\")'>
                                         </a>
@@ -360,10 +691,10 @@
                                     else $fila=$fila."<a href='#'>
                                                         <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                       </a></td></tr>";
-                  }
-                  else
-                  {//SE SUMA EMPLEADO ORDEN
-                      $fila=$fila."
+                    }
+                    else
+                    {//SE SUMA EMPLEADO ORDEN
+                        $fila=$fila."
                                     <td>".$color."</td>
                                     <td>
                                         <a href='#'>
@@ -379,12 +710,12 @@
                                     else $fila=$fila."<a href='#'>
                                                         <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                       </a></td></tr>";
-                  }
+                    }
 
-                  $bandera="";
-          break;
-          case "PE"://ORDEN PENDIENTE DE APROBACION POR PARTE DE RESPONSABLE
-                    $fila=$fila."
+                    $bandera="";
+            break;
+            case "PE"://ORDEN PENDIENTE DE APROBACION POR PARTE DE RESPONSABLE
+                      $fila=$fila."
                                   <td>".$color."</td>
                                   <td>
                                       <a href='#'>
@@ -399,284 +730,32 @@
                                   else $fila=$fila."<a href='#'>
                                                       <img src='assets/img/tarea_historia.png' alt='Ver Historial Chasis' onclick='historial(\"$numchasis\")'>
                                                     </a></td></tr>";
-                    $bandera="";
-            break;
-        }
-    
-        desconectar($con);
+                      $bandera="";
+              break;
+          }
+      
+          desconectar($con);
 
-        if (($estado=="DI")||($estado=="PR")||($estado=="AU")||($estado=="FI")) 
-        {
-          $filasproydis=$filasproydis."".$fila;
-        }
+          if (($estado=="DI")||($estado=="PR")||($estado=="AU")||($estado=="FI")) 
+          {
+            $filasproydis=$filasproydis."".$fila;
+          }
 
-        if ($estado=="PE") 
-        {
-          $filasap=$filasap."".$fila;
+          if ($estado=="PE") 
+          {
+            $filasap=$filasap."".$fila;
+          }
         }
       }
-      else $fila="<tr><td colspan='7' style='text-align: center;'>Sin información a mostrar</td></tr>";
+      else $filasproydis="<tr><td colspan='7' style='text-align: center;'>Sin información a mostrar</td></tr>";
+      
     }
   }
   else
   {
-    header('Location: index.php');
-    exit;
+    echo "<script> window.location.href='index.html'</script>";
   }   
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-  <title>SMATE</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <!--link href="https://fonts.gstatic.com" rel="preconnect"-->
-  <link href="assets/font/Open_Sans.css" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="assets/css/style.css" rel="stylesheet">
-
-  <!-- =======================================================
-  POR OTRO LADO LAS TAREAS PUEDEN TENER LOS SIGUIENTES ESTADOS
-  * D => DISPONIBLES PARA SU ATENCION
-  * P => EN PROCESO SE ESTA ATENDIENDO
-  * F => TAREA TERMINADA
-  ======================================================== -->
-  <script>
-    function iniciar(num,idtarea,idmecanico) 
-    {
-      if (num<=0 && idtarea<=0 && idmecanico<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            
-           // alert("VALORES INICIALES=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
-            
-            var resp=this.responseText;
- 
-            if (resp=="0") 
-            {
-              //alert ("El valor de respesta fue: "+resp);
-          
-              atendertareas(num,idmecanico);
-            }
-          }
-        };
-        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=I&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico, false);
-        xmlhttp.send();
-      }
-    }
-
-    function aprocesar(num,idtarea,idmecanico) 
-    {
-      if (num<=0 && idtarea<=0 && idmecanico<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            
-           // alert("VALORES INICIALES=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
-            
-            var resp=this.responseText;
- 
-            if (resp=="0") 
-            {
-              //alert ("El valor de respesta fue: "+resp);
-          
-              atendertareas(num,idmecanico);
-            }
-          }
-        };
-        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=P&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico, false);
-        xmlhttp.send();
-      }
-    }
-
-    function finalizar(num,idtarea,idmecanico) 
-    {
-      var obs=document.getElementById("txtobservacion").value;// "Se finaliza por prueba de CESAR";
-
-      if ((num<=0)&&(idtarea<=0)&&(idmecanico<=0)) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            //alert ('VINCULAR orden ='+num+" y tarea ='+idtarea+" y idempleado="+idmecanico);
-            var resp=this.responseText;
- 
-            if (resp=="0") 
-            {
-              //alert("FINALIZAR=>Orden:"+num+"-Tarea:"+idtarea+"-Mecanico:"+idmecanico+"-Observacion:"+obs);
- 
-              atendertareas(num,idmecanico);
-            }
-          }
-        };
-        xmlhttp.open('GET', 'gestionartareamecanico.php?estado=F&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico+'&obs='+obs, false);
-        xmlhttp.send();
-      }
-    }
-
-    function vermovimientostareasvsempledos() 
-    {
-      location.reload();
-    }
-
-    function vincularordentrabajo(num,id) 
-    {
-      if (num<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            //alert ('numero orden='+num+" y idempleado="+id);
-            document.getElementById("lsinfo").innerHTML=this.responseText;
-            //var bandera=this.responseText;
-
-            if (document.getElementById("lsinfo").value==0) 
-            {
-              autoriza(num,id);
-              //location.reload();
-            }
-          }
-        };
-        xmlhttp.open('GET', 'vincularusuarioordentrabajo.php?num='+num+'&id='+id, false);
-        xmlhttp.send();
-      }
-    }
-
-    function desvincularordentrabajo(num,id) 
-    {
-      if (num<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            //alert ('DESVINCULAR numero orden='+num+" y idempleado="+id);
-            document.getElementById("lsinfo").innerHTML=this.responseText;
-
-            if (document.getElementById("lsinfo").value==0) 
-            {
-              location.reload();
-            }
-          }
-        };
-        xmlhttp.open('GET', 'desvincularordentrabajo.php?num='+num+'&id='+id, false);
-        xmlhttp.send();
-      }
-    }
-
-    function atendertareas(num,id) 
-    {
-      if (num<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            //alert ('numero orden='+num);
-            document.getElementById("lsdetalles").innerHTML=this.responseText;
-          }
-        };
-        xmlhttp.open('GET', 'atendertareas.php?num='+num+'&id='+id, false);
-        xmlhttp.send();
-      }
-    }
-
-    function historial(num) 
-    {
-      if (num<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            //alert ('numero chasis='+num);
-            document.getElementById("lsdetalles").innerHTML=this.responseText;
-          }
-        };
-        xmlhttp.open('GET', 'historialorden.php?num='+num+"&ver=S", false);
-        xmlhttp.send();
-      }
-    }
-
-    function vertabla(num)
-    {
-      //alert("Se muestra historial de la orden " + num);
-
-      if (num<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            //alert ('numero orden='+num);
-            document.getElementById("tbldetalleorden").innerHTML=this.responseText;
-          }
-        };
-        xmlhttp.open('GET', 'vertablatareas.php?num='+num, false);
-        xmlhttp.send();
-      }
-    }
-
-    function deshabilitaRetroceso()
-    {
-      window.location.hash="no-back-button";
-      window.location.hash="Again-No-back-button" //chrome
-      window.onhashchange=function(){window.location.hash="";}
-    }
-
-    function autoriza(num,id) 
-    {
-      if (num<=0) {
-        return;
-      } else {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            //alert ('Estodos son los datos numero orden='+num+" y idempleado="+id);
-            document.getElementById("lsinfo").innerHTML=this.responseText;
-
-            if (document.getElementById("lsinfo").value==0) 
-            {
-              location.reload();
-            }
-          }
-        };
-        xmlhttp.open('GET', 'autoriza.php?num='+num+'&id='+id, false);
-        xmlhttp.send();
-      }
-    }
-  </script>
-</head>
-
-<body>
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -684,7 +763,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SAM</span>
+        <span class="d-none d-lg-block">SMATE</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -778,6 +857,7 @@
             <div class="card-body">
               <h5 class="card-title">Ordenes de Trabajo Disponibles/Autorizadas</h5>
               <!-- Table with stripped rows -->
+             
               <table class="table datatable">
                 <thead>
                   <tr>
@@ -802,9 +882,9 @@
       </div>
     </section>
    
-    <?php echo $filasap; ?>
+    <?php if ($filasap>0) echo $filasap; else ""; ?>
 
-    <input id="lsinfo" name="lsinfo" type="hidden" value="0" />
+    <input id="lsinfo" name="lsinfo" type="hidden" value="." />
      
     </span>
 

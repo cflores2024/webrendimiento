@@ -1,84 +1,10 @@
-<!--// CHEQUEO DATOS LOGIN -->
 <?php
-include "configuracion/conexion.php";
 
-$id=0;
-$apenomb="";
-$tipousu="";
-$foto="";
-$txtusu=$_GET['username'];
-$txtpass=$_GET['password'];
-
-  if (isset($_GET['username']))
-  {
-      try 
-      {
-        $cnx=conectar();
-       
-        $sql = "SELECT a.`idpersona`,CONCAT(a.`apellido`,', ',a.`nombre`) AS usuario,b.`tipopersona`,a.`urlfoto`,a.`nombrecortousu`
-                FROM personas a INNER JOIN tipopersona b ON (a.`idtipopersona`=b.`idtipopersona`)
-                WHERE a.`accion`!='B' AND a.`emailusuario`='". $txtusu ."' AND a.`pass`='". $txtpass ."';";
-
-        $result = $cnx->query($sql);
-
-        if (!$result) 
-        {
-          die('Invalid query: ' . $cnx->error);
-        }
-
-        if (!$result) 
-        {
-          die('Invalid query: ' . $mysqli->error);
-        }
-        else
-        {
-           // echo $sql;
-
-            while($row = $result->fetch_assoc())
-            {
-              $id=$row['idpersona'];
-              $apenomb=$row['usuario'];
-              $tipousu=$row['tipopersona'];
-              $foto=$row['urlfoto'];
-              $nombrecorto=$row['nombrecortousu'];
-            }
-        }
-
-       // echo "IDUSUARIOS=".$id;
-       // echo "nombre de base de datos=".$base;
-
-        desconectar($cnx);
-     
-        if ($id>0)
-        {
-          session_start();
-          
-          $_SESSION['id']=$id;
-          $_SESSION['apenomb']=$apenomb;
-          $_SESSION['tipo']=$tipousu;
-          $_SESSION['foto']=$foto;
-          $_SESSION['nombrecorto']=$nombrecorto;
-        }
-
-        //REDIRIJO A PAG DEL MENU PRINCIPAL SI EXISTE USUARIO INGRESADO
-        if ($id>0)
-        {
-          if ($tipousu=="Gerente") header('Location: home.php');
-          else header('Location: avancestareas.php');
-          
-          exit;
-        }
-      }
-      catch(Exception $err)
-      {
-          $cnx=false;
-      }
-    }
+  session_start();
 ?>
-
+<!--// CHEQUEO DATOS LOGIN -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -120,6 +46,104 @@ $txtpass=$_GET['password'];
 </head>
 
 <body onload="deshabilitaRetroceso()">
+<?php
+
+include "configuracion/conexion.php";
+
+  $id=0;
+  $apenomb="";
+  $tipousu="";
+  $foto="";
+  $txtusu="";
+  $txtpass="";
+  $txtpassreg="";
+
+  if (isset($_GET['username']))
+  {
+    $txtusu=$_GET['username'];
+    $txtpass=$_GET['password'];
+
+      try 
+      {
+        $cnx=conectar();
+       
+        $sql = "SELECT a.`idpersona`,CONCAT(a.`apellido`,', ',a.`nombre`) AS usuario,b.`tipopersona`,a.`urlfoto`,a.`nombrecortousu`,a.pass
+                FROM personas a INNER JOIN tipopersona b ON (a.`idtipopersona`=b.`idtipopersona`)
+                WHERE a.`accion`!='B' AND a.`emailusuario`='". $txtusu ."';"; //AND a.`pass`='". $txtpass ."';";
+
+        $result = $cnx->query($sql);
+
+        if (!$result) 
+        {
+          die('Invalid query: ' . $cnx->error);
+        }
+
+        if (!$result) 
+        {
+          die('Invalid query: ' . $mysqli->error);
+        }
+        else
+        {
+           // echo $sql;
+
+            while($row = $result->fetch_assoc())
+            {
+              $id=$row['idpersona'];
+              $apenomb=$row['usuario'];
+              $tipousu=$row['tipopersona'];
+              $foto=$row['urlfoto'];
+              $nombrecorto=$row['nombrecortousu'];
+              $txtpassreg=$row['pass'];
+            }
+        }
+
+       // echo "IDUSUARIOS=".$id;
+       // echo "nombre de base de datos=".$base;
+
+        desconectar($cnx);
+     
+        //CHEQUEO SI LOS PASS SON IGUALES Y CORRECTOS
+        if (password_verify($txtpass, $txtpassreg))
+        {
+          if ($id>0)
+          {
+            $_SESSION['id']=$id;
+            $_SESSION['apenomb']=$apenomb;
+            $_SESSION['tipo']=$tipousu;
+            $_SESSION['foto']=$foto;
+            $_SESSION['nombrecorto']=$nombrecorto;
+          }
+
+          //REDIRIJO A PAG DEL MENU PRINCIPAL SI EXISTE USUARIO INGRESADO
+          if ($id>0)
+          {
+            if ($tipousu=="Gerente") 
+            {
+              echo "<script> window.location.href='home.php'</script>";
+            }
+            else 
+            {
+              echo "<script> window.location.href='avancestareas.php'</script>";
+            }
+          }
+          else
+          {
+            $id=-1;
+          }
+        }
+        else
+        {
+          $id=-1;
+        }
+      }
+      catch(Exception $err)
+      {
+          $cnx=false;
+      }
+    }
+?>
+
+
 
   <main>
     <div class="container">
@@ -156,12 +180,12 @@ $txtpass=$_GET['password'];
                       <div class="invalid-feedback">Por favor ingrese su password!</div>
                     </div>
 
-                    <div class="col-12">
+                    <!--div class="col-12">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe">
                         <label class="form-check-label" for="rememberMe">Recuerdame en este equipo</label>
                       </div>
-                    </div>
+                    </div-->
 
 <?php
                   if (($id<=0)&&(strlen($txtusu)>0))
@@ -174,7 +198,7 @@ $txtpass=$_GET['password'];
                   }
 ?>
                     <div class="col-12">
-                      <button class="btn btn-primary w-100" type="submit" onclick="loginusuario()">Login</button>
+                      <button class="btn btn-primary w-100" type="submit">Login</button>
                     </div>
                   </form>
 

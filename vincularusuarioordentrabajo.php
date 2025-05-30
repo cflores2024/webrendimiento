@@ -1,10 +1,9 @@
-<!--// CHEQUEO DATOS LOGIN -->
 <?php
+  session_start();
+
   include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
 
-  session_start();
-  
   if (isset($_SESSION['id']))
   {  
     $idusuario=$_SESSION['id'];
@@ -37,10 +36,11 @@
     {
         echo "1"; //La acción dio error
     }
+    
+    //echo "recibe para vincular idusuario=".$idusuario." con orden numero=".$numorden." y va con accion=".$accion." estado=".$estado." y observacion=".$obs." con fecha accion=".$fechaaccion;
   }
   else
   {
-    header('Location: index.php');
-    exit;
+    echo "<script> window.location.href='index.html'</script>";
   }   
 ?>

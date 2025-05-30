@@ -1,9 +1,8 @@
-<!--// CHEQUEO DATOS LOGIN -->
 <?php
-  include "configuracion/conexion.php";
-  date_default_timezone_set("America/Argentina/Tucuman");
-
   session_start();
+
+  include "configuracion/conexion.php";
+  date_default_timezone_set("America/Argentina/Tucuman"); 
   
   if (isset($_SESSION['id']))
   {  
@@ -41,7 +40,6 @@
   }
   else
   {
-    header('Location: index.php');
-    exit;
+    echo "<script> window.location.href='index.html'</script>";
   }   
 ?>
