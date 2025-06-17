@@ -13,21 +13,28 @@
     $numorden=$_GET['orden'];
     $estado=$_GET['estado'];
     $titulo=$_GET['titulo'];
+    $dias=$_GET['dias'];
+    $mecanico=$_GET['mecanico'];
     $msn="";
+    $idmecanico="1";
+
+    //SI LA ORDEN LA ESTA GESTIONANDO EL MECANICO AUTORIZA EL ADMINISTRADOR EN OTRO CASO NO SE TOCA QUIEN AUTORIZA
+    if ($mecanico=="1") $idmecanico="1";
+    else $idmecanico=$id;
 
     if ($numorden>0)
     {//SE CAMBIA DE ESTADO DE LA ORDEN SELECCIONADA A DISPONIBLE PARA QUE ALGUN MECANICO TRATE ALGUNA 
      //DE SUS TAREAS
   
       $accion="M";
-      $fechaaccion=date("Y-m-d H:i:s"); 
+      $fechaaccion=date("Y-m-d H:i:s");
       //PONE ORDEN EN DISPONIBLE
-      $sql="UPDATE numeroorden SET tituloorden=?,estado=?,idpersonadisp=?,accion=?,idempleadoaccion=?,fechaaccion=?
+      $sql="UPDATE numeroorden SET tituloorden=?,fentrega=DATE_ADD(fecha, INTERVAL ? DAY),estado=?,idpersonadisp=?,accion=?,idempleadoaccion=?,fechaaccion=?
             WHERE numorden=?;";
 
       $con=conectar();
       $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-      mysqli_stmt_bind_param($sentencia,'sssssss',$titulo,$estado,$id,$accion,$id,$fechaaccion,$numorden);
+      mysqli_stmt_bind_param($sentencia,'ssssssss',$titulo,$dias,$estado,$idmecanico,$accion,$id,$fechaaccion,$numorden);
       $resp2=mysqli_stmt_execute($sentencia);
       
       desconectar($con);
@@ -81,124 +88,147 @@
       $msn="Error!!!. La orden no pudo ser cambiada de estado a DISPONIBLE. Intente de nuevo.";
     } 
   
-    //SE TRATAN TODAS LAS ORDENES A VER COMO NO DISPONIBLES
-    $sql = "SELECT b.`iddetalleorden`,a.`patente`,b.`numeroorden`,a.`estado`,
-         (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=a.`numchasis` AND tt.numorden!=a.`numorden`) historial,
-    c.`idtarea`,c.`descripciontarea`
-            FROM numeroorden a INNER JOIN detalleorden b ON (a.`numorden`=b.`numeroorden` AND b.`accion`!='B')
-                               INNER JOIN tareas c ON (c.`idtarea`=b.`idtarea` AND c.`accion`!='B')
-            WHERE a.`estado`='S'
-            ORDER BY a.`fechaaccion`;";
-
-    $con=conectar();
-
-    $result = $cnx->query($sql);
-
-    if (!$result) 
-    {
-      die('Invalid query: ' . $cnx->error);
-    }
-
-    if (!$result) 
-    {
-      die('Invalid query: ' . $mysqli->error);
+    if ($mecanico=="1")
+    { 
+      if ($msn=="") echo "OK"; 
+      else echo $msn;
     }
     else
     {
 
-      $encabezado="";
-      $info="";
-      $lsdatos="";
-      $numorden="";
-      $item=1;
-      $matricula="";
-      $lsdatosnodisp="";
-      $lsdatosdisp="";
-    
-      while($row = mysqli_fetch_array($result))
+      //SE TRATAN TODAS LAS ORDENES A VER COMO NO DISPONIBLES
+      $sql = "SELECT b.`iddetalleorden`,a.`patente`,b.`numeroorden`,a.`estado`,
+          (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=a.`numchasis` AND tt.numorden!=a.`numorden`) historial,
+      c.`idtarea`,c.`descripciontarea`
+              FROM numeroorden a INNER JOIN detalleorden b ON (a.`numorden`=b.`numeroorden` AND b.`accion`!='B')
+                                INNER JOIN tareas c ON (c.`idtarea`=b.`idtarea` AND c.`accion`!='B')
+              WHERE a.`estado`='S'
+              ORDER BY a.`fechaaccion`;";
+
+      $con=conectar();
+
+      $result = $cnx->query($sql);
+
+      if (!$result) 
       {
-          if ($numorden==$row['numeroorden'])
-          {
-            $info=$info."<p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
-          }
-          else
-          {
-            if (strlen($info)>0)
-            {//VIENE CON DATOS DE QUE CORRESPONDEN A TODOS LOS ELEMENTOS DE UN ACORDEON
-              $lsdatos=$lsdatos."".$encabezado."".$info."</div></div></div>";
-              $item=1;
-              $encabezado="";
-              $info="";
-            }
+        die('Invalid query: ' . $cnx->error);
+      }
 
-            $numorden=$row['numeroorden'];
-            $matricula=$row['patente'];
-            $encabezado="<div class='accordion-item'>
-                          <h2 class='accordion-header' id='flush-heading".$numorden."'>
-                            <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapse".$numorden."' aria-expanded='false' aria-controls='flush-collapse".$numorden."'>
-                              Orden de trabajo #".$numorden."&nbsp;&nbsp;&nbsp;&nbsp;";
-            
-            if ($row['historial']=="S") 
-            {//LA ORDEN PRESENTA UN HISTORIAL
-            /* $encabezado=$encabezado."<a href='#' onclick='historial(\"$matricula\")'>
-                                        <img src='assets/img/tarea_historia.png' alt='La orden ya presenta un historial'>
-                                      </a>";
-                                      */
-            }
+      if (!$result) 
+      {
+        die('Invalid query: ' . $mysqli->error);
+      }
+      else
+      {
 
-                  
-            
-            $poup="
-                    <div class='modal fade' id='".$numorden."' tabindex='-1'>
-                      <div class='modal-dialog modal-dialog-centered'>
-                        <div class='modal-content'>
-                          <div class='modal-header'>
-                            <h5 class='modal-title'>Titulo Descripción</h5>
-                            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-                          </div>
-                          <div class='modal-body'>
-                                <form>
-                                  <div class='row mb-3'>
-                                    <label for='txttitulo' class='col-md-4 col-lg-3 col-form-label'>Titulo orden:</label>
-                                    <div class='col-md-8 col-lg-9'>
-                                      <input name='txttitulo' type='text' class='form-control' id='txttitulo".$numorden."' placeholder='Ingrese un titulo para esta orden' value=''>
+        $encabezado="";
+        $info="";
+        $lsdatos="";
+        $numorden="";
+        $item=1;
+        $matricula="";
+        $lsdatosnodisp="";
+        $lsdatosdisp="";
+      
+        while($row = mysqli_fetch_array($result))
+        {
+            if ($numorden==$row['numeroorden'])
+            {
+              $info=$info."<p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
+            }
+            else
+            {
+              if (strlen($info)>0)
+              {//VIENE CON DATOS DE QUE CORRESPONDEN A TODOS LOS ELEMENTOS DE UN ACORDEON
+                $lsdatos=$lsdatos."".$encabezado."".$info."</div></div></div>";
+                $item=1;
+                $encabezado="";
+                $info="";
+              }
+
+              $numorden=$row['numeroorden'];
+              $matricula=$row['patente'];
+              $encabezado="<div class='accordion-item'>
+                            <h2 class='accordion-header' id='flush-heading".$numorden."'>
+                              <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapse".$numorden."' aria-expanded='false' aria-controls='flush-collapse".$numorden."'>
+                              <input type='checkbox' name='".$numorden."' value='".$numorden."'>&nbsp;&nbsp;Orden de trabajo #".$numorden."&nbsp;&nbsp;&nbsp;&nbsp;";
+              
+              if ($row['historial']=="S") 
+              {//LA ORDEN PRESENTA UN HISTORIAL
+              /* $encabezado=$encabezado."<a href='#' onclick='historial(\"$matricula\")'>
+                                          <img src='assets/img/tarea_historia.png' alt='La orden ya presenta un historial'>
+                                        </a>";
+                                        */
+              }                 
+              
+              $poup="
+                      <div class='modal fade' id='".$numorden."' tabindex='-1'>
+                        <div class='modal-dialog modal-dialog-centered'>
+                          <div class='modal-content'>
+                            <div class='modal-header'>
+                              <h5 class='modal-title'>Titulo Descripción</h5>
+                              <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                            </div>
+                            <div class='modal-body'>
+                                  <form>
+                                    <div class='row mb-3'>
+                                      <label for='txttitulo' class='col-md-4 col-lg-3 col-form-label'>Titulo orden:</label>
+                                      <div class='col-md-8 col-lg-9'>
+                                        <input name='txttitulo' type='text' class='form-control' id='txttitulo".$numorden."' placeholder='Ingrese un titulo para esta orden' value=''>
+                                      </div>
+                                      <p></p>
+                                      <label for='txtdias' class='col-md-4 col-lg-3 col-form-label'>Tiempo:</label>
+                                      <div class='col-md-8 col-lg-9'>
+                                         
+                                        <div class='form-floating mb-3'>
+                                          <select class='form-select' id='txtdias".$numorden."' aria-label='State'>
+                                            <option value='0' selected>Hoy</option>";
+                                              $ccdias="";                
+                                              
+                                              for ($i=1;$i<=365;$i++)
+                                              {
+                                                $ccdias=$ccdias."<option value='".$i."'>".$i." día</option>";
+                                              }
+                                              $poup=$poup.$ccdias.         "</select>
+                                          <label for='txtdias".$numorden."'>Duración de la tarea</label>
+                                        </div>
+                                      </div>
+                                      
                                     </div>
-                                  </div>
-                                </form>
-                          </div>
-                          <div class='modal-footer'>
-                            <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
-                            <button type='button' class='btn btn-primary' data-bs-dismiss='modal' onclick='disponible(".$numorden.")'>Aceptar</button>
+                                  </form>
+                            </div>
+                            <div class='modal-footer'>
+                              <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
+                              <button type='button' class='btn btn-primary' data-bs-dismiss='modal' onclick='disponible(".$numorden.")'>Aceptar</button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ";
-                  
-            $encabezado=$encabezado."<a href='#' data-bs-toggle='modal' data-bs-target='#".$numorden."'>
-                                    <!--a href='#' onclick='disponible(".$numorden.",'')'-->
-                                      <img src='assets/img/tarea_cambio_der.png' alt='Cambiar estado tarea'>
-                                    </a>
-                                  </button>
+                    ";
+                    
+              $encabezado=$encabezado." <a href='#' data-bs-toggle='modal' data-bs-target='#".$numorden."'>
+                                          <img src='assets/img/tarea_cambio_der.png' alt='Cambiar estado orden de trabajo'>
+                                        </a>             
+                                    </button>
 
-                                </h2>
-                              ". $poup;
+                                  </h2>
+                                ". $poup;
 
-            $info="<div id='flush-collapse".$numorden."' class='accordion-collapse collapse' aria-labelledby='flush-heading".$numorden."' data-bs-parent='#accordionFlush".$numorden."'>
-                    <div class='accordion-body'>
-                    <p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
-          }
+              $info="<div id='flush-collapse".$numorden."' class='accordion-collapse collapse' aria-labelledby='flush-heading".$numorden."' data-bs-parent='#accordionFlush".$numorden."'>
+                      <div class='accordion-body'>
+                      <p>#".$item."&nbsp;".$row['descripciontarea']."</p>";
+            }
 
-          $item=$item+1;
+            $item=$item+1;
+        }
+
+        $lsdatosnodisp=$lsdatos."".$encabezado."".$info."</div></div></div>";
       }
 
-      $lsdatosnodisp=$lsdatos."".$encabezado."".$info."</div></div></div>";
-    }
+      desconectar($con);
 
-    desconectar($con);
-
-    //if (strlen($info)>0)
-    //{
+      //if (strlen($info)>0)
+      //{
       //SE BUSCAN Y TRATAN TODAS LAS ORDENES A VER COMO DISPONIBLES
       $sql = "SELECT b.`iddetalleorden`,a.`patente`,b.`numeroorden`,a.`estado`,
           (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=a.`numchasis` AND tt.numorden!=a.`numorden`) historial,
@@ -253,7 +283,7 @@
               $encabezado="<div class='accordion-item'>
                             <h2 class='accordion-header' id='flush-heading".$numorden."'>
                               <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#flush-collapse".$numorden."' aria-expanded='false' aria-controls='flush-collapse".$numorden."'>
-                                Orden de trabajo #".$numorden."&nbsp;&nbsp;&nbsp;&nbsp;";
+                                <input type='checkbox' name='".$numorden."' value='".$numorden."'>&nbsp;&nbsp;Orden de trabajo #".$numorden."&nbsp;&nbsp;&nbsp;&nbsp;";
               
               if ($row['historial']=="S") 
               {//LA ORDEN PRESENTA UN HISTORIAL
@@ -265,7 +295,7 @@
               }
 
               $encabezado=$encabezado."<a href='#' onclick='nodisponible(".$numorden.")'>
-                                        <img src='assets/img/tarea_cambio_izq.png' alt='Cambiar estado tarea'>
+                                        <img src='assets/img/tarea_cambio_izq.png' alt='Cambiar estado orden de trabajo'>
                                       </a>
                                     </button>
                                   </h2>
@@ -318,14 +348,11 @@
 
                 </div>
               </div>". $poup ."</section>";
-   /* }
-    else
-    {
-      echo "<p style='text-align: center;'>Sin datos para mostrar</p>";
-    }*/
-}
-else
-{
-    echo "<script> window.location.href='index.html'</script>";
-}   
+      
+    }
+  }
+  else
+  {
+      echo "<script> window.location.href='index.html'</script>";
+  }   
 ?>

@@ -16,10 +16,11 @@ if (isset($_SESSION['id']))
     if (isset($_GET["num"]))
     {  
       $numorden=$_GET["num"];
+      $mostrar=$_GET["mostrar"];
     
-      $sql = "SELECT a.`numorden`, a.`tituloorden`, a.`kilometraje`, a.`modelo`
-              FROM numeroorden a
-              WHERE a.`accion`!='B' AND a.`numorden`=". $numorden;
+      $sql = "SELECT a.`numorden`, a.`tituloorden`, a.`fventa`, a.`kilometraje`, b.`modelomarca` AS modelo
+              FROM numeroorden a INNER JOIN modelos b ON (a.`codmodelo`=b.`codmodelo`)
+              WHERE a.`accion`!='B' AND a.`numorden`=".$numorden;
 
       $con=conectar();
 
@@ -36,10 +37,14 @@ if (isset($_SESSION['id']))
       }
       else
       {
+        //echo "NUMERO DE LA ORDEN=>".$numorden;
+        //echo "sql=>".$sql;
+
         while($row = mysqli_fetch_array($result))
         {
-          echo "
-                <section class='section'>
+          //echo "NUMERO DE LA ORDEN=>".$numorden;
+          
+          echo "<section class='section'>
                   <div class='row'>
                     <div class='col-lg-6'>
 
@@ -69,35 +74,34 @@ if (isset($_SESSION['id']))
                         <div class='card-body'>
                           <h5 class='card-title'>Detalle Auto</h5>
                           <div class='row mb-3'>
-                              <label for='inputText' class='col-sm-3 col-form-label'>Kilometraje</label>
-                              <div class='col-sm-9'>
-                                <input type='text' class='form-control' value='".$row['kilometraje']."'>
-                              </div>
-                          </div>
-                          <div class='row mb-3'>
                               <label for='inputEmail' class='col-sm-3 col-form-label'>Modelo</label>
                               <div class='col-sm-9'>
                                 <input type='text' class='form-control' value='".$row['modelo']."'>
                               </div>
-                            </div>
-                        </div>
+                          </div>
+                          <div class='row mb-3'>
+                              <label for='inputEmail' class='col-sm-3 col-form-label'>Fecha Venta</label>
+                              <div class='col-sm-9'>
+                                <input type='text' class='form-control' value='".$row['fventa']."'>
+                              </div>
+                          </div>
+                          </div>
                       </div>
                     </div>
                   </div>
                 </section>";
+                
         }
 
         desconectar($con);
         //============================================================================
         //SE TRATAN TAREAS DE INICIO DE LA ORDEN DISPONIBLE
-
-        $sql="SELECT a.`numorden`, b.`idtarea`,c.`descripciontarea`,e.`nombrecortousu`,d.`fechaautoriza`
+        $sql="SELECT a.`numorden`, b.`idtarea`,c.`descripciontarea`,d.`nombrecortousu`,b.`fechaaccion` AS fechaautoriza
               FROM numeroorden a INNER JOIN detalleorden b ON (a.`numorden`=b.`numeroorden` AND b.`accion`!='B')
                                 INNER JOIN tareas c ON (b.`idtarea`=c.`idtarea` AND c.`accion`!='B') 
-                                INNER JOIN autorizaraccorden d ON (d.`numorden`=a.`numorden` AND d.accion!='B')
-                                INNER JOIN personas e ON (e.`idpersona`=d.`idempleadoaccion` AND e.`accion`!='B') 
-              WHERE a.`accion`!='B' AND b.`estado`='D' AND d.idpersona=". $idusuario ." AND a.`numorden`=". $numorden ."
-              ORDER BY d.`fechaautoriza`;";
+                                INNER JOIN personas d ON (d.`idpersona`=a.`idpersonadisp` AND d.`accion`!='B') 
+              WHERE a.`accion`!='B' AND b.`estado`='D' AND a.`numorden`=". $numorden ."
+              ORDER BY b.`fechaaccion`;";
 
         $con=conectar();
 
@@ -121,33 +125,34 @@ if (isset($_SESSION['id']))
           while($row = mysqli_fetch_array($result))
           {
             $idtarea=$row['idtarea'];
-            $datos=$datos ."
-                            <a href='#' data-bs-toggle='tooltip' data-bs-placement='top' title='Da entrada a la tarea para su atención.' onclick='aprocesar(\"$numorden\",\"$idtarea\",\"$idusuario\")'>
+           
+            $datos=$datos ."<a href='#' data-bs-toggle='tooltip' data-bs-placement='top' title='Da entrada a la tarea para su atención.' onclick='aprocesar(\"$numorden\",\"$idtarea\",\"$idusuario\")'>
                               <div class='alert alert-danger alert-dismissible fade show' role='alert'>
-                               ". $row['descripciontarea'] ."
+                              ". $row['descripciontarea'] ."
                               <p>
                                 <code>Usuario: ". $row['nombrecortousu'] ." <br/> ". $row['fechaautoriza'] ."</code>
                               </p>
                               </div>
-                            </a>
-                          ";
+                            </a>";
+                            
           }
 
-          $opdisponibles="
-                          <div class='col-lg-4'>
+          $opdisponibles="<div class='col-lg-4'>
                             <div class='card'>
                               <div class='card-body'>
                               
-                                <h5 class='card-title'>Tareas Disponibles</h5>
+                                <h5 class='card-title'>Tareas Disponibles
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
-                                <!-- Lista De Tareas Disponibles-->
+          if ($mostrar=="S") $opdisponibles=$opdisponibles."<a href='#'><img src='assets/img/nueva_tarea.png' alt='Profile' data-bs-toggle='modal' data-bs-target='#NuevaTarea'></a></h5>";
+
+          $opdisponibles=$opdisponibles."<!-- Lista De Tareas Disponibles-->
                                 ". $datos ."
                                 <!-- Fin Lista De Tareas Disponibles -->
                                               
                               </div>
                             </div>
-                          </div>
-                        ";
+                          </div>";
 
           desconectar($con);
 
@@ -155,11 +160,11 @@ if (isset($_SESSION['id']))
           //============================================================================
 
           //============================================================================
-          //SE TRATAN TAREAS DE PROCESO DE LA ORDEN DISPONIBLE
-            $sql="SELECT a.`numorden`, a.`idtarea`,b.`descripciontarea`
+          //SE TRATAN TAREAS EN PROCESO DE LA ORDEN DISPONIBLE
+            $sql="SELECT a.`numorden`, a.`idtarea`,b.`descripciontarea`,a.suspendida
                   FROM afectadostareas a INNER JOIN tareas b ON (b.`idtarea`=a.`idtarea` AND b.`accion`!='B') 
                   WHERE a.`estado`='P' AND a.`numorden`=". $numorden ." 
-                  GROUP BY a.`numorden`, a.`idtarea`,b.`descripciontarea`
+                  GROUP BY a.`numorden`, a.`idtarea`,b.`descripciontarea`,a.suspendida
                   ORDER BY a.`idtarea`,a.`fechaobs`;";
             
             $con=conectar();
@@ -184,12 +189,15 @@ if (isset($_SESSION['id']))
               while($row = mysqli_fetch_array($result))
               {
                 $idtarea=$row['idtarea'];
-                $datos=$datos ."
-                                <a href='#' data-bs-placement='top' data-bs-toggle='modal' data-bs-target='#basicModal".$idtarea."'>
-                                  <div class='alert alert-warning alert-dismissible fade show' role='alert'>
-                                    ". $row['descripciontarea'] ."  
-                                    <p>
-                                      <code>Usuario: ";
+                $suspendida=$row['suspendida'];
+
+                if ($suspendida=="S") $datos=$datos ."<a href='#'>";
+                else $datos=$datos ."<a href='#' data-bs-placement='top' data-bs-toggle='modal' data-bs-target='#basicModal".$idtarea."'>";
+
+                if ($suspendida=="S") $datos=$datos."<div class='alert alert-dark  alert-dismissible fade show' role='alert'>"; //TAREA SUSPENDIDA
+                else $datos=$datos."<div class='alert alert-warning alert-dismissible fade show' role='alert'>"; //TAREA EN PROCESO
+
+                $datos=$datos."". $row['descripciontarea'] ."<p><code>Usuario: ";
                 
                 //==================================================CHEQUEO SI EXISTE MECANICO EN LA TAREA
                   $bandera=false;//USADO PARA SABER SI EMPLEADO EXISTE EN LA TAREA
@@ -246,16 +254,38 @@ if (isset($_SESSION['id']))
                     
                     $datos=$datos.$afectados."</code></p><a style='float: right;' href='#'>";
                     
-                    if ($cantparticipan>1)
-                    {//SI HAY MÁS DE UN MECANICO SE PUEDE MOSTRARA EL BOTON DE BORRAR O AGREGAR TAREA EN CASO DE SER UN MECANICO NUEVO DE EXISTIR EL MECANICO EN TAREA SE MUESTRA EL BOTON BAJA
-                      if ($bandera==true) $datos=$datos ."<img src='assets/img/del_tarea.png' alt='Profile' data-bs-toggle='modal' data-bs-target='#basicModalMec".$idtarea."'>";
-                      else $datos=$datos ."<img src='assets/img/add_tarea.png' alt='Profile' onclick='addcolaborartarea(\"$numorden\",\"$idtarea\",\"$idusuario\")'>";
+                    if ($suspendida=="S") //TAREA SUSPENDIDA SOLO SE MUESTRA UN ICONO DE SACAR DE SUSPENDIDA
+                    {
+                       if ($mostrar=="S") $datos=$datos ."<img src='assets/img/sacar_pausa.png' alt='Profile' onclick='reactivartarea(\"$numorden\",\"$idtarea\",\"$idusuario\")'>";
                     }
-                    else 
-                    {//EXISTE UN UNICO MECANICO POR CONSIGUIENTE SE ANALIZA SI ES EL ACTUALMENTE LOGUEADO, DE NO SER SE MUESTRA EL BOTON AGREGAR
-                      if ($bandera==false) $datos=$datos ."<img src='assets/img/add_tarea.png' alt='Profile' onclick='addcolaborartarea(\"$numorden\",\"$idtarea\",\"$idusuario\")'>";
+                    else
+                    {
+                      if ($cantparticipan>1)
+                      {
+                        if ($mostrar=="S")
+                        {
+                          //SI HAY MÁS DE UN MECANICO SE PUEDE MOSTRARA EL BOTON DE BORRAR O AGREGAR TAREA EN CASO DE SER UN MECANICO NUEVO DE EXISTIR EL MECANICO EN TAREA SE MUESTRA EL BOTON BAJA
+                          if ($bandera==true) $datos=$datos ."<img src='assets/img/del_tarea.png' alt='Profile' data-bs-toggle='modal' data-bs-target='#basicModalMec".$idtarea."'>
+                                                              &nbsp;
+                                                              <img src='assets/img/pausar.png' alt='Profile' data-bs-toggle='modal' data-bs-target='#basicPausa".$idtarea."'>";
+                          else $datos=$datos ."<img src='assets/img/add_tarea.png' alt='Profile' onclick='addcolaborartarea(\"$numorden\",\"$idtarea\",\"$idusuario\")'>
+                                              &nbsp;
+                                              <img src='assets/img/pausar.png' alt='Profile' data-bs-toggle='modal' data-bs-target='#basicPausa".$idtarea."'>";
+                        }
+                      }
+                      else 
+                      {
+                        if ($mostrar=="S")
+                        {
+                          //EXISTE UN UNICO MECANICO POR CONSIGUIENTE SE ANALIZA SI ES EL ACTUALMENTE LOGUEADO, DE NO SER SE MUESTRA EL BOTON AGREGAR
+                          if ($bandera==false) $datos=$datos ."<img src='assets/img/add_tarea.png' alt='Profile' onclick='addcolaborartarea(\"$numorden\",\"$idtarea\",\"$idusuario\")'>
+                                                              &nbsp;
+                                                              <img src='assets/img/pausar.png' alt='Profile' data-bs-toggle='modal' data-bs-target='#basicPausa".$idtarea."'>";
+                          else $datos=$datos ."<img src='assets/img/pausar.png' alt='Profile' data-bs-toggle='modal' data-bs-target='#basicPausa".$idtarea."'>";
+                        }
+                      }
                     }
-
+                    
                     desconectar($_con);
                   } 
                 //=====================================FIN CONTROL EXISTE MECANICO EN TAREA
@@ -264,35 +294,13 @@ if (isset($_SESSION['id']))
                   $datos=$datos ."      </a>
                                     </div>
                                   </a>
-                                  
-                                  <div class='card-body'>
-                                    <!-- Cambio Estado al Dejar tarea Modal -->
-                                    <div class='modal fade' id='basicModalMec".$idtarea."' tabindex='-1'>
-                                      <div class='modal-dialog'>
-                                        <div class='modal-content'>
-                                          <div class='modal-header'>
-                                            <h5 class='modal-title'>Salir de Tarea ".$numorden."-".$idtarea."-".$idusuario."
-                                            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-                                          </div>
-                                          <div class='modal-body'>
-                                            <input name='txtobservacionmec' type='text' class='form-control' id='txtobservacionmec' placeholder='Ingrese una observación sobre la tarea a dejar'>
-                                          </div>
-                                          <div class='modal-footer'>
-                                            <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
-                                            <button type='button' class='btn btn-primary' onclick='abandonar(\"$numorden\",\"$idtarea\",\"$idusuario\")' data-bs-dismiss='modal'>Dejar tarea</button>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div><!-- Cambio Estado al Dejar tarea Modal-->
-                                  </div>
-
                                   <div class='card-body'>
                                     <!-- Cambio Estado a Finalizar Modal -->
                                     <div class='modal fade' id='basicModal".$idtarea."' tabindex='-1'>
                                       <div class='modal-dialog'>
                                         <div class='modal-content'>
                                           <div class='modal-header'>
-                                            <h5 class='modal-title'>Finalizar Tarea ".$numorden."-".$idtarea."-".$idusuario."</h5>
+                                            <h5 class='modal-title'>Finalizar Tarea</h5>
                                             <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
                                           </div>
                                           <div class='modal-body'>
@@ -307,13 +315,52 @@ if (isset($_SESSION['id']))
                                       </div>
                                     </div><!-- Finalizar Cambio Estado a Finalizar Modal-->
                                   </div>
-                                ";
+
+                                  <div class='card-body'>
+                                    <!-- Cambio Estado a Finalizar Modal -->
+                                    <div class='modal fade' id='basicModalMec".$idtarea."' tabindex='-1'>
+                                      <div class='modal-dialog'>
+                                        <div class='modal-content'>
+                                          <div class='modal-header'>
+                                            <h5 class='modal-title'>Dejar Tarea</h5>
+                                            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                                          </div>
+                                          <div class='modal-body'>
+                                            <input name='txtobservacionmec' type='text' class='form-control' id='txtobservacionmec' placeholder='Ingrese una observación sobre la tarea a dejar'>
+                                          </div>
+                                          <div class='modal-footer'>
+                                            <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
+                                            <button type='button' class='btn btn-primary' onclick='abandonar(\"$numorden\",\"$idtarea\",\"$idusuario\")' data-bs-dismiss='modal'>Dejar tarea</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div><!-- Finalizar Cambio Estado a Finalizar Modal-->
+                                  </div>
+
+                                  <div class='card-body'>
+                                    <!-- Cambio Estado a Finalizar Modal -->
+                                    <div class='modal fade' id='basicPausa".$idtarea."' tabindex='-1'>
+                                      <div class='modal-dialog'>
+                                        <div class='modal-content'>
+                                          <div class='modal-header'>
+                                            <h5 class='modal-title'>Pausar Tarea</h5>
+                                            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                                          </div>
+                                          <div class='modal-body'>
+                                            <input name='txtobspausa".$idtarea."' type='text' class='form-control' id='txtobspausa".$idtarea."' placeholder='Ingrese una observación sobre el motivo de la pausa'>
+                                          </div>
+                                          <div class='modal-footer'>
+                                            <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
+                                            <button type='button' class='btn btn-primary' onclick='pausartarea(\"$numorden\",\"$idtarea\",\"$idusuario\")' data-bs-dismiss='modal'>Pausar tarea</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div><!-- Finalizar Cambio Estado a Finalizar Modal-->
+                                  </div>";
                 //======================================FIN VENTANAS EMERGENTES SEGUN ACCION PRESIONADAS DE ELIMINAR O AGREGAR COLABORADOR MECANICO O CAMBIAR ESTADO DE LA ORDEN A DISPONIBLE O FINALIZADA
               }
 
-              $opprocesos="
-              
-                            <div class='col-lg-4'>
+              $opprocesos="<div class='col-lg-4'>
                               <div class='card'>
                                 <div class='card-body'>
                                 
@@ -325,8 +372,7 @@ if (isset($_SESSION['id']))
 
                                 </div>
                               </div>
-                            </div>
-                          ";
+                            </div>";
 
               desconectar($con);
 
@@ -362,21 +408,17 @@ if (isset($_SESSION['id']))
                 while($row = mysqli_fetch_array($result))
                 {
                   $idtarea=$row['idtarea'];
-                  $datos=$datos ."
-                                  <a href='#' data-bs-toggle='tooltip' data-bs-placement='top' title='". $row['observacion'] ."'>
+                  $datos=$datos ."<a href='#' data-bs-toggle='tooltip' data-bs-placement='top' title='". $row['observacion'] ."'>
                                       <div class='alert alert-info alert-dismissible fade show' role='alert'>
                                       ". $row['descripciontarea'] ."
                                       <p>
                                         <code>Inicio: ". $row['fini'] ." <br/> Fin: ". $row['ffin'] ."</code>
                                       </p>
                                     </div>
-                                  </a>
-                                ";
+                                  </a>";
                 }
 
-                $opfinalizar="
-                
-                              <div class='col-lg-4'>
+                $opfinalizar="<div class='col-lg-4'>
                                 <div class='card'>
                                   <div class='card-body'>
 
@@ -387,8 +429,7 @@ if (isset($_SESSION['id']))
                                     <!-- Fin Lista De Tareas Finalizadas -->
                                   </div>
                                 </div>
-                              </div>
-                            ";
+                              </div>";
 
                 desconectar($con);
 
@@ -399,7 +440,7 @@ if (isset($_SESSION['id']))
           }  
         }
                     
-      echo "
+      $imprimir= "
           <section class='section'>
             <div class='row'>
              
@@ -416,8 +457,68 @@ if (isset($_SESSION['id']))
               ."
 
             </div>
-          </section>
+          </section>";
+
+
+          $sql = "SELECT a.`idtarea`,a.`descripciontarea`
+                  FROM tareas a
+                  WHERE a.`accion`!='B'
+                  order by a.`descripciontarea` asc;";
+
+          $con=conectar();
+
+          $result = $cnx->query($sql);
+
+          if (!$result) 
+          {
+            die('Invalid query: ' . $cnx->error);
+          }
+
+          if (!$result) 
+          {
+            die('Invalid query: ' . $mysqli->error);
+          }
+          else
+          {
+            while($row = mysqli_fetch_array($result))
+            {
+              $lista=$lista ."<option value='".$row['idtarea']."'>".$row['descripciontarea']."</option>";
+            }
+          }
+          
+          desconectar($con);
+
+      $imprimir=$imprimir."<div class='card-body'>
+            <!-- Cambio Estado a Finalizar Modal -->
+            <div class='modal fade' id='NuevaTarea' tabindex='-1'>
+              <div class='modal-dialog'>
+                <div class='modal-content'>
+                  <div class='modal-header'>
+                    <h5 class='modal-title'>Nueva Tarea</h5>
+                    <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                  </div>
+                  <div class='modal-body'>
+                    <div class='row mb-3'>
+                      <label class='col-sm-2 col-form-label'>Tarea</label>
+                      <div class='col-sm-10'>
+                        <select class='form-select' aria-label='Default select example' id='txttarea'>
+                          <option selected>Seleccione una tarea del listado</option>".
+                          $lista
+                          ."</select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
+                    <button type='button' class='btn btn-primary' onclick='nuevatarea(\"$numorden\",\"$idusuario\")' data-bs-dismiss='modal'>Aceptar</button>
+                  </div>
+                </div>
+              </div>
+            </div><!-- Finalizar Cambio Estado a Finalizar Modal-->
+          </div>
         ";
+
+        echo $imprimir;
     }
   }
 }

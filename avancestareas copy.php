@@ -111,23 +111,6 @@
         xmlhttp.send();
       }
     }
-
-    function ordenessegunestados(ver) 
-    {
-      let xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          
-          alert ('SE MUESTRAN LAS ORDENES EN ESTADO='+ver);
-          
-          if (ver=="P") document.getElementById("proceso").innerHTML=this.responseText;
-          if (ver=="D") document.getElementById("disponible").innerHTML=this.responseText;
-          if (ver=="F") document.getElementById("finalizada").innerHTML=this.responseText;
-        }
-      };
-      xmlhttp.open('GET', 'vertablaestadoordenes.php?ver='+ver, false);
-      xmlhttp.send();  
-    }
   </script>
 
   <style>
@@ -258,34 +241,6 @@
       <section class="section">
         <div class="row">
           <div class="col-lg-12">
-
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Estados de ordenes</h5>
-
-                <!-- Vertical Pills Tabs -->
-                <div class="d-flex align-items-start">
-                  <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true" onclick="ordenessegunestados('P')">En Proceso</button>
-                    <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false" onclick="ordenessegunestados('D')">Disponibles</button>
-                    <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false" onclick="ordenessegunestados('F')">Finalizadas</button>
-                  </div>
-                  <div class="tab-content" id="v-pills-tabContent">
-                    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
-                      <span id="proceso"></span>
-                    </div>
-                    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                      <span id="disponible"></span>
-                    </div>
-                    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
-                      <span id="finalizada"></span>
-                    </div>
-                  </div>
-                </div>
-                <!-- End Vertical Pills Tabs -->
-
-              </div>
-            </div>
 
             <div class="card">
               <div class="card-body">

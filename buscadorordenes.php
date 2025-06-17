@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>SMATE</title>
+  <title><?php echo $_SESSION['nombreapp']; ?></title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -40,15 +40,16 @@
     function disponible(num)
     {
       var desc=document.getElementById("txttitulo" + num).value;
+      var dias=document.getElementById("txtdias" + num).value;
       
-      if (desc.length === 0) 
+      if ((desc.length === 0)&&(dias<= 0)) 
       {
-        alert ("Se debe de indicar un nombre de orden");
+        alert ("Se debe de indicar un nombre de orden o falta indicar cantidad de dias que toma terminar la orden");
       }
       else
       {
-         //alert("Se cambia estado orden " + num + " a disponible y con el titulo "+ desc);
-        organizartareas(num,'D',desc);
+        //alert("Se cambia estado orden " + num + " a disponible y con el titulo "+ desc +", dias que llevara la tarea "+ dias);
+        organizartareas(num,'D',desc,dias);
       }
     }
 
@@ -56,7 +57,7 @@
     {
       //alert("Sa cambia estado orden " + num + " a no disponible!!!");
 
-      organizartareas(num,'S','');
+      organizartareas(num,'S','',0);
     }
 
     function vertabla(num)
@@ -87,7 +88,8 @@
       window.onhashchange=function(){window.location.hash="";}
     }
 
-    function verorden() {
+    function verorden() 
+    {
       var num=document.getElementById('txtnumorden').value;
      
       if (num=="") {
@@ -107,12 +109,13 @@
             document.getElementById("lsinfo").innerHTML=this.responseText;
           }
         };
-        xmlhttp.open('GET', 'detalleorden.php?num='+num, true);
+        xmlhttp.open('GET', 'detalleorden.php?num='+num+'&mecanico=0', true);
         xmlhttp.send();
       }
     }
 
-    function verhistorial() {
+    function verhistorial() 
+    {
       var num=document.getElementById('txtnumpatente').value;
     
       if (num=="") {
@@ -133,17 +136,59 @@
       }
     }
 
-    function organizartareas(orden,estado,titulo) {
+    function organizartareas(orden,estado,titulo,dias) 
+    {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            //alert("Se envia la orden numero=>"+orden+" y se lo pasa al estado de =>"+estado+", con el titulo "+titulo);
+            
+            //alert("Se envia la orden numero=>"+orden+" y se lo pasa al estado de =>"+estado+", con el titulo "+titulo+", dias que dura la tarea "+dias);
+        
             document.getElementById("lblproceso").innerHTML="";
             document.getElementById("lsinfo").innerHTML=this.responseText;
           }
         };
-        xmlhttp.open('GET', 'organizarorden.php?orden='+orden+'&estado='+estado+'&titulo='+titulo, false);
+        xmlhttp.open('GET', 'organizarorden.php?orden='+orden+'&estado='+estado+'&titulo='+titulo+'&dias='+dias+'&mecanico=0', false);
+        xmlhttp.send();  
+    }
+
+    function eliminarorden()
+    {
+      const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
+      let lsdatos="";
+
+      for (let i = 0; i < checkboxes.length; i++) {
+        //console.log(checkboxes[i].value);
+        if (lsdatos.length<=0) lsdatos=checkboxes[i].value;
+        else lsdatos=lsdatos+";"+checkboxes[i].value;
+      }
+      
+      if (lsdatos.length<=0) {
+        return;
+      } else {
+        
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+          
+            let resp=this.responseText;
+ 
+            //alert("devuelve la funcion=>"+resp);
+         
+            if (resp=="0") 
+            {//SE REALIZA LA ACTUALIZACION DE LAS ORDENES NO ELIMINADAS
+              organizartareas(0,'','',0);
+            }
+            else
+            {
+              alert("ERROR EN LA ELIMINACION DE LAS ORDENES SELECCIONADAS=> "+resp);
+            }
+          }
+        };
+        
+        xmlhttp.open('GET', 'eliminarordentrabajo.php?lsdatos='+lsdatos, false);
         xmlhttp.send();
+      }
     }
 
   </script>
@@ -174,7 +219,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SMATE</span>
+        <span class="d-none d-lg-block"><?php echo $_SESSION['nombreapp']; ?></span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -253,7 +298,12 @@
       <h1>Ordenes</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="home.php">Home</a></li>
+          <li class="breadcrumb-item">
+          <?php
+            if (($tipousu=="Administración")||($tipousu=="Gerente")) echo "<a href='home.php'>Home</a>";
+            else echo "<a href='avancestareas.php'>Home</a>";
+          ?>
+          </li>
           <li class="breadcrumb-item"><a href="buscadorordenes.php">Buscador ordenes</a></li>
         </ol>
       </nav>
@@ -286,9 +336,11 @@
                                   <div class="col-sm-10">
                                       <input type="button" id="btnBusOrden" class="btn btn-primary" value="Importar Orden" onclick="verorden()">
                                       &nbsp;&nbsp;&nbsp;&nbsp;
-                                      <input type="button" id="btnGestionar" class="btn btn-primary" value="Gestionar Ordenes" onclick="organizartareas(0,'')">
+                                      <input type="button" id="btnGestionar" class="btn btn-primary" value="Gestionar Ordenes" onclick="organizartareas(0,'','',0)">
                                       &nbsp;&nbsp;&nbsp;&nbsp;
                                       <input type="button" id="btnHistorial" class="btn btn-primary" value="Ver Historial Chasis" onclick="verhistorial()">
+                                      &nbsp;&nbsp;&nbsp;&nbsp;
+                                      <input type="button" id="btnEliminar" class="btn btn-primary" value="Eliminar Ordenes" onclick="eliminarorden()">
                                   </div>
                               </div>
 

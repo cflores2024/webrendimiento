@@ -168,7 +168,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>SMATE</title>
+  <title><?php echo $_SESSION['nombreapp']; ?></title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -202,7 +202,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SMATE</span>
+        <span class="d-none d-lg-block"><?php echo $_SESSION['nombreapp']; ?></span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -281,7 +281,16 @@
       <h1>Perfiles</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="home.php">Home</a></li>
+          <li class="breadcrumb-item">
+          <?php
+            if (($tipousu=="Administración")||($tipousu=="Gerente")) echo "<a href='home.php'>Home</a>";
+            else 
+            {  
+              echo "<a href='atenderordenes.php?ver=P'>Home</a>";
+              //echo "<a href='avancestareas.php'>Home</a>";
+            }
+          ?>
+          </li>
           <li class="breadcrumb-item"><a href="buscadordisciplinas.php">Buscador Perfil</a></li>
           <li class="breadcrumb-item active">CRUD Perfiles</li>
         </ol>

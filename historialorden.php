@@ -25,10 +25,11 @@
     {  
       $numchasis=$_GET["num"];
    
-      $sql = "SELECT CONCAT(a.`apellido`,', ', a.`nombre`) AS cliente, MAX(a.`domicilio`) dom,MAX(a.`tel`) tel,MAX(a.`emailusuario`) email,b.`patente`,b.`modelo`,b.`numchasis`,b.`kilometraje`
+      $sql = "SELECT CONCAT(a.`apellido`,', ', a.`nombre`) AS cliente, MAX(a.`domicilio`) dom,MAX(a.`tel`) tel,MAX(a.`emailusuario`) email,b.`patente`,c.`modelomarca` AS modelo,b.`numchasis`,b.`kilometraje`
               FROM personas a INNER JOIN numeroorden b ON (a.`idpersona`=b.`idcliente` AND b.`accion`!='B')
+                              INNER JOIN modelos c ON (b.`codmodelo`=c.`codmodelo`)
               WHERE a.accion!='B' AND b.numchasis='".$numchasis."' 
-              GROUP BY a.`apellido`, a.`nombre`, a.`domicilio`,a.`tel`,a.`emailusuario`,b.`patente`,b.`modelo`,b.`numchasis`,b.`kilometraje`;";
+              GROUP BY a.`apellido`, a.`nombre`, a.`domicilio`,a.`tel`,a.`emailusuario`,b.`patente`,c.`modelomarca`,b.`numchasis`,b.`kilometraje`;";
 
       $con=conectar();
 
@@ -45,7 +46,6 @@
       }
       else
       {
-       
         while($row = mysqli_fetch_array($result))
         {
           $tienedatos=$row['numchasis'];

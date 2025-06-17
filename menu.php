@@ -17,12 +17,46 @@ switch ($tipousu)
                                         <span>Metricas</span>
                                       </a>
                                     </li>
-                                    <li class='nav-item'>
+                                    <!--li class='nav-item'>
                                       <a class='nav-link collapsed' href='avancestareas.php'>
                                         <i class='bi bi-grid'></i>
-                                        <span>Tareas en curso</span>
+                                        <span>Vista gral tareas</span>
                                       </a>
-                                    </li><!-- End Dashboard Nav -->
+                                    </li--><!-- End Dashboard Nav -->
+
+                                    <li class='nav-item'>
+                                      <a class='nav-link collapsed' data-bs-target='#ordenes-nav' data-bs-toggle='collapse' href='#'>
+                                        <i class='bi bi-layout-text-window-reverse'></i><span>Ordenes</span><i class='bi bi-chevron-down ms-auto'></i>
+                                      </a>
+                                      <ul id='ordenes-nav' class='nav-content collapse ' data-bs-parent='#sidebar-nav'>
+                                        <li>
+                                          <a href='buscadorordenes.php'>
+                                            <i class='bi bi-circle'></i><span>Gestión Ordenes</span>
+                                          </a>
+                                        </li>
+                                        <li>
+                                          <a href='atenderordenes.php?ver=P'>
+                                            <i class='bi bi-circle'></i><span>En Proceso</span>
+                                          </a>
+                                        </li>
+                                        <li>
+                                          <a href='atenderordenes.php?ver=D'>
+                                            <i class='bi bi-circle'></i><span>Disponibles</span>
+                                          </a>
+                                        </li>
+                                        <li>
+                                          <a href='atenderordenes.php?ver=F'>
+                                            <i class='bi bi-circle'></i><span>Finalizadas</span>
+                                          </a>
+                                        </li>
+                                        <!--li>
+                                          <a href='autorizarpedido.php'>
+                                            <i class='bi bi-circle'></i><span>Autorizar Acceso Orden</span>
+                                          </a>
+                                        </li-->
+                                      </ul>
+                                    </li><!-- End Tables Nav -->
+
 
                                     <li class='nav-item'>
                                       <a class='nav-link collapsed' data-bs-target='#tables-nav' data-bs-toggle='collapse' href='#'>
@@ -40,26 +74,10 @@ switch ($tipousu)
                                           </a>
                                         </li>
                                         <li>
-                                          <a href='buscadorordenes.php'>
-                                            <i class='bi bi-circle'></i><span>Gestión Ordenes</span>
-                                          </a>
-                                        </li>
-                                        <li>
                                           <a href='buscadortareas.php'>
                                             <i class='bi bi-circle'></i><span>Estimar Tiempos Tareas</span>
                                           </a>
                                         </li>
-                                        <li>
-                                          <a href='atenderordenes.php'>
-                                            <i class='bi bi-circle'></i><span>Atender Ordenes</span>
-                                          </a>
-                                        </li>
-                                        <!--li>
-                                          <a href='autorizarpedido.php'>
-                                            <i class='bi bi-circle'></i><span>Autorizar Acceso Orden</span>
-                                          </a>
-                                        </li-->
-                                        
                                       </ul>
                                     </li><!-- End Tables Nav -->
 
@@ -111,12 +129,12 @@ switch ($tipousu)
                                   <span>Metricas</span>
                                 </a>
                               </li>
-                              <li class='nav-item'>
+                              <!--li class='nav-item'>
                                 <a class='nav-link collapsed' href='avancestareas.php'>
                                   <i class='bi bi-grid'></i>
-                                  <span>Tareas en curso</span>
+                                  <span>Vista gral tareas</span>
                                 </a>
-                              </li><!-- End Dashboard Nav -->
+                              </li--><!-- End Dashboard Nav -->
 
                               <li class='nav-item'>
                                 <a class='nav-link collapsed' data-bs-target='#tables-nav' data-bs-toggle='collapse' href='#'>
@@ -194,19 +212,47 @@ switch ($tipousu)
 
                               <ul class='sidebar-nav' id='sidebar-nav'>
 
-                                <li class='nav-item'>
+                                <!--li class='nav-item'>
                                   <a class='nav-link ' href='home.php'>
                                     <i class='bi bi-reception-4'></i>
                                     <span>Metricas</span>
                                   </a>
-                                </li>
-                                <li class='nav-item'>
+                                </li-->
+                                <!--li class='nav-item'>
                                   <a class='nav-link collapsed' href='avancestareas.php'>
                                     <i class='bi bi-grid'></i>
-                                    <span>Tareas en curso</span>
+                                    <span>Vista gral tareas</span>
                                   </a>
-                                </li><!-- End Dashboard Nav -->
+                                </li--><!-- End Dashboard Nav -->
 
+                                <li class='nav-item'>
+                                  <a class='nav-link collapsed' data-bs-target='#ordenes-nav' data-bs-toggle='collapse' href='#'>
+                                    <i class='bi bi-layout-text-window-reverse'></i><span>Ordenes</span><i class='bi bi-chevron-down ms-auto'></i>
+                                  </a>
+                                  <ul id='ordenes-nav' class='nav-content collapse ' data-bs-parent='#sidebar-nav'>
+                                    <li>
+                                      <a href='atenderordenes.php?ver=P'>
+                                        <i class='bi bi-circle'></i><span>En Proceso</span>
+                                      </a>
+                                    </li>
+                                    <li>
+                                      <a href='atenderordenes.php?ver=D'>
+                                        <i class='bi bi-circle'></i><span>Disponibles</span>
+                                      </a>
+                                    </li>
+                                    <li>
+                                      <a href='atenderordenes.php?ver=F'>
+                                        <i class='bi bi-circle'></i><span>Finalizadas</span>
+                                      </a>
+                                    </li>
+                                    <!--li>
+                                      <a href='autorizarpedido.php'>
+                                        <i class='bi bi-circle'></i><span>Autorizar Acceso Orden</span>
+                                      </a>
+                                    </li-->
+                                  </ul>
+                                </li><!-- End Tables Nav -->
+                                
                                 <li class='nav-item'>
                                   <a class='nav-link collapsed' data-bs-target='#tables-nav' data-bs-toggle='collapse' href='#'>
                                     <i class='bi bi-layout-text-window-reverse'></i><span>Operaciones</span><i class='bi bi-chevron-down ms-auto'></i>
@@ -265,23 +311,39 @@ switch ($tipousu)
                                   <span>Metricas</span>
                                 </a>
                               </li-->
-                              <li class='nav-item'>
+                              
+                              <!--li class='nav-item'>
                                 <a class='nav-link collapsed' href='avancestareas.php'>
                                   <i class='bi bi-grid'></i>
-                                  <span>Tareas en curso</span>
+                                  <span>Vista gral tareas</span>
                                 </a>
-                              </li><!-- End Dashboard Nav -->
+                              </li--><!-- End Dashboard Nav -->
 
                               <li class='nav-item'>
-                                <a class='nav-link collapsed' data-bs-target='#tables-nav' data-bs-toggle='collapse' href='#'>
-                                  <i class='bi bi-layout-text-window-reverse'></i><span>Operaciones</span><i class='bi bi-chevron-down ms-auto'></i>
+                                <a class='nav-link collapsed' data-bs-target='#ordenes-nav' data-bs-toggle='collapse' href='#'>
+                                  <i class='bi bi-layout-text-window-reverse'></i><span>Ordenes</span><i class='bi bi-chevron-down ms-auto'></i>
                                 </a>
-                                <ul id='tables-nav' class='nav-content collapse ' data-bs-parent='#sidebar-nav'>
+                                <ul id='ordenes-nav' class='nav-content collapse ' data-bs-parent='#sidebar-nav'>
                                   <li>
-                                    <a href='atenderordenes.php'>
-                                      <i class='bi bi-circle'></i><span>Atender Ordenes</span>
+                                    <a href='atenderordenes.php?ver=P'>
+                                      <i class='bi bi-circle'></i><span>En Proceso</span>
                                     </a>
                                   </li>
+                                  <li>
+                                    <a href='atenderordenes.php?ver=D'>
+                                      <i class='bi bi-circle'></i><span>Disponibles</span>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a href='atenderordenes.php?ver=F'>
+                                      <i class='bi bi-circle'></i><span>Finalizadas</span>
+                                    </a>
+                                  </li>
+                                  <!--li>
+                                    <a href='autorizarpedido.php'>
+                                      <i class='bi bi-circle'></i><span>Autorizar Acceso Orden</span>
+                                    </a>
+                                  </li-->
                                 </ul>
                               </li><!-- End Tables Nav -->
 

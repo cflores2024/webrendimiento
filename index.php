@@ -9,7 +9,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Login - SMATE</title>
+  <title>Login - MATE</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -112,18 +112,24 @@ include "configuracion/conexion.php";
             $_SESSION['tipo']=$tipousu;
             $_SESSION['foto']=$foto;
             $_SESSION['nombrecorto']=$nombrecorto;
+            $_SESSION['nombreapp']="MATE";
           }
 
           //REDIRIJO A PAG DEL MENU PRINCIPAL SI EXISTE USUARIO INGRESADO
           if ($id>0)
           {
+            //PROCESO DE TRAER LA ORDEN DE ORACLE A MYSQL PARA SU TRATAMIENTO
+
+            //FIN DEL PROCESO DE TRAER LA ORDEN DE ORACLE A MYSQL PARA SU TRATAMIENTO
+
             if ($tipousu=="Gerente") 
             {
               echo "<script> window.location.href='home.php'</script>";
             }
             else 
             {
-              echo "<script> window.location.href='avancestareas.php'</script>";
+              //echo "<script> window.location.href='avancestareas.php'</script>";
+              echo "<script> window.location.href='atenderordenes.php?ver=P'</script>";
             }
           }
           else
@@ -158,7 +164,7 @@ include "configuracion/conexion.php";
                 <div class="card-body">
 
                 <div class="pt-4 pb-2">
-                <h5 class="card-title text-center pb-0 fs-4">SMATE</h5>
+                <h5 class="card-title text-center pb-0 fs-4">MATE</h5>
                 <p class="text-center small">Sistema Mantenimiento Técnico</p>
               </div>
                   

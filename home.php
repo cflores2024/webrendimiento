@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>SMATE</title>
+  <title><?php echo $_SESSION['nombreapp']; ?></title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -118,7 +118,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="home.php" class="logo d-flex align-items-center">
         <!--img src="assets/img/logo.png" alt=""-->
-        <span class="d-none d-lg-block">SMATE</span>
+        <span class="d-none d-lg-block"><?php echo $_SESSION['nombreapp']; ?></span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -197,7 +197,9 @@
       <h1>Panel metricas</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item">
+            <a href="#">Home</a>
+          </li>
           <li class="breadcrumb-item active">Metricas</li>
         </ol>
       </nav>
@@ -313,12 +315,12 @@
                 <div class="ps-3">
                 <?php
                 
-                  $sql = "SELECT COUNT(TIMESTAMPDIFF(MINUTE,a.`fechaentrega`,CURDATE())) AS demoradaact,
-                                (SELECT COUNT(TIMESTAMPDIFF(MINUTE,b.`fechaentrega`,CURDATE()))
+                  $sql = "SELECT COUNT(TIMESTAMPDIFF(MINUTE,a.`fentrega`,CURDATE())) AS demoradaact,
+                                (SELECT COUNT(TIMESTAMPDIFF(MINUTE,b.`fentrega`,CURDATE()))
                                 FROM numeroorden b
-                                WHERE b.`accion`!='B' AND (TIMESTAMPDIFF(MINUTE,b.`fechaentrega`,CURDATE())>0) AND MONTH(b.`fecha`)=". $mesant .") AS demoraant
+                                WHERE b.`accion`!='B' AND (TIMESTAMPDIFF(MINUTE,b.`fentrega`,CURDATE())>0) AND MONTH(b.`fecha`)=". $mesant .") AS demoraant
                           FROM numeroorden a
-                          WHERE a.`accion`!='B' AND (TIMESTAMPDIFF(MINUTE,a.`fechaentrega`,CURDATE())>0) AND MONTH(a.`fecha`)=". $mesact .";";
+                          WHERE a.`accion`!='B' AND (TIMESTAMPDIFF(MINUTE,a.`fentrega`,CURDATE())>0) AND MONTH(a.`fecha`)=". $mesact .";";
 
                   $con=conectar();
 
@@ -1039,7 +1041,7 @@
                           WHERE xx.`accion`!='B' AND MONTH(DATE(xx.fecha))=MONTH(DATE(a.`fecha`))) AS totalorden, 
                         COUNT(a.`numorden`) AS cantdemoradas
                   FROM numeroorden a
-                  WHERE a.`accion`!='B' AND a.`estado`='F' AND DATE(a.`fechaentrega`)<DATE(a.`fechaaccion`) AND a.fecha BETWEEN '".$finimes."' AND '".$ffin."'
+                  WHERE a.`accion`!='B' AND a.`estado`='F' AND DATE(a.`fentrega`)<DATE(a.`fechaaccion`) AND a.fecha BETWEEN '".$finimes."' AND '".$ffin."'
                   GROUP BY a.`fecha`,a.`numorden`
                   ORDER BY 1 ASC;";
 
@@ -1822,85 +1824,133 @@
 
         
         <!-- Total Services x Modelo -->
-        <!--div class="col-lg-6">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Total Services x Modelo</h5>
+        <div class="col-lg-6">
+          <?php    
+              $sql = "SELECT b.`modelomarca`, COUNT(a.`numorden`) AS cant
+                      FROM numeroorden a INNER JOIN modelos b ON (a.codmodelo=b.codmodelo)
+                      WHERE a.`accion`!='B' AND a.estado!='S' AND a.fecha BETWEEN '".$finimes."' AND '".$ffin."'
+                      GROUP BY b.`modelomarca`
+                      ORDER BY 1;";
 
-                <div id="barChart48"></div>
-                <script>
-                  document.addEventListener("DOMContentLoaded", () => {
-                    new ApexCharts(document.querySelector("#barChart48"), {
-                      series: [{
-                                name: 'Servicios',
-                                data: [12, 10, 5, 8]
-                              }],
-                                
-                              chart: {
-                                height: 350,
-                                type: 'bar',
-                              },
-                              plotOptions: {
-                                bar: {
-                                  borderRadius: 0,
-                                  columnWidth: '50%',
-                                }
-                              },
-                              dataLabels: {
-                                enabled: false
-                              },
-                              stroke: {
-                                width: 0
-                              },
-                              grid: {
-                                row: {
-                                  colors: ['#fff', '#f2f2f2']
-                                }
-                              },
-                              xaxis: {
-                                labels: {
-                                  rotate: -45
-                                },
-                                categories: ['Fiat Argo', 'Fiat Cronos', 'Fiat Fullback', 'Fiat Toro'
-                                ],
-                                tickPlacement: 'on'
-                              },
-                              colors: ["#2b908f", "#2b908f", "#2b908f", "#2b908f"],
-                              yaxis: {
-                                title: {
-                                  text: 'Servicios',
-                                },
-                              },
-                              fill: {
-                                type: 'gradient',
-                                gradient: {
-                                  shade: 'light',
-                                  type: "horizontal",
-                                  shadeIntensity: 0.25,
-                                  gradientToColors: undefined,
-                                  inverseColors: true,
-                                  opacityFrom: 0.85,
-                                  opacityTo: 0.85,
-                                  stops: [50, 0, 100]
-                                },
-                              }
-                      }).render();
-                    });
-                  </script>
-  
-              </div>
-            </div>
-        </div-->
+            $con=conectar();
+
+            $result = $con->query($sql);
+
+            if (!$result) 
+            {
+              die('Invalid query: ' . $con->error);
+            }
+
+            if (!$result) 
+            {
+              die('Invalid query: ' . $mysqli->error);
+            }
+            else
+            {
+              $datos="";
+              $modelos="";
+              $colores="";
+              
+              while($row = mysqli_fetch_array($result))
+              {
+                if ($row['cant']>1)
+                {
+                  $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
+                  $modelos=strlen($modelos)<=0? "'".$row['modelomarca']."'": $modelos.",'".$row['modelomarca']."'";
+                  $colores=strlen($colores)<=0? "'#c388d6'": $colores.",'#c388d6'";
+                }
+              }
+
+              desconectar($con);
+            }
+                    
+            echo "
+                  <div class='card'>
+                    <div class='card-body'>
+                      <h5 class='card-title'>Total Services x Modelo <p>".$finimeseti." al ".$ffineti."</p></h5>
+
+                      <div id='barChart48'></div>
+                      <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                          new ApexCharts(document.querySelector('#barChart48'), {
+                            series: [{
+                                      name: 'Servicios',
+                                      data: [".$datos."]
+                                    }],
+                                      
+                                    chart: {
+                                      height: 350,
+                                      type: 'bar',
+                                    },
+                                    plotOptions: {
+                                      bar: {
+                                        borderRadius: 0,
+                                        columnWidth: '50%',
+                                      }
+                                    },
+                                    dataLabels: {
+                                      enabled: false
+                                    },
+                                    stroke: {
+                                      width: 0
+                                    },
+                                    grid: {
+                                      row: {
+                                        colors: ['#fff', '#f2f2f2']
+                                      }
+                                    },
+                                    xaxis: {
+                                      labels: {
+                                        rotate: -45
+                                      },
+                                      categories: [".$modelos."],
+                                      tickPlacement: 'on'
+                                    },
+                                    colors: [".$colores."],
+                                    yaxis: {
+                                      title: {
+                                        text: 'Servicios',
+                                      },
+                                    },
+                                    fill: {
+                                      type: 'gradient',
+                                      gradient: {
+                                        shade: 'light',
+                                        type: 'horizontal',
+                                        shadeIntensity: 0.25,
+                                        gradientToColors: undefined,
+                                        inverseColors: true,
+                                        opacityFrom: 0.85,
+                                        opacityTo: 0.85,
+                                        stops: [50, 0, 100]
+                                      },
+                                    }
+                            }).render();
+                          });
+                        </script>
+        
+                    </div>
+                  </div>";
+          ?>
+        </div>
         <!-- Fin Total Services x Modelo -->
 
         <!-- Origen Conoce gráfico barra-->
-        <div class="col-lg-6">
+        <!--div class="col-lg-6">
           <?php
+            /*MODIFICADO 17-06-2025
             $sql = "SELECT a.`conocio`,COUNT(a.`numorden`) AS cant
                     FROM numeroorden a
                     WHERE a.`accion`!='B' AND a.fecha BETWEEN '".$fini."' AND '".$ffin."'
                     GROUP BY a.`conocio`
                     ORDER BY 1;";
+            */
+                    /*
+            $sql="SELECT b.`publicacion` as conocio,COUNT(a.`numorden`) AS cant
+                  FROM numeroorden a INNER JOIN publicaciones b ON (a.`idpublicidad`=b.`idpublicacion`)
+                  WHERE a.`accion`!='B' AND a.fecha BETWEEN '".$fini."' AND '".$ffin."'
+                  GROUP BY b.`publicacion`
+                  ORDER BY 1;";
 
             $con=conectar();
 
@@ -1998,18 +2048,19 @@
   
               </div>
             </div>";
+            */
           ?>
-        </div>
+        </div-->
         <!-- Fin Total Services x Modelo -->
 
         <!-- Origen Conoce gráfico torta-->
         <div class="col-lg-6">
           <?php
             
-            $sql = "SELECT a.`conocio`,COUNT(a.`numorden`) AS cant
-                    FROM numeroorden a
+            $sql = "SELECT b.`publicacion` as conocio,COUNT(a.`numorden`) AS cant
+                    FROM numeroorden a INNER JOIN publicaciones b ON (a.`idpublicidad`=b.`idpublicacion`)
                     WHERE a.`accion`!='B' AND a.fecha BETWEEN '".$fini."' AND '".$ffin."'
-                    GROUP BY a.`conocio`
+                    GROUP BY b.`publicacion`
                     ORDER BY 1;";
 
             $con=conectar();
