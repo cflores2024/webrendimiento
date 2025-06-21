@@ -32,19 +32,21 @@
     }
     else
     {*/
-        $sql="SELECT a.numorden,a.`tituloorden` AS descripcion,'Orden disponible para su tratamiento' AS observacion, a.`fecha` AS fini,
+        $sql="SELECT a.numorden,'' AS idtarea,a.`tituloorden` AS descripcion,'Orden disponible para su tratamiento' AS observacion, a.`fecha` AS fini,
                 CASE WHEN a.fecha IS NULL THEN '' ELSE a.fecha END ffin, 
                 TIMESTAMPDIFF(MINUTE,a.fecha,a.fecha) AS tiempo,
-                'F' AS estado
+                'F' AS estado,
+                '' AS suspendida
                 FROM numeroorden a WHERE a.`numorden`=".$numorden."
                 UNION
-                SELECT b.idtarea,c.descripciontarea AS descripcion,b.observacion,b.fechaini AS fini,
+                SELECT b.numorden,b.idtarea,c.descripciontarea AS descripcion,b.observacion,b.fechaini AS fini,
                 CASE WHEN b.fechaobs IS NULL THEN '' ELSE b.fechaobs END ffin,
                 CASE WHEN b.fechaobs IS NULL THEN '-1' ELSE TIMESTAMPDIFF(MINUTE,b.fechaini,b.fechaobs) END tiempo,
-                b.estado
+                b.estado,
+                CASE WHEN (SELECT aa.suspendida FROM tareassuspendidas aa WHERE aa.numorden=".$numorden." AND aa.idtarea=b.idtarea) IN ('S') THEN 'S' ELSE b.estado END suspendida
                 FROM afectadostareas b INNER JOIN tareas c ON (b.idtarea=c.idtarea AND c.accion!='B')
                 WHERE b.numorden=".$numorden." AND b.idempleado=".$idempleado."
-                ORDER BY 4;";
+                ORDER BY 5;";
    // }
 
     $con=conectar();
@@ -67,10 +69,17 @@
         while($row = mysqli_fetch_array($result))
         {
             $tmp="";
-            if ($row['tiempo']<0) $tmp="En proceso";
-            else $tmp=$row['tiempo']." min";
+            if ($row['tiempo']<0) 
+            {
+              if ($row['suspendida']=="S") $tmp="Suspendida";
+              else $tmp="En proceso";
+            }
+            else 
+            {
+              $tmp=$row['tiempo']." min";
+            }
 
-            if ($row['estado']=="P")
+            if ($row['suspendida']=="S")
             {
                 $fila=$fila."<tr class='table-warning'>
                             <th scope='row'>".$i."</th>
@@ -83,14 +92,28 @@
             }
             else
             {
-                $fila=$fila."<tr>
-                            <th scope='row'>".$i."</th>
-                            <td>".$row['descripcion']."</td>
-                            <td>".$row['observacion']."</td>
-                            <td>".$row['fini']."</td>
-                            <td>".$row['ffin']."</td>
-                            <td>".$tmp."</td>
-                        </tr>";
+              if ($row['estado']=="P")
+              {
+                  $fila=$fila."<tr class='table-info'>
+                              <th scope='row'>".$i."</th>
+                              <td>".$row['descripcion']."</td>
+                              <td>".$row['observacion']."</td>
+                              <td>".$row['fini']."</td>
+                              <td>".$row['ffin']."</td>
+                              <td>".$tmp."</td>
+                          </tr>";
+              }
+              else
+              {
+                  $fila=$fila."<tr>
+                              <th scope='row'>".$i."</th>
+                              <td>".$row['descripcion']."</td>
+                              <td>".$row['observacion']."</td>
+                              <td>".$row['fini']."</td>
+                              <td>".$row['ffin']."</td>
+                              <td>".$tmp."</td>
+                          </tr>";
+              }
             }
             $i=$i+1;        
         }

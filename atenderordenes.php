@@ -346,7 +346,7 @@
         let xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            alert ('1-FUNCION VINCULAR=>vincular numero orden='+num+" con idempleado="+id);
+            //alert ('1-FUNCION VINCULAR=>vincular numero orden='+num+" con idempleado="+id);
             
             let resp=this.responseText;
             //var bandera=this.responseText;
@@ -530,7 +530,6 @@
     $nombrecorto=$_SESSION['nombrecorto'];
     $filtrar=$_GET['ver'];
 
-
     $idusuario=$id;
     $idempleado="0";
     $lsfotos="";
@@ -636,6 +635,7 @@
   switch($filtrar)
   {
     case "D":
+              /*
               $sql = "-- ORDENES DISPONIBLES
                       SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
 
@@ -656,6 +656,28 @@
                       WHERE aa.`accion`!='B' AND aa.`estado` IN ('P','A')
                       )
                       ORDER BY 1,4;";
+              */
+            
+              $sql = "-- ORDENES DISPONIBLES
+                    SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
+
+                    xx2.`idpersonadisp` AS idempleado,
+                    zz1.urlfoto AS foto, 
+                    CONCAT(zz1.`apellido`,', ',zz1.`nombre`) empleado,
+
+                    xx2.`estado`,xx2.`fechaaccion`,
+
+                    'DI' AS situacionorden, 
+                    (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,
+                    xx2.numchasis
+                    FROM numeroorden xx2 INNER JOIN personas zz1 ON (xx2.idpersonadisp=zz1.`idpersona` AND zz1.`accion`!='B')
+                    WHERE xx2.accion!='B' AND xx2.estado IN ('D','P') AND xx2.`numorden` NOT IN  
+                    (
+                    SELECT aa.`numorden`
+                    FROM autorizaraccorden aa
+                    WHERE aa.`accion`!='B' AND aa.`idpersona`=".$idusuario."
+                    )
+                    ORDER BY 1,4;";
     break;
     case "P":
             switch ($tipousu)
