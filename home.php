@@ -40,6 +40,25 @@
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
   <script>
+    
+    function filtrar() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+     
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        //alert ('LLEVANDO FECHAS FINI '+fini+' Y LA FFIN '+ffin);
+        window.location.href="home.php?txtfini="+fini+"&txtffin="+ffin;
+      }
+    }
+
+    function limpiar() 
+    {
+      window.location.href="home.php";
+    }
+
     function deshabilitaRetroceso()
     {
       window.location.hash="no-back-button";
@@ -55,14 +74,6 @@
   include "configuracion/conexion.php";
   date_default_timezone_set("America/Argentina/Tucuman");
  
-  $ffin=date("Y-m-d H:i:s");
-  $ffineti=date("d-m-Y"); 
-  $fini=date("Y-m-d H:i:s",strtotime($ffin . "-5 days"));
-  $finieti=date("d-m-Y",strtotime($ffin . "-5 days"));
-  $finimes=date("Y-m-d H:i:s",strtotime($ffin . "-5 month"));
-  $finimeseti=date("d-m-Y",strtotime($ffin . "- 5 month"));
-  $anioActual = date('Y'); // Obtiene el número del mes actual
-
   function obtenermes($opcion,$mesdeseado)
   {
     $resp="";
@@ -87,18 +98,39 @@
   }
 
   if (isset($_SESSION['id']))
-  {  
+  { 
     $id=$_SESSION['id'];
     $apenomb=$_SESSION['apenomb'];
     $tipousu=$_SESSION['tipo'];
     $foto=$_SESSION['foto'];
     $nombrecorto=$_SESSION['nombrecorto'];
-    $fechahoy=date("Y-m-d");
+ 
+    if ((isset($_GET['txtfini']))&&(isset($_GET['txtffin'])))
+    {  
+      $txtfini=$_GET['txtfini'];
+      $txtffin=$_GET['txtffin'];
+    }
+    else
+    {
+      $txtfini=date("Y-m-d",strtotime($ffin . "-5 days"));
+      $txtffin=date("Y-m-d");
+    }
+
+    $ffin=$txtffin;// date("Y-m-d H:i:s");
+    $ffineti=$txtffin; //date("Y-m-d")
+    $fini=$txtfini;// date("Y-m-d H:i:s",strtotime($ffin . "-5 days"));
+    $finieti=$txtfini;// date("d-m-Y",strtotime($ffin . "-5 days"));
+    $finimes=$fini;//date("Y-m-d H:i:s",strtotime($ffin . "-5 month"));
+    $finimeseti=$fini;//date("d-m-Y",strtotime($ffin . "- 5 month"));
+    $anioActual = date("Y",strtotime($ffin)); //date('Y'); // Obtiene el número del año actual
+    $mesact=date("n",strtotime($ffin)); //date("n");
+
+    $fechahoy=$txtfini;//date("Y-m-d");
     $fechaayer=date("Y-m-d", strtotime($fechahoy. "-1 day")); 
     $fecha7diasantes=date("Y-m-d", strtotime($fechahoy. "-7 day")); 
-    $anioC=date("y");
-    $anioL=date("Y");
-    $mes=date("m")*1;
+    $anioC=date("y",strtotime($ffin)); //date("y");
+    $anioL=$anioActual;// date("Y");
+    $mes=date("m",strtotime($ffin))*1;//date("m")*1;
     $mesviejo=date("m", strtotime($fechahoy . "- 3 month"))*1;
     
     $lsdias = array("Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sábado");
@@ -208,32 +240,53 @@
     <section class="section dashboard">
       <div class="row">
 
-      <!-- TOTAL DE ORDENES X MES -->
+       <!-- FILTROS POR FECHAS -->
+        <div class="col-lg-12">
+          <?php    
+            echo "<div class='card'>
+                    <div class='card-body'>
+                      &nbsp;
+                      <div class='accordion' id='accordionExample'>
+                        <div class='accordion-item'>
+                          <h2 class='accordion-header' id='headingTwo'>
+                            <button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#collapseTwo' aria-expanded='false' aria-controls='collapseTwo'>
+                              Buscador
+                            </button>
+                          </h2>
+                          <div id='collapseTwo' class='accordion-collapse collapse' aria-labelledby='headingTwo' data-bs-parent='#accordionExample'>
+                            <div class='accordion-body'>
+                              <form class='row g-3'>
+                                <div class='col-md-6'>
+                                  <label for='txtfini' class='form-label'>Fecha Inicio</label>
+                                  <input type='date' class='form-control' id='txtfini' value='".$txtfini."'>
+                                </div>
+                                <div class='col-md-6'>
+                                  <label for='txtffin' class='form-label'>Fecha Fin</label>
+                                  <input type='date' class='form-control' id='txtffin' value='".$txtffin."'>
+                                </div>   
+                                <div class='text-center'>
+                                  <button type='button' class='btn btn-secondary' onclick='limpiar()'>Limpiar</button>
+                                  <button type='button' class='btn btn-primary' onclick='filtrar()'>Filtrar</button>
+                                </div>           
+                              </form>  
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ";
+          ?>
+        </div>
+      <!-- FIN FILTROS POR FECHAS -->
+    
+      <!-- TOTAL DE ORDENES -->
         <div class="col-lg-3">
-
           <div class="card info-card sales-card">
-
-            <!--div class="filter">
-              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li class="dropdown-header text-start">
-                  <h6>Filtro</h6>
-                </li>
-
-                <li><a class="dropdown-item" href="#">Hoy</a></li>
-                <li><a class="dropdown-item" href="#">Este Mes</a></li>
-                <li><a class="dropdown-item" href="#">Este Año</a></li>
-              </ul>
-            </div-->
               <?php
-                $mesact=date("n");
-                $mesant=$mesact-1;
-
-                $sql = "SELECT 
-                            (SELECT COUNT(b.`numorden`) FROM numeroorden b WHERE b.`accion`!='B' AND MONTH(b.`fecha`)=". $mesant .") AS ant,
-                            COUNT(a.`numorden`) AS act
-                        FROM numeroorden a
-                        WHERE a.`accion`!='B' AND MONTH(a.`fecha`)=". $mesact .";";
+                $sql = "SELECT COUNT(a.`numorden`) AS act
+                         FROM numeroorden a
+                         WHERE a.`accion`!='B' AND a.estado!='S' AND DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."';";
 
                 $con=conectar();
 
@@ -252,7 +305,6 @@
                 {
                   while($row = mysqli_fetch_array($result))
                   {
-                      $cantant=$row['ant'];
                       $cantact=$row['act'];
                   }
                 }
@@ -261,7 +313,7 @@
               ?>
 
             <div class="card-body">
-              <h5 class="card-title">Total Ordenes<span>| <?php echo obtenermes('C',0) ." ". $anioC; ?></span></h5>
+              <h5 class="card-title"><a href="homexfiltros.php?op=TO">Total Ordenes</a></h5>
 
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -270,16 +322,6 @@
                 <div class="ps-3">
                   <h6><?php echo $cantact; ?></h6>
                   <h5>Ordenes</h5>
-                  <span class="text-success small pt-1 fw-bold">
-                  <?php
-                    //Analizo porcentaje
-                    $porctarea=($cantant*$cantact)/100;
-
-                    if ($cantact<$cantant) echo "-".$porctarea."%";
-                    else echo "+".$porctarea."%";
-                  ?>
-                  </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('C',1) ." ". $anioL; ?></span>
-
                 </div>
               </div>
             </div>
@@ -292,21 +334,8 @@
 
           <div class="card info-card sales-card">
 
-            <!--div class="filter">
-              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li class="dropdown-header text-start">
-                  <h6>Filtro</h6>
-                </li>
-
-                <li><a class="dropdown-item" href="#">Hoy</a></li>
-                <li><a class="dropdown-item" href="#">Este Mes</a></li>
-                <li><a class="dropdown-item" href="#">Este Año</a></li>
-              </ul>
-            </div-->
-
             <div class="card-body">
-              <h5 class="card-title">Demoradas <span>| <?php echo obtenermes('C',0) ." ". $anioC; ?> </span></h5>
+              <h5 class="card-title"><a href="homexfiltros.php?op=DE">Demoradas</a></h5>
 
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -315,13 +344,10 @@
                 <div class="ps-3">
                 <?php
                 
-                  $sql = "SELECT COUNT(TIMESTAMPDIFF(MINUTE,a.`fentrega`,CURDATE())) AS demoradaact,
-                                (SELECT COUNT(TIMESTAMPDIFF(MINUTE,b.`fentrega`,CURDATE()))
-                                FROM numeroorden b
-                                WHERE b.`accion`!='B' AND (TIMESTAMPDIFF(MINUTE,b.`fentrega`,CURDATE())>0) AND MONTH(b.`fecha`)=". $mesant .") AS demoraant
+                  $sql = "SELECT COUNT(a.`numorden`) AS demoradaact
                           FROM numeroorden a
-                          WHERE a.`accion`!='B' AND (TIMESTAMPDIFF(MINUTE,a.`fentrega`,CURDATE())>0) AND MONTH(a.`fecha`)=". $mesact .";";
-
+                          WHERE a.`accion`!='B' AND a.`estado`='F' AND DATE(a.`fentrega`)<DATE(a.`fechaaccion`) AND DATE(a.`fecha`) BETWEEN '".$finimes."' AND '".$ffin."';";
+                 
                   $con=conectar();
 
                   $result = $cnx->query($sql);
@@ -339,7 +365,6 @@
                   {
                     while($row = mysqli_fetch_array($result))
                     {
-                        $cantant=$row['demoraant'];
                         $cantact=$row['demoradaact'];
                     }
                   }
@@ -349,16 +374,7 @@
 
                   <h6><?php echo $cantact; ?></h6>
                   <h5>Ordenes</h5>
-                  <span class="text-success small pt-1 fw-bold">
-                  <?php
-                    //Analizo porcentaje
-                    $porctarea=($cantant*$cantact)/100;
-
-                    if ($cantact<$cantant) echo "-".$porctarea."%";
-                    else echo "+".$porctarea."%";
-                  ?>
-                  </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('C',1) ." ". $anioL; ?></span>
-
+                 
                 </div>
               </div>
             </div>
@@ -372,22 +388,8 @@
         <div class="col-lg-3">
 
           <div class="card info-card sales-card">
-
-            <!--div class="filter">
-              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li class="dropdown-header text-start">
-                  <h6>Filtro</h6>
-                </li>
-
-                <li><a class="dropdown-item" href="#">Hoy</a></li>
-                <li><a class="dropdown-item" href="#">Este Mes</a></li>
-                <li><a class="dropdown-item" href="#">Este Año</a></li>
-              </ul>
-            </div-->
-
             <div class="card-body">
-              <h5 class="card-title">Terminadas <span>| <?php echo obtenermes('C',0) ." ". $anioC; ?></span></h5>
+              <h5 class="card-title"><a href="homexfiltros.php?op=TE">Terminadas</a></h5>
 
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -395,60 +397,44 @@
                 </div>
                 <div class="ps-3">
 
-                <?php
+                  <?php
                 
-                $cantant=0;
-                $cantact=100;
+                    $cantact=0;
 
-                $sql = "SELECT 
-                            (SELECT COUNT(b.`numorden`) FROM numeroorden b WHERE b.`accion`!='B' AND MONTH(b.`fecha`)=".$mesant." AND b.estado='F') AS ant,
-                            COUNT(a.`numorden`) AS act
-                        FROM numeroorden a
-                        WHERE a.`accion`!='B' AND MONTH(a.`fecha`)=".$mesact." AND a.`estado`='F';";
+                    $sql = "SELECT COUNT(a.`numorden`) AS act
+                            FROM numeroorden a
+                            WHERE a.`accion`!='B' AND a.estado='F' AND a.`fentrega` BETWEEN '".$txtfini."' AND '".$txtffin."';";
 
-                $con=conectar();
+                    $con=conectar();
 
-                $result = $cnx->query($sql);
+                    $result = $cnx->query($sql);
 
-                if (!$result) 
-                {
-                    die('Invalid query: ' . $cnx->error);
-                }
+                    if (!$result) 
+                    {
+                        die('Invalid query: ' . $cnx->error);
+                    }
 
-                if (!$result) 
-                {
-                    die('Invalid query: ' . $mysqli->error);
-                }
-                else
-                {
-                  while($row = mysqli_fetch_array($result))
-                  {
-                      $cantant=$row['ant'];
-                      $cantact=$row['act'];
-                  }
-                }
+                    if (!$result) 
+                    {
+                        die('Invalid query: ' . $mysqli->error);
+                    }
+                    else
+                    {
+                      while($row = mysqli_fetch_array($result))
+                      {
+                          $cantact=$row['act'];
+                      }
+                    }
 
-                desconectar($con);
-              ?>
+                    desconectar($con);
+                  ?>
 
                   <h6><?php echo $cantact; ?></h6>
                   <h5>Ordenes</h5>
-                  <span class="text-success small pt-1 fw-bold">
-                  <?php
-                    //Analizo porcentaje
-                    $porctarea=($cantant*$cantact)/100;
-
-                    if ($cantact<$cantant) echo "-".$porctarea."%";
-                    else echo "+".$porctarea."%";
-                  ?>  
-                  </span> 
-                  <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('C',1) ." ". $anioL; ?></span>
-
                 </div>
               </div>
             </div>
-
-            </div>
+          </div>
 
         </div>
       <!-- FIN ORDENES TERMINADAS-->    
@@ -458,21 +444,8 @@
 
           <div class="card info-card sales-card">
 
-            <!--div class="filter">
-              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li class="dropdown-header text-start">
-                  <h6>Filtro</h6>
-                </li>
-
-                <li><a class="dropdown-item" href="#">Hoy</a></li>
-                <li><a class="dropdown-item" href="#">Este Mes</a></li>
-                <li><a class="dropdown-item" href="#">Este Año</a></li>
-              </ul>
-            </div-->
-
             <div class="card-body">
-              <h5 class="card-title">En curso <span>| Hoy</span></h5>
+              <h5 class="card-title"><a href="homexfiltros.php?op=EC">En curso</a> <span>| Hoy</span></h5>
 
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -481,14 +454,11 @@
                 <div class="ps-3">
                 <?php
                 
-                $cantant=0;
                 $cantact=100;
 
-                $sql = "SELECT 
-                            (SELECT COUNT(b.`numorden`) FROM numeroorden b WHERE b.`accion`!='B' AND MONTH(b.`fecha`)=".$mesant." AND b.estado='P') AS ant,
-                            COUNT(a.`numorden`) AS act
+                $sql = "SELECT COUNT(a.`numorden`) AS act
                         FROM numeroorden a
-                        WHERE a.`accion`!='B' AND MONTH(a.`fecha`)=".$mesact." AND a.`estado`='P';";
+                        WHERE a.`accion`!='B' AND a.estado='P' AND DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."';";
 
                 $con=conectar();
 
@@ -507,7 +477,6 @@
                 {
                   while($row = mysqli_fetch_array($result))
                   {
-                      $cantant=$row['ant'];
                       $cantact=$row['act'];
                   }
                 }
@@ -517,16 +486,6 @@
 
                   <h6><?php echo $cantact; ?></h6>
                   <h5>Ordenes</h5>
-                  <span class="text-success small pt-1 fw-bold">
-                  <?php
-                    //Analizo porcentaje
-                    $porctarea=($cantant*$cantact)/100;
-
-                    if ($cantact<$cantant) echo "-".$porctarea."%";
-                    else echo "+".$porctarea."%";
-                  ?>  
-                  </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('C',1) ." ". $anioL; ?></span>
-
                 </div>
               </div>
             </div>
@@ -541,182 +500,125 @@
     <section class="section dashboard">
       <div class="row">
 
-      <!-- DESIGNAR ORDENES EN CURSO-->
-        <div class="col-lg-6">
-        
-          <!-- Customers Card -->
+        <!-- TOTAL HORAS/MINUTOS TRABAJADOS POR LOS MECANICOS -->
+          <div class="col-lg-6">
             <div class="card info-card customers-card">
+              <?php
+                $ttiempo=0;
+                
+                $sql = "SELECT ROUND(SUM(CASE WHEN c.`fechaobs` IS NULL THEN TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,CONCAT(DATE(NOW()),' 18:59:00'))/60 ELSE TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,c.`fechaobs`)/60 END),2) ttiempo
+                        FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
+                                           LEFT JOIN afectadostareas c ON (c.`numorden`=a.`numorden` AND c.`idempleado`=b.`idpersona`)
+                        WHERE a.`accion`!='B' AND a.estado!='S' AND DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."';";
 
-              <!--div class="filter">
-                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                  <li class="dropdown-header text-start">
-                    <h6>Filtro</h6>
-                  </li>
+                $con=conectar();
 
-                  <li><a class="dropdown-item" href="#">Hoy</a></li>
-                  <li><a class="dropdown-item" href="#">Este Mes</a></li>
-                  <li><a class="dropdown-item" href="#">Este Año</a></li>
-                </ul>
-              </div-->
+                $result = $cnx->query($sql);
+
+                if (!$result) 
+                {
+                    die('Invalid query: ' . $cnx->error);
+                }
+
+                if (!$result) 
+                {
+                    die('Invalid query: ' . $mysqli->error);
+                }
+                else
+                {
+                  while($row = mysqli_fetch_array($result))
+                  {
+                      $ttiempo=$row['ttiempo'];
+                  }
+                }
+
+                desconectar($con);
+
+                //echo $ttiempo;
+              ?>
 
               <div class="card-body">
-                <h5 class="card-title">Designación Ordenes<span>| <?php echo obtenermes('L',0) ." ". $anioL; ?></span></h5>
-
+                <h5 class="card-title"><a href="homexfiltros.php?op=TI">Tiempo invertido</a></h5>
                 <div class="d-flex align-items-center">
                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                     <i class="bi bi-people"></i>
                   </div>
                   <div class="ps-3">
                     <h6>
-                    <?php
-                        $promant=0;
-                        $promact=0;
-                        $hora="";
+                      <?php 
+                        // Separar la parte entera (horas) y la parte decimal (minutos)
+                        $horas = floor($ttiempo);
+                        $minutos = round(($ttiempo - $horas) * 60);
 
-                        $sql = "SELECT SEC_TO_TIME(AVG(TIMESTAMPDIFF(MINUTE,b.`fecha`,a.`fechaautoriza`))) AS hora,AVG(TIMESTAMPDIFF(MINUTE,b.`fecha`,a.`fechaautoriza`)) AS promact,
-                                  (SELECT AVG(TIMESTAMPDIFF(MINUTE,bb.`fecha`,aa.`fechaautoriza`))
-                                  FROM autorizaraccorden aa INNER JOIN numeroorden bb ON (aa.`numorden`=bb.`numorden` AND bb.`accion`!='B')
-                                  WHERE aa.`accion`!='B' AND aa.`estado`='A' AND MONTH(bb.`fecha`)=".$mesant.") AS promant
-                                FROM autorizaraccorden a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                                WHERE a.`accion`!='B' AND a.`estado`='A' AND MONTH(b.`fecha`)=".$mesact.";";
+                        // Formatear las horas y minutos en formato HH:MM
+                        $formato_hhmm = sprintf("%02d:%02d", $horas, $minutos);
 
-                        $con=conectar();
-
-                        $result = $cnx->query($sql);
-
-                        if (!$result) 
-                        {
-                            die('Invalid query: ' . $cnx->error);
-                        }
-
-                        if (!$result) 
-                        {
-                            die('Invalid query: ' . $mysqli->error);
-                        }
-                        else
-                        {
-                          while($row = mysqli_fetch_array($result))
-                          {
-                              $promant=$row['promant'];
-                              $promact=$row['promact'];
-                              $hora=explode('.',(string)$row['hora']);
-                          }
-                        }
-
-                        desconectar($con);
-
-                        echo $hora[0] ." hs";
+                        echo $formato_hhmm; // Salida: 254:14
                       ?>
-                      </h6>
-                    <span class="text-danger small pt-1 fw-bold">
-                    <?php
-                      //Analizo porcentaje
-                      $porctarea=($promant*$promact*0)/100;
-
-                      if ($promact<$promant) echo "-".$porctarea."%";
-                      else echo "+".$porctarea."%";
-                    ?>    
-                    </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('L',1) ." ". $anioL; ?></span>
-
+                    </h6>
+                    <h5>Horas Trabajadas Mecanicos</h5>
                   </div>
                 </div>
-
               </div>
             </div>
-          <!-- End Customers Card -->  
+          </div>
+        <!-- FIN TOTAL ORDENES SIN SER ASIGNADAS PARA TRABAJAR -->
 
-        </div>
-      <!-- FIN DESIGNAR ORDENES EN CURSO-->
-
-      <!-- TIEMPO MUERTO -->
-        <div class="col-lg-6">
-        
-          <!-- Customers Card -->
+        <!-- CANTIDAD DE PERSONAS SIN ACTIVIDAD -->
+          <div class="col-lg-6">
             <div class="card info-card customers-card">
+              <?php
+                $cantsin=0;
+                
+                $sql = "SELECT COUNT(xx.`idpersona`) AS cantact
+                        FROM personas xx
+                        WHERE xx.`accion`!='B' AND xx.`idtipopersona`=4 AND xx.`idpersona` NOT IN (SELECT a.`idempleado`
+                                                                                                  FROM afectadostareas a
+                                                                                                  WHERE (DATE(a.`fechaini`) BETWEEN '".$txtfini."' AND '".$txtffin."')
+                                                                                                  GROUP BY 1
+                                                                                                  ORDER BY 1);";
 
-              <!--div class="filter">
-                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                  <li class="dropdown-header text-start">
-                    <h6>Filtro</h6>
-                  </li>
+                $con=conectar();
 
-                  <li><a class="dropdown-item" href="#">Hoy</a></li>
-                  <li><a class="dropdown-item" href="#">Este Mes</a></li>
-                  <li><a class="dropdown-item" href="#">Este Año</a></li>
-                </ul>
-              </div-->
+                $result = $cnx->query($sql);
 
+                if (!$result) 
+                {
+                    die('Invalid query: ' . $cnx->error);
+                }
+
+                if (!$result) 
+                {
+                    die('Invalid query: ' . $mysqli->error);
+                }
+                else
+                {
+                  while($row = mysqli_fetch_array($result))
+                  {
+                      $cantsin=$row['cantact'];
+                  }
+                }
+
+                desconectar($con);
+                
+              ?>
               <div class="card-body">
-                <h5 class="card-title">Tiempo Muerto <span>| <?php echo obtenermes('L',0) ." ". $anioL; ?></span></h5>
-
+                <h5 class="card-title"><a href="homexfiltros.php?op=EO">Empleados Ociosos</a></h5>
                 <div class="d-flex align-items-center">
                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="bi bi-cup-straw"></i>
+                    <i class="bi bi-cup-straw"></i>              
                   </div>
                   <div class="ps-3">
-                    <h6>
-                    <?php
-                        $promant=0;
-                        $promact=0;
-                        $hora="";
-
-                        $sql = "SELECT SEC_TO_TIME(AVG(TIMESTAMPDIFF(MINUTE,a.`fecha`,a.`fechaaccion`))) AS hora,
-                                      AVG(TIMESTAMPDIFF(MINUTE,a.`fecha`,a.`fechaaccion`)) AS promact,
-                                      (SELECT AVG(TIMESTAMPDIFF(MINUTE,bb.`fecha`,bb.`fechaaccion`))
-                                      FROM numeroorden bb
-                                      WHERE bb.`accion`!='B' AND bb.`estado`='D' AND MONTH(bb.`fecha`)=".$mesant.") AS promant
-                                FROM numeroorden a
-                                WHERE a.`accion`!='B' AND a.`estado`='D' AND MONTH(a.`fecha`)=".$mesact.";";
-
-                        $con=conectar();
-
-                        $result = $cnx->query($sql);
-
-                        if (!$result) 
-                        {
-                            die('Invalid query: ' . $cnx->error);
-                        }
-
-                        if (!$result) 
-                        {
-                            die('Invalid query: ' . $mysqli->error);
-                        }
-                        else
-                        {
-                          while($row = mysqli_fetch_array($result))
-                          {
-                              $promant=$row['promant'];
-                              $promact=$row['promact'];
-                              $hora=explode('.',(string)$row['hora']);
-                          }
-                        }
-
-                        desconectar($con);
-
-                        echo $hora[0] ." hs";
-                      ?>
-                      </h6>
-                    <span class="text-danger small pt-1 fw-bold">
-                    <?php
-                      //Analizo porcentaje
-                      $porctarea=($promant*$promact)/100;
-
-                      if ($promact<$promant) echo "-".$porctarea."%";
-                      else echo "+".$porctarea."%";
-                    ?>      
-                    </span> <span class="text-muted small pt-2 ps-1"><?php echo obtenermes('L',1) ." ". $anioL; ?></span>
-
+                    <h6><?php echo $cantsin; ?></h6>
+                    <h5>Empleados Sin Tareas</h5>
                   </div>
                 </div>
-
               </div>
             </div>
-            <!-- End Customers Card -->  
           </div>
-        </div>
-      <!-- FIN TIEMPO MUERTO -->
+        <!-- FIN CANTIDAD DE PERSONAS SIN ACTIVIDAD -->
+      
+      </div>
     </section>
 <!--=========================================== FIN DE TARJETAS ===============================================-->
 
@@ -726,157 +628,155 @@
     <section class="section dashboard">
       <div class="row">
       
-        <!-- TIEMPO DE ATENCION DE ORDENES -->
+        <!-- TIEMPO PROMEDIO DE ATENCION DE ORDENES -->
         <div class="col-lg-6">
           <?php
           
-          $sql = "SELECT DATE(a.`fecha`) AS fecha,
-                        CASE 
-                            WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Monday' THEN 'Lunes' 
-                            WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Tuesday' THEN 'Martes' 
-                            WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Wednesday' THEN 'Miercoles' 
-                            WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Thursday' THEN 'Jueves' 
-                            WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Friday' THEN 'Viernes' 
-                            WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Saturday' THEN 'Sabado' 
-                            WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Sunday' THEN 'Domingo' 
-                            ELSE 'ERROR' 
-                        END AS diasnomb, 
-                    ROUND(AVG(TIMESTAMPDIFF(MINUTE,a.`fecha`,b.`fechaautoriza`)/60),0) AS hora
-                  FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
-                  WHERE a.`accion`!='B' AND a.`estado`='F' AND a.fecha BETWEEN '".$fini."' AND '".$ffin."'
-                  GROUP BY a.`fecha`
-                  ORDER BY 1;";
+            $sql = "SELECT DATE(a.`fecha`) AS fecha,
+                          CASE 
+                              WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Monday' THEN 'Lunes' 
+                              WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Tuesday' THEN 'Martes' 
+                              WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Wednesday' THEN 'Miercoles' 
+                              WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Thursday' THEN 'Jueves' 
+                              WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Friday' THEN 'Viernes' 
+                              WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Saturday' THEN 'Sabado' 
+                              WHEN DATE_FORMAT(DATE(a.`fecha`), '%W')='Sunday' THEN 'Domingo' 
+                              ELSE 'ERROR' 
+                          END AS diasnomb, 
+                      ROUND(AVG(TIMESTAMPDIFF(MINUTE,a.`fecha`,b.`fechaautoriza`)/60),0) AS hora
+                    FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
+                    WHERE a.`accion`!='B' AND a.`estado`='F' AND DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."'
+                    GROUP BY 1,2
+                    ORDER BY 1;";
 
-          $con=conectar();
+            $con=conectar();
 
-          $result = $con->query($sql);
+            $result = $con->query($sql);
 
-          if (!$result) 
-          {
-                die('Invalid query: ' . $con->error);
-          }
+            if (!$result) 
+            {
+                  die('Invalid query: ' . $con->error);
+            }
 
-          if (!$result) 
-          {
-                die('Invalid query: ' . $mysqli->error);
-          }
-          else
-          {
-              $datos="";
-              $dias="";
-              $colores="";
-              while($row = mysqli_fetch_array($result))
-              {
-                $datos=strlen($datos)<=0? $row['hora']: $datos.",".$row['hora'];
-                $dias=strlen($dias)<=0? "'".$row['diasnomb']."'": $dias.",'".$row['diasnomb']."'";
-                $colores=strlen($colores)<=0? "'#33b2df'": $colores.",'#33b2df'";
-              }
+            if (!$result) 
+            {
+                  die('Invalid query: ' . $mysqli->error);
+            }
+            else
+            {
+                $datos="";
+                $dias="";
+                $colores="";
+                while($row = mysqli_fetch_array($result))
+                {
+                  $datos=strlen($datos)<=0? $row['hora']: $datos.",".$row['hora'];
+                  $dias=strlen($dias)<=0? "'".$row['diasnomb']."'": $dias.",'".$row['diasnomb']."'";
+                  $colores=strlen($colores)<=0? "'#33b2df'": $colores.",'#33b2df'";
+                }
 
-              desconectar($con);
-          }
+                desconectar($con);
+            }
 
          // echo $datos."=".$dias."=".$colores;
-
-          echo "<div class='card'>
+            echo "<div class='card'>
                   <div class='card-body'>
-                  <h5 class='card-title'>Tiempo Promedio de Atención de Ordenes <p>".$finieti." al ".$ffineti."</p></h5>
-                  <div id='barChart'></div>
-                  <script>
-                      document.addEventListener('DOMContentLoaded', () => {
-                      new ApexCharts(document.querySelector('#barChart'), {
-                          series: [{
-                                  name: 'Atención',
-                                  data: [".$datos."]
-                                  }],
-                                  chart: {
-                                  height: 350,
-                                  type: 'bar',
-                                  },
-                                  plotOptions: {
-                                  bar: {
-                                      borderRadius: 0,
-                                      dataLabels: {
-                                      position: 'center', // top, center, bottom
-                                      },
-                                  }
-                                  },
-                                  dataLabels: {
-                                  enabled: true,
-                                  formatter: function (val) {
-                                      return val + 'hs';
-                                  },
-                                  offsetY: -20,
-                                  style: {
-                                      fontSize: '12px',
-                                      colors: ['#304758']
-                                  }
-                                  },
-                                  
-                                  xaxis: {
-                                  categories: [".$dias."],
-                                  position: 'top',
-                                  axisBorder: {
-                                      show: false
-                                  },
-                                  axisTicks: {
-                                      show: false
-                                  },
-                                  crosshairs: {
-                                      fill: {
-                                      type: 'gradient',
-                                      gradient: {
-                                          colorFrom: '#D8E3F0',
-                                          colorTo: '#BED1E6',
-                                          stops: [0, 100],
-                                          opacityFrom: 0.4,
-                                          opacityTo: 0.5,
-                                      }
-                                      }
-                                  },
-                                  tooltip: {
-                                      enabled: true,
-                                  }
-                                  },
-                                  colors: [".$colores."],
-                                  yaxis: {
-                                  axisBorder: {
-                                      show: false
-                                  },
-                                  axisTicks: {
-                                      show: false,
-                                  },
-                                  labels: {
-                                      show: false,
-                                      formatter: function (val) {
-                                      return val + 'hs';
-                                      }
-                                  }
-                                  
-                                  },
-                                  title: {
-                                  text: 'Tiempo de Atención',
-                                  floating: true,
-                                  offsetY: 330,
-                                  align: 'center',
-                                  style: {
-                                      color: '#444'
-                                  }
-                                  }
-                          }).render();
-                      });
-                  </script>
-              </div>
-              </div>";
-              
+                    <h5 class='card-title'><a href='homexfiltros.php?op=AO'>Promedio Atención Ordenes Por Dias</a></h5>
+                    <div id='barChart'></div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                        new ApexCharts(document.querySelector('#barChart'), {
+                            series: [{
+                                    name: 'Atención',
+                                    data: [".$datos."]
+                                    }],
+                                    chart: {
+                                    height: 350,
+                                    type: 'bar',
+                                    },
+                                    plotOptions: {
+                                    bar: {
+                                        borderRadius: 0,
+                                        dataLabels: {
+                                        position: 'center', // top, center, bottom
+                                        },
+                                    }
+                                    },
+                                    dataLabels: {
+                                    enabled: true,
+                                    formatter: function (val) {
+                                        return val + 'hs';
+                                    },
+                                    offsetY: -20,
+                                    style: {
+                                        fontSize: '12px',
+                                        colors: ['#304758']
+                                    }
+                                    },
+                                    
+                                    xaxis: {
+                                    categories: [".$dias."],
+                                    position: 'top',
+                                    axisBorder: {
+                                        show: false
+                                    },
+                                    axisTicks: {
+                                        show: false
+                                    },
+                                    crosshairs: {
+                                        fill: {
+                                        type: 'gradient',
+                                        gradient: {
+                                            colorFrom: '#D8E3F0',
+                                            colorTo: '#BED1E6',
+                                            stops: [0, 100],
+                                            opacityFrom: 0.4,
+                                            opacityTo: 0.5,
+                                        }
+                                        }
+                                    },
+                                    tooltip: {
+                                        enabled: true,
+                                    }
+                                    },
+                                    colors: [".$colores."],
+                                    yaxis: {
+                                    axisBorder: {
+                                        show: false
+                                    },
+                                    axisTicks: {
+                                        show: false,
+                                    },
+                                    labels: {
+                                        show: false,
+                                        formatter: function (val) {
+                                        return val + 'hs';
+                                        }
+                                    }
+                                    
+                                    },
+                                    title: {
+                                    text: 'Tiempo de Atención',
+                                    floating: true,
+                                    offsetY: 330,
+                                    align: 'center',
+                                    style: {
+                                        color: '#444'
+                                    }
+                                    }
+                            }).render();
+                        });
+                    </script>
+                  </div>
+                </div>";     
           ?>
         </div>
-        <!-- FIN DE TIEMPO DE ATENCION DE ORDENES -->
-
-        <!-- Tiempo Asignación Tarea Administrador -->
+        <!-- FIN TIEMPO PROMEDIO DE ATENCION DE ORDENES -->
+        
+        <!-- TIEMPO PROMEDIO AUTORIZA EL SUPERVISOR A LA ORDEN -->
           <div class="col-lg-6">
             <?php
                   
-                  $sql = "SELECT CASE MONTH(DATE(a.`fecha`))
+                  $sql = "SELECT MONTH(DATE(a.`fecha`)) AS mes,CASE MONTH(DATE(a.`fecha`))
                                         WHEN 1 THEN 'Enero'
                                         WHEN 2 THEN 'Febrero'
                                         WHEN 3 THEN 'Marzo'
@@ -892,7 +792,7 @@
                                 ELSE 'ERROR'END AS mesnomb,
                                 ROUND(AVG(TIMESTAMPDIFF(MINUTE,a.`fecha`,b.`fechaautoriza`)/60),0) AS hora
                           FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
-                          WHERE a.`accion`!='B' AND b.`estado`='A' AND a.fecha BETWEEN '".$finimes."' AND '".$ffin."'
+                          WHERE a.`accion`!='B' AND b.`estado`='A' AND DATE(a.`fecha`) BETWEEN '".$finimes."' AND '".$ffin."'
                           GROUP BY 1
                           ORDER BY 1 ASC;";
 
@@ -927,7 +827,7 @@
                 
                 echo "<div class='card'>
                           <div class='card-body'>
-                            <h5 class='card-title'>Tiempo Promedio Asignación Tarea Supervisor <p>".$finimeseti." al ".$ffineti."</p></h5>
+                            <h5 class='card-title'>Promedio Asignación Tarea Supervisor Por Mes</h5>
                             <div id='barChart45'></div>
                               <script>
                                 document.addEventListener('DOMContentLoaded', () => {
@@ -1016,13 +916,121 @@
                       </div>";
             ?>
           </div>
-        <!-- Fin Tiempo Asignación Tarea Administrador -->
+        <!-- FIN TIEMPO PROMEDIO AUTORIZA EL SUPERVISOR A LA ORDEN -->
  
-        <!-- Total Ordenes Demoradas x Mes -->
-        <div class="col-lg-6">
-          <?php
-                  
-            $sql = "SELECT CASE MONTH(DATE(a.`fecha`))
+        <!-- TAREAS REALIZADAS -->
+          <div class="col-lg-6">
+            <?php    
+                $sql = "SELECT b.`descripciontarea`,SUBSTRING(b.`descripciontarea`, 1, 20) AS recorte,COUNT(a.idtarea) AS cantidad
+                        FROM afectadostareas a INNER JOIN tareas b ON (a.`idtarea`=b.`idtarea` AND b.`accion`!='B')
+                                              INNER JOIN numeroorden c ON (a.`numorden`=c.`numorden` AND c.`accion`!='B')
+                        WHERE a.`estado`='F' AND DATE(c.`fecha`) BETWEEN '".$finimes."' AND '".$ffin."' 
+                        GROUP BY 1;";
+
+              $con=conectar();
+
+              $result = $con->query($sql);
+
+              if (!$result) 
+              {
+                die('Invalid query: ' . $con->error);
+              }
+
+              if (!$result) 
+              {
+                die('Invalid query: ' . $mysqli->error);
+              }
+              else
+              {
+                $datos="";
+                $categorias="";
+                $colores="";
+                
+                while($row = mysqli_fetch_array($result))
+                {
+                  $datos=strlen($datos)<=0? $row['cantidad']: $datos.",".$row['cantidad'];
+                  $categorias=strlen($categorias)<=0? "'".$row['recorte']."'": $categorias.",'".$row['recorte']."'";
+                  $colores=strlen($colores)<=0? "'#A5978B'": $colores.",'#A5978B'";
+                }
+
+                desconectar($con);
+              }
+                      
+              echo "<div class='card'>
+                        <div class='card-body'>
+                          <h5 class='card-title'>Tareas Realizadas</h5>
+
+                          <div id='barChart47'></div>
+                          <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                              new ApexCharts(document.querySelector('#barChart47'), {
+                                series: [{
+                                          name: 'Servicios',
+                                          data: [".$datos."]
+                                        }],
+                                          
+                                        chart: {
+                                          height: 350,
+                                          type: 'bar',
+                                        },
+                                        plotOptions: {
+                                          bar: {
+                                            borderRadius: 0,
+                                            columnWidth: '50%',
+                                          }
+                                        },
+                                        dataLabels: {
+                                          enabled: false
+                                        },
+                                        stroke: {
+                                          width: 0
+                                        },
+                                        grid: {
+                                          row: {
+                                            colors: ['#fff', '#f2f2f2']
+                                          }
+                                        },
+                                        xaxis: {
+                                          labels: {
+                                            rotate: -45
+                                          },
+                                          categories: [".$categorias."],
+                                          tickPlacement: 'on'
+                                        },
+                                        colors: [".$colores."],
+                                        yaxis: {
+                                          title: {
+                                            text: 'Servicios',
+                                          },
+                                        },
+                                        fill: {
+                                          type: 'gradient',
+                                          gradient: {
+                                            shade: 'light',
+                                            type: 'horizontal',
+                                            shadeIntensity: 0.25,
+                                            gradientToColors: undefined,
+                                            inverseColors: true,
+                                            opacityFrom: 0.85,
+                                            opacityTo: 0.85,
+                                            stops: [50, 0, 100]
+                                          },
+                                        }
+                                }).render();
+                              });
+                            </script>
+
+                        </div>
+                      </div>";
+            ?>
+          </div>
+        <!-- FIN TAREAS REALIZADAS -->
+      
+        <!-- TOTAL DE REVISITAS -->
+          <div class="col-lg-6">
+            <?php    
+                $sql = "SELECT MONTH(DATE(a.`fecha`)) AS mes,
+                                CASE MONTH(DATE(a.`fecha`))
                                   WHEN 1 THEN 'Enero'
                                   WHEN 2 THEN 'Febrero'
                                   WHEN 3 THEN 'Marzo'
@@ -1035,134 +1043,55 @@
                                   WHEN 10 THEN 'Octubre'
                                   WHEN 11 THEN 'Noviembre'
                                   WHEN 12 THEN 'Diciembre'
-                          ELSE 'ERROR'END AS mesnomb,
-                          (SELECT COUNT(xx.numorden)
-                          FROM numeroorden xx
-                          WHERE xx.`accion`!='B' AND MONTH(DATE(xx.fecha))=MONTH(DATE(a.`fecha`))) AS totalorden, 
-                        COUNT(a.`numorden`) AS cantdemoradas
-                  FROM numeroorden a
-                  WHERE a.`accion`!='B' AND a.`estado`='F' AND DATE(a.`fentrega`)<DATE(a.`fechaaccion`) AND a.fecha BETWEEN '".$finimes."' AND '".$ffin."'
-                  GROUP BY a.`fecha`,a.`numorden`
-                  ORDER BY 1 ASC;";
-
-            $con=conectar();
-
-            $result = $con->query($sql);
-
-            if (!$result) 
-            {
-                  die('Invalid query: ' . $con->error);
-            }
-
-            if (!$result) 
-            {
-                  die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
-              $datos="";
-              $mes="";
-              while($row = mysqli_fetch_array($result))
-              {
-                $datos=strlen($datos)<=0? $row['cantdemoradas']: $datos.",".$row['cantdemoradas'];
-                $mes=strlen($mes)<=0? "'".$row['mesnomb']." (".$row['totalorden'].")'": $mes.",'".$row['mesnomb']." (".$row['totalorden'].")'";
-              }
-
-              desconectar($con);
-            }
-          
-          
-            echo "<div class='card'>
-                    <div class='card-body'>
-                      <h5 class='card-title'>Total Ordenes Demoradas <p>".$finimeseti." al ".$ffineti."</p></h5>
-
-                      <div id='donutChart'></div>
-
-                      <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                          new ApexCharts(document.querySelector('#donutChart'), {
-                            series: [".$datos."],
-                            chart: {
-                              height: 350,
-                              type: 'donut',
-                              toolbar: {
-                                show: true
-                              }
-                            },
-                            labels: [".$mes."],
-                          }).render();
-                        });
-                      </script>
-
-                    </div>
-                  </div>";
-          ?>
-        </div>
-        <!-- Fin Total Ordenes Demoradas xx Mes -->
-         
-        <!-- Cantidad Ordenes Atendidas x Mes -->
-        <div class="col-lg-6">
-          <?php    
-              $sql = "SELECT CASE MONTH(DATE(a.`fecha`))
-                                        WHEN 1 THEN 'Enero'
-                                        WHEN 2 THEN 'Febrero'
-                                        WHEN 3 THEN 'Marzo'
-                                        WHEN 4 THEN 'Abril'
-                                        WHEN 5 THEN 'Mayo'
-                                        WHEN 6 THEN 'Junio'
-                                        WHEN 7 THEN 'Julio'
-                                        WHEN 8 THEN 'Agosto'
-                                        WHEN 9 THEN 'Septiembre'
-                                        WHEN 10 THEN 'Octubre'
-                                        WHEN 11 THEN 'Noviembre'
-                                        WHEN 12 THEN 'Diciembre'
                                 ELSE 'ERROR'END AS mesnomb,
-        
-                            COUNT(a.`numorden`) AS totalordenes
-                      FROM numeroorden a
-                      WHERE a.`accion`!='B' AND a.`estado`='F' AND a.fecha BETWEEN '".$finimes."' AND '".$ffin."'
-                      GROUP BY 1
-                      ORDER BY 1 ASC;";
+                              COUNT(a.numchasis) AS cant
+                        FROM numeroorden a
+                        WHERE a.`accion`!='B' AND a.estado!='S' AND DATE(a.`fecha`) BETWEEN '".$finimes."' AND '".$ffin."'
+                        GROUP BY 1
+                        ORDER BY 1,3;";
 
-            $con=conectar();
+              $con=conectar();
 
-            $result = $con->query($sql);
+              $result = $con->query($sql);
 
-            if (!$result) 
-            {
-              die('Invalid query: ' . $con->error);
-            }
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
-              $datos="";
-              $mes="";
-              $colores="";
-              
-              while($row = mysqli_fetch_array($result))
+              if (!$result) 
               {
-                $datos=strlen($datos)<=0? $row['totalordenes']: $datos.",".$row['totalordenes'];
-                $mes=strlen($mes)<=0? "'".$row['mesnomb']."'": $mes.",'".$row['mesnomb']."'";
-                $colores=strlen($colores)<=0? "'#13d8aa'": $colores.",'#13d8aa'";
+                die('Invalid query: ' . $con->error);
               }
 
-              desconectar($con);
-            }
-                    
-            echo "<div class='card'>
-                    <div class='card-body'>
-                      <h5 class='card-title'>Cantidad Ordenes Atendidas <p>".$finimeseti." al ".$ffineti."</p></h5>
+              if (!$result) 
+              {
+                die('Invalid query: ' . $mysqli->error);
+              }
+              else
+              {
+                $datos="";
+                $meses="";
+                $colores="";
+                
+                while($row = mysqli_fetch_array($result))
+                {
+                  if ($row['cant']>1)
+                  {
+                    $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
+                    $meses=strlen($meses)<=0? "'".$row['mesnomb']."'": $meses.",'".$row['mesnomb']."'";
+                    $colores=strlen($colores)<=0? "'#c388d6'": $colores.",'#c388d6'";
+                  }
+                }
 
-                        <div id='barChart46'></div>
+                desconectar($con);
+              }
+                      
+              echo "<div class='card'>
+                      <div class='card-body'>
+                        <h5 class='card-title'>Total Revisitas</h5>
+
+                        <div id='barChart50'></div>
                         <script>
                           document.addEventListener('DOMContentLoaded', () => {
-                            new ApexCharts(document.querySelector('#barChart46'), {
+                            new ApexCharts(document.querySelector('#barChart50'), {
                               series: [{
-                                        name: 'Ordenes',
+                                        name: 'Revisitas',
                                         data: [".$datos."]
                                       }],
                                         chart: {
@@ -1190,7 +1119,7 @@
                                       },
                                       
                                       xaxis: {
-                                        categories: [".$mes."],
+                                        categories: [".$meses."],
                                         position: 'top',
                                         axisBorder: {
                                           show: false
@@ -1230,7 +1159,7 @@
                                         }
                                       },
                                       title: {
-                                        text: 'Cantidad Ordenes Atendidas',
+                                        text: 'Cantidad Revisitas',
                                         floating: true,
                                         offsetY: 330,
                                         align: 'center',
@@ -1242,57 +1171,386 @@
                             });
                           </script>
 
-                    </div>
-                  </div>";
-          ?>
-        </div>  
-        <!-- Fin Cantidad Ordenes Atendidas x Mes -->
+                      </div>
+                    </div>";
+            ?>
+          </div>
+        <!-- FIN TOTAL DE REVISITAS -->
 
-        <!-- Tareas Realizadas -->
-        <div class="col-lg-6">
-          <?php    
-              $sql = "SELECT b.`descripciontarea`,SUBSTRING(b.`descripciontarea`, 1, 20) AS recorte,COUNT(a.idtarea) AS cantidad
-                      FROM afectadostareas a INNER JOIN tareas b ON (a.`idtarea`=b.`idtarea` AND b.`accion`!='B')
-                      WHERE a.`estado`='F'
-                      GROUP BY 1;";
+        <!-- HORAS/MINUTOS TRABAJADOS POR MECANICOS -->
+          <!--div class="col-lg-6">
+            <?php    
+            
+              /*
+              $sql = "SELECT b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS emple ,COUNT(b.`idtarea`) AS cant
+                                  FROM autorizaraccorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
+                                                          INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
+                                  WHERE a.`estado`='A' AND b.`estado`='F' AND DATE(a.fechaautoriza) BETWEEN '".$finimes."' AND '".$ffin."'
+                                  GROUP BY 1
+                                  ORDER BY 1;";
+            */ 
+            /*
+              $fecha = date("Y-m-d");
+              $anio = date('Y', strtotime($fecha)); 
+              $mes = date('m', strtotime($fecha));
 
-            $con=conectar();
 
-            $result = $con->query($sql);
+              $sql="SELECT a.`numorden`,
+                            CONCAT(d.`apellido`,', ',d.`nombre`) AS emple,
+                            CASE WHEN c.idtarea IS NULL THEN 0 ELSE (SELECT hh.`descripciontarea` FROM tareas hh WHERE hh.accion!='B' AND hh.idtarea=c.idtarea) END idtarea,c.fechaini,c.fechaobs,
+                            CASE WHEN c.idtarea IS NULL THEN 0 ELSE TIMESTAMPDIFF(MINUTE,c.fechaini,c.fechaobs) END minutos
+                    FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
+                          LEFT JOIN afectadostareas c ON (a.numorden=c.numorden AND b.idpersona=c.idempleado)
+                          INNER JOIN personas d ON (d.`idpersona`=b.`idpersona` AND d.`accion`!='B')
+                    WHERE a.`accion`!='B' AND a.`estado`='F' AND DATE(a.fecha) BETWEEN '".$finimes."' AND '".$ffin."'
+                    GROUP BY 1,2,3
+                    ORDER BY 4;";
 
-            if (!$result) 
-            {
-              die('Invalid query: ' . $con->error);
-            }
+              $con=conectar();
 
-            if (!$result) 
-            {
-              die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
-              $datos="";
-              $categorias="";
-              $colores="";
-              
-              while($row = mysqli_fetch_array($result))
+              $result = $con->query($sql);
+
+              if (!$result) 
               {
-                $datos=strlen($datos)<=0? $row['cantidad']: $datos.",".$row['cantidad'];
-                $categorias=strlen($categorias)<=0? "'".$row['recorte']."'": $categorias.",'".$row['recorte']."'";
-                $colores=strlen($colores)<=0? "'#A5978B'": $colores.",'#A5978B'";
+                die('Invalid query: ' . $con->error);
               }
 
-              desconectar($con);
-            }
-                    
-            echo "<div class='card'>
-                      <div class='card-body'>
-                        <h5 class='card-title'>Tareas Realizadas</h5>
+              if (!$result) 
+              {
+                die('Invalid query: ' . $mysqli->error);
+              }
+              else
+              {
+                $datos="";
+                $mecanico="";
+                $colores="";
+                global $mesActual; // Obtiene el número del mes actual
+                //$anioActual = date('Y'); // Obtiene el número del mes actual
+                
+                while($row = mysqli_fetch_array($result))
+                {
+                  $datos=strlen($datos)<=0? $row['minutos']: $datos.",".$row['minutos'];
+                  $mecanico=strlen($mecanico)<=0? "'".$row['emple']."/".$row['numorden']."/".$row['idtarea']."'": $mecanico.",'".$row['emple']."/".$row['numorden']."/".$row['idtarea']."'";
+                  $color = substr(md5(time()), 0, 6);
+                  $colores=strlen($colores)<=0? "'".randomColor()."'" : $colores.",'".randomColor()."'";
+                }
 
-                        <div id='barChart47'></div>
+                desconectar($con);
+              }
+                  
+              //echo " ". $anioC ." ". obtenermes('L',0);
+              
+              echo "<div class='card'>
+                <div class='card-body'>
+                  <h5 class='card-title'>Minutos Trabajados Por Mecanicos</h5>
+
+                  <div id='barChart51'></div>
+                  <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                      new ApexCharts(document.querySelector('#barChart51'), {
+                        series: [{
+                                data: [".$datos."]
+                              }],
+                                chart: {
+                                type: 'bar',
+                                height: 380
+                              },
+                              plotOptions: {
+                                bar: {
+                                  barHeight: '100%',
+                                  distributed: true,
+                                  horizontal: true,
+                                  dataLabels: {
+                                    position: 'bottom'
+                                  },
+                                }
+                              },
+                              colors: [".$colores."],
+                              dataLabels: {
+                                enabled: true,
+                                textAnchor: 'start',
+                                style: {
+                                  colors: ['#fff']
+                                },
+                                formatter: function (val, opt) {
+                                  return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
+                                },
+                                offsetX: 0,
+                                dropShadow: {
+                                  enabled: true
+                                }
+                              },
+                              stroke: {
+                                width: 1,
+                                colors: ['#fff']
+                              },
+                              xaxis: {
+                                categories: [".$mecanico."],
+                              },
+                              yaxis: {
+                                labels: {
+                                  show: false
+                                }
+                              },
+                              title: {
+                                  text: '',
+                                  align: 'center',
+                                  floating: true
+                              },
+                              subtitle: {
+                                  text: 'Minutos Trabajados',
+                                  align: 'center',
+                              },
+                              tooltip: {
+                                theme: 'dark',
+                                x: {
+                                  show: false
+                                },
+                                y: {
+                                  title: {
+                                    formatter: function () {
+                                      return ''
+                                    }
+                                  }
+                                }
+                              }
+                        }).render();
+                      });
+                    </script>
+                </div>
+              </div>";
+
+              function randomColor(){
+                $str = "#";
+                for($i = 0 ; $i < 6 ; $i++){
+                $randNum = rand(0, 15);
+                switch ($randNum) {
+                case 10: $randNum = "A"; 
+                break;
+                case 11: $randNum = "B"; 
+                break;
+                case 12: $randNum = "C"; 
+                break;
+                case 13: $randNum = "D"; 
+                break;
+                case 14: $randNum = "E"; 
+                break;
+                case 15: $randNum = "F"; 
+                break; 
+                }
+                $str .= $randNum;
+                }
+                return $str;
+              }
+                */
+            ?>
+          </div-->
+        <!-- FIN MINUTOS TRABAJADOS POR MECANICOS -->
+
+        <!-- Total Tiempo Muerto x Mecanicos -->
+          <!--div class="col-lg-6">
+            <?php   
+            /*
+                $ultimoDiaMes = date('t', strtotime($fecha));
+                $contadorDiasSemana = 0;
+
+                $sql = "SELECT b.`idpersona`,CONCAT(d.`apellido`,', ',d.`nombre`) AS emple,ROUND(SUM(TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,c.`fechaobs`))/60,0) AS horas
+                        FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
+                                          INNER JOIN afectadostareas c ON (b.`numorden`=c.`numorden` AND b.`idpersona`=c.`idempleado`)
+                                          INNER JOIN personas d ON (d.`idpersona`=b.`idpersona` AND d.`accion`!='B')
+                        WHERE a.`accion`!='B' AND a.`estado`='F' AND MONTH(b.`fechaautoriza`)=".$mes." 
+                        GROUP BY 1
+                        ORDER BY 1;";
+
+                $con=conectar();
+
+                $result = $con->query($sql);
+
+                if (!$result) 
+                {
+                  die('Invalid query: ' . $con->error);
+                }
+
+                if (!$result) 
+                {
+                  die('Invalid query: ' . $mysqli->error);
+                }
+                else
+                {
+                  for ($dia = 1; $dia <= $ultimoDiaMes; $dia++) {
+                      $fechaActual = "$anio-$mes-$dia";
+                      $diaSemana = date('N', strtotime($fechaActual));
+                      if ($diaSemana < 6) { // 6 representa el viernes, por lo que los días menores a 6 son de lunes a viernes
+                          $contadorDiasSemana++;
+                      }
+                  }
+                
+                  $jornada = ($contadorDiasSemana*570)/60; //570 EQUIVA A 9 HORAS 30 MIN JORNADA DE UN MECANICO
+                
+                  //echo "dias=".$contadorDiasSemana."-min=".$jornada;
+                  
+                  $datos="";
+                  $mecanico="";
+                  $colores="";
+                  
+                  while($row = mysqli_fetch_array($result))
+                  {
+                    if (strlen($datos)<=0)
+                    {
+                      if (($jornada-$row['horas'])<0) $datos=0;
+                      else $datos=$jornada-$row['horas'];
+                    }
+                    else
+                    {
+                      if (($jornada-$row['horas'])<0) $datos=$datos.",0";
+                      else $datos=$datos.",".($jornada-$row['horas']);
+                    }
+                    //$datos=strlen($datos)<=0? ($jornada-$row['horas'])<0?0:($jornada-$row['horas']) : $datos.",". ($jornada-$row['horas'])<0?0:($jornada-$row['horas']);
+                    $mecanico=strlen($mecanico)<=0? "'".$row['emple']."'": $mecanico.",'".$row['emple']."'";
+                    $color = substr(md5(time()), 0, 6);
+                    $colores=strlen($colores)<=0? "'".randomColor()."'" : $colores.",'".randomColor()."'";
+                  }
+
+                  desconectar($con);
+                }
+
+                //echo "Datos=".$datos."-mes".$mes;
+                        
+                echo "<div class='card'>
+                        <div class='card-body'>
+                          <h5 class='card-title'>Tiempo Muerto Mecanicos - ". obtenermes('L',0) ." ". $anioL ."</h5>
+
+                          <div id='barChart52'></div>
+                          <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                              new ApexCharts(document.querySelector('#barChart52'), {
+                                series: [{
+                                        data: [".$datos."]
+                                      }],
+                                        chart: {
+                                        type: 'bar',
+                                        height: 380
+                                      },
+                                      plotOptions: {
+                                        bar: {
+                                          barHeight: '100%',
+                                          distributed: true,
+                                          horizontal: true,
+                                          dataLabels: {
+                                            position: 'bottom'
+                                          },
+                                        }
+                                      },
+                                      colors: [".$colores."],
+                                      dataLabels: {
+                                        enabled: true,
+                                        textAnchor: 'start',
+                                        style: {
+                                          colors: ['#fff']
+                                        },
+                                        formatter: function (val, opt) {
+                                          return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
+                                        },
+                                        offsetX: 0,
+                                        dropShadow: {
+                                          enabled: true
+                                        }
+                                      },
+                                      stroke: {
+                                        width: 1,
+                                        colors: ['#fff']
+                                      },
+                                      xaxis: {
+                                        categories: [".$mecanico."],
+                                      },
+                                      yaxis: {
+                                        labels: {
+                                          show: false
+                                        }
+                                      },
+                                      title: {
+                                          text: '',
+                                          align: 'center',
+                                          floating: true
+                                      },
+                                      subtitle: {
+                                          text: 'Tiempo Muerto',
+                                          align: 'center',
+                                      },
+                                      tooltip: {
+                                        theme: 'dark',
+                                        x: {
+                                          show: false
+                                        },
+                                        y: {
+                                          title: {
+                                            formatter: function () {
+                                              return ''
+                                            }
+                                          }
+                                        }
+                                      }
+                                }).render();
+                              });
+                            </script>
+                        </div>
+                      </div>";
+                      */
+              ?>
+          </div-->
+        <!-- Fin Total Tiempo Muerto x Mecanicos -->
+        
+        <!-- TOTAL SERVICIOS POR MODELO -->
+          <div class="col-lg-6">
+            <?php   
+              $datos="";
+              $modelos="";
+              $colores="";
+              $bandera="";
+
+              $sql = "SELECT b.`modelomarca`, COUNT(a.`numorden`) AS cant
+                      FROM numeroorden a INNER JOIN modelos b ON (a.codmodelo=b.codmodelo)
+                      WHERE a.`accion`!='B' AND a.estado!='S' AND DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."'
+                      GROUP BY 1
+                      ORDER BY 1;";
+
+              $con=conectar();
+
+              $result = $con->query($sql);
+
+              if (!$result) 
+              {
+                die('Invalid query: ' . $con->error);
+              }
+
+              if (!$result) 
+              {
+                die('Invalid query: ' . $mysqli->error);
+              }
+              else
+              {
+                while($row = mysqli_fetch_array($result))
+                {
+                  if ($row['cant']>0)
+                  {
+                    $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
+                    $modelos=strlen($modelos)<=0? "'".$row['modelomarca']."'": $modelos.",'".$row['modelomarca']."'";
+                    $colores=strlen($colores)<=0? "'#c388d6'": $colores.",'#c388d6'";
+                  }
+                }
+
+                desconectar($con);
+              }
+                      
+              echo "
+                    <div class='card'>
+                      <div class='card-body'>
+                        <h5 class='card-title'>Total Services x Modelo</h5>
+
+                        <div id='barChart48'></div>
                         <script>
                           document.addEventListener('DOMContentLoaded', () => {
-                            new ApexCharts(document.querySelector('#barChart47'), {
+                            new ApexCharts(document.querySelector('#barChart48'), {
                               series: [{
                                         name: 'Servicios',
                                         data: [".$datos."]
@@ -1323,7 +1581,7 @@
                                         labels: {
                                           rotate: -45
                                         },
-                                        categories: [".$categorias."],
+                                        categories: [".$modelos."],
                                         tickPlacement: 'on'
                                       },
                                       colors: [".$colores."],
@@ -1348,341 +1606,131 @@
                               }).render();
                             });
                           </script>
-
+          
                       </div>
                     </div>";
-          ?>
-        </div>
-        <!-- Fin Tareas Realizadas -->
-      
-        <!-- Total Revisitas x Mes -->
-        <div class="col-lg-6">
-          <?php    
-              $sql = "SELECT a.numchasis, 
-                              CASE MONTH(DATE(a.`fecha`))
-                                WHEN 1 THEN 'Enero'
-                                WHEN 2 THEN 'Febrero'
-                                WHEN 3 THEN 'Marzo'
-                                WHEN 4 THEN 'Abril'
-                                WHEN 5 THEN 'Mayo'
-                                WHEN 6 THEN 'Junio'
-                                WHEN 7 THEN 'Julio'
-                                WHEN 8 THEN 'Agosto'
-                                WHEN 9 THEN 'Septiembre'
-                                WHEN 10 THEN 'Octubre'
-                                WHEN 11 THEN 'Noviembre'
-                                WHEN 12 THEN 'Diciembre'
-                              ELSE 'ERROR'END AS mesnomb,
-                            COUNT(a.numchasis) AS cant
-                      FROM numeroorden a
-                      WHERE a.`accion`!='B' AND a.estado!='S' AND a.fecha BETWEEN '".$finimes."' AND '".$ffin."'
-                      GROUP BY a.numchasis,a.`fecha`
-                      ORDER BY 2,3;";
+            ?>
+          </div>
+        <!-- FIN TOTAL SERVICIOS POR MODELO -->
 
-            $con=conectar();
-
-            $result = $con->query($sql);
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $con->error);
-            }
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
+        <!-- ORIGEN DESDE DONDE NOS CONOCEN -->
+          <div class="col-lg-6">
+            <?php
               $datos="";
-              $meses="";
+              $origen="";
               $colores="";
-              
-              while($row = mysqli_fetch_array($result))
+
+              $sql="SELECT b.`publicacion`,COUNT(a.`numorden`) AS cant
+                    FROM numeroorden a INNER JOIN publicaciones b ON (a.`idpublicidad`=b.`idpublicacion`)
+                    WHERE a.`accion`!='B' AND DATE(a.fecha) BETWEEN '".$fini."' AND '".$ffin."'
+                    GROUP BY 1
+                    ORDER BY 1;";
+
+              $con=conectar();
+
+              $result = $con->query($sql);
+
+              if (!$result) 
               {
-                if ($row['cant']>1)
-                {
-                  $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
-                  $meses=strlen($meses)<=0? "'".$row['mesnomb']."'": $meses.",'".$row['mesnomb']."'";
-                  $colores=strlen($colores)<=0? "'#c388d6'": $colores.",'#c388d6'";
-                }
+                    die('Invalid query: ' . $con->error);
               }
 
-              desconectar($con);
-            }
-                    
-            echo "<div class='card'>
-                    <div class='card-body'>
-                      <h5 class='card-title'>Total Revisitas <p>".$finimeseti." al ".$ffineti."</p></h5>
+              if (!$result) 
+              {
+                    die('Invalid query: ' . $mysqli->error);
+              }
+              else
+              {
+                  while($row = mysqli_fetch_array($result))
+                  {
+                    $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
+                    $origen=strlen($origen)<=0? "'".$row['publicacion']."'": $origen.",'".$row['publicacion']."'";
+                    $colores=strlen($colores)<=0? "'#33b2df'": $colores.",'#33b2df'";
+                  }
 
-                      <div id='barChart50'></div>
-                      <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                          new ApexCharts(document.querySelector('#barChart50'), {
-                            series: [{
-                                      name: 'Revisitas',
-                                      data: [".$datos."]
-                                    }],
+                  desconectar($con);
+              }
+
+              //echo $datos."=".$origen."=".$colores;
+
+              echo "<div class='card'>
+                      <div class='card-body'>
+                        <h5 class='card-title'>Desde Donde Nos Conoce</h5>
+
+                        <div id='barChart49'></div>
+                        <script>
+                          document.addEventListener('DOMContentLoaded', () => {
+                            new ApexCharts(document.querySelector('#barChart49'), {
+                              series: [{
+                                        name: 'Fuentes',
+                                        data: [".$datos."]
+                                      }],
+                                        
                                       chart: {
-                                      height: 350,
-                                      type: 'bar',
-                                    },
-                                    plotOptions: {
-                                      bar: {
-                                        borderRadius: 0,
-                                        dataLabels: {
-                                          position: 'center', // top, center, bottom
+                                        height: 350,
+                                        type: 'bar',
+                                      },
+                                      plotOptions: {
+                                        bar: {
+                                          borderRadius: 0,
+                                          columnWidth: '50%',
+                                        }
+                                      },
+                                      dataLabels: {
+                                        enabled: false
+                                      },
+                                      stroke: {
+                                        width: 0
+                                      },
+                                      grid: {
+                                        row: {
+                                          colors: ['#fff', '#f2f2f2']
+                                        }
+                                      },
+                                      xaxis: {
+                                        labels: {
+                                          rotate: -45
+                                        },
+                                        categories: [".$origen."],
+                                        tickPlacement: 'on'
+                                      },
+                                      colors: [".$colores."],
+                                      yaxis: {
+                                        title: {
+                                          text: 'Fuentes',
+                                        },
+                                      },
+                                      fill: {
+                                        type: 'gradient',
+                                        gradient: {
+                                          shade: 'light',
+                                          type: 'horizontal',
+                                          shadeIntensity: 0.25,
+                                          gradientToColors: undefined,
+                                          inverseColors: true,
+                                          opacityFrom: 0.85,
+                                          opacityTo: 0.85,
+                                          stops: [50, 0, 100]
                                         },
                                       }
-                                    },
-                                    dataLabels: {
-                                      enabled: true,
-                                      formatter: function (val) {
-                                        return val + '';
-                                      },
-                                      offsetY: -20,
-                                      style: {
-                                        fontSize: '12px',
-                                        colors: ['#304758']
-                                      }
-                                    },
-                                    
-                                    xaxis: {
-                                      categories: [".$meses."],
-                                      position: 'top',
-                                      axisBorder: {
-                                        show: false
-                                      },
-                                      axisTicks: {
-                                        show: false
-                                      },
-                                      crosshairs: {
-                                        fill: {
-                                          type: 'gradient',
-                                          gradient: {
-                                            colorFrom: '#D8E3F0',
-                                            colorTo: '#BED1E6',
-                                            stops: [0, 100],
-                                            opacityFrom: 0.4,
-                                            opacityTo: 0.5,
-                                          }
-                                        }
-                                      },
-                                      tooltip: {
-                                        enabled: true,
-                                      }
-                                    },
-                                    colors: [".$colores."],
-                                    yaxis: {
-                                      axisBorder: {
-                                        show: false
-                                      },
-                                      axisTicks: {
-                                        show: false,
-                                      },
-                                      labels: {
-                                        show: false,
-                                        formatter: function (val) {
-                                          return val + '';
-                                        }
-                                      }
-                                    },
-                                    title: {
-                                      text: 'Cantidad Revisitas',
-                                      floating: true,
-                                      offsetY: 330,
-                                      align: 'center',
-                                      style: {
-                                        color: '#444'
-                                      }
-                                    }
-                            }).render();
-                          });
+                              }).render();
+                            });
                         </script>
+                      </div>
+                    </div>";
+            ?>
+          </div>
+        <!-- FIN ORIGEN DESDE DONDE NOS CONOCEN -->
 
-                    </div>
-                  </div>";
-          ?>
-        </div>
-        <!-- Fin Total Revisitas x Mes -->
-
-        <!-- Tiempo Ocupación x Mecanicos -->
-        <div class="col-lg-6">
-          <?php    
-            /*
-            $sql = "SELECT b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS emple ,COUNT(b.`idtarea`) AS cant
-                                FROM autorizaraccorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
-                                                        INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
-                                WHERE a.`estado`='A' AND b.`estado`='F' AND DATE(a.fechaautoriza) BETWEEN '".$finimes."' AND '".$ffin."'
-                                GROUP BY 1
-                                ORDER BY 1;";
-          */ 
-            $fecha = date("Y-m-d");
-            $anio = date('Y', strtotime($fecha)); 
-            $mes = date('m', strtotime($fecha));
-
-            $sql="SELECT b.`idpersona`,CONCAT(d.`apellido`,', ',d.`nombre`) AS emple,ROUND(SUM(TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,c.`fechaobs`))/60,0) AS horas
-                  FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                                    INNER JOIN afectadostareas c ON (b.`numorden`=c.`numorden` AND b.`idpersona`=c.`idempleado`)
-                                    INNER JOIN personas d ON (d.`idpersona`=b.`idpersona` AND d.`accion`!='B')
-                  WHERE a.`accion`!='B' AND a.`estado`='F' AND MONTH(b.`fechaautoriza`)=".$mes." 
-                  GROUP BY 1
-                  ORDER BY 1;";
-
-            $con=conectar();
-
-            $result = $con->query($sql);
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $con->error);
-            }
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
-              $datos="";
-              $mecanico="";
-              $colores="";
-              global $mesActual; // Obtiene el número del mes actual
-              //$anioActual = date('Y'); // Obtiene el número del mes actual
-              
-              while($row = mysqli_fetch_array($result))
-              {
-                $datos=strlen($datos)<=0? $row['horas']: $datos.",".$row['horas'];
-                $mecanico=strlen($mecanico)<=0? "'".$row['emple']."'": $mecanico.",'".$row['emple']."'";
-                $color = substr(md5(time()), 0, 6);
-                $colores=strlen($colores)<=0? "'".randomColor()."'" : $colores.",'".randomColor()."'";
-              }
-
-              desconectar($con);
-            }
-                
-            //echo " ". $anioC ." ". obtenermes('L',0);
-            
-            echo "<div class='card'>
-              <div class='card-body'>
-                <h5 class='card-title'>Horas Trabajadas Mecanico - ". obtenermes('L',0) ." ". $anioL ."</h5>
-
-                <div id='barChart51'></div>
-                <script>
-                  document.addEventListener('DOMContentLoaded', () => {
-                    new ApexCharts(document.querySelector('#barChart51'), {
-                      series: [{
-                              data: [".$datos."]
-                            }],
-                              chart: {
-                              type: 'bar',
-                              height: 380
-                            },
-                            plotOptions: {
-                              bar: {
-                                barHeight: '100%',
-                                distributed: true,
-                                horizontal: true,
-                                dataLabels: {
-                                  position: 'bottom'
-                                },
-                              }
-                            },
-                            colors: [".$colores."],
-                            dataLabels: {
-                              enabled: true,
-                              textAnchor: 'start',
-                              style: {
-                                colors: ['#fff']
-                              },
-                              formatter: function (val, opt) {
-                                return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
-                              },
-                              offsetX: 0,
-                              dropShadow: {
-                                enabled: true
-                              }
-                            },
-                            stroke: {
-                              width: 1,
-                              colors: ['#fff']
-                            },
-                            xaxis: {
-                              categories: [".$mecanico."],
-                            },
-                            yaxis: {
-                              labels: {
-                                show: false
-                              }
-                            },
-                            title: {
-                                text: '',
-                                align: 'center',
-                                floating: true
-                            },
-                            subtitle: {
-                                text: 'Horas Trabajadas',
-                                align: 'center',
-                            },
-                            tooltip: {
-                              theme: 'dark',
-                              x: {
-                                show: false
-                              },
-                              y: {
-                                title: {
-                                  formatter: function () {
-                                    return ''
-                                  }
-                                }
-                              }
-                            }
-                      }).render();
-                    });
-                  </script>
-              </div>
-            </div>";
-
-            function randomColor(){
-              $str = "#";
-              for($i = 0 ; $i < 6 ; $i++){
-              $randNum = rand(0, 15);
-              switch ($randNum) {
-              case 10: $randNum = "A"; 
-              break;
-              case 11: $randNum = "B"; 
-              break;
-              case 12: $randNum = "C"; 
-              break;
-              case 13: $randNum = "D"; 
-              break;
-              case 14: $randNum = "E"; 
-              break;
-              case 15: $randNum = "F"; 
-              break; 
-              }
-              $str .= $randNum;
-              }
-              return $str;
-             }
-          ?>
-        </div>
-        <!-- Fin Tiempo Ocupación x Mecanicos -->
-
-        <!-- Total Tiempo Muerto x Mecanicos -->
-        <div class="col-lg-6">
-          <?php   
-          
-              $ultimoDiaMes = date('t', strtotime($fecha));
-              $contadorDiasSemana = 0;
-
-              $sql = "SELECT b.`idpersona`,CONCAT(d.`apellido`,', ',d.`nombre`) AS emple,ROUND(SUM(TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,c.`fechaobs`))/60,0) AS horas
-                      FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                                        INNER JOIN afectadostareas c ON (b.`numorden`=c.`numorden` AND b.`idpersona`=c.`idempleado`)
-                                        INNER JOIN personas d ON (d.`idpersona`=b.`idpersona` AND d.`accion`!='B')
-                      WHERE a.`accion`!='B' AND a.`estado`='F' AND MONTH(b.`fechaautoriza`)=".$mes." 
-                      GROUP BY 1
-                      ORDER BY 1;";
+        <!-- TOTAL ORDENES FINALIZADAS POR MECANICOS -->
+          <div class="col-lg-12">
+            <?php    
+              $sql = "SELECT MONTH(a.fentrega) AS mes,b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS emple,COUNT(b.`idtarea`) AS cant
+                      FROM numeroorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
+                                  INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
+                      WHERE a.`accion`!='B' AND a.`estado`='F' AND a.fentrega BETWEEN '".$fini."' AND '".$ffin."'
+                      GROUP BY 1,2,3
+                      ORDER BY 1,2;";
 
               $con=conectar();
 
@@ -1699,528 +1747,85 @@
               }
               else
               {
-                for ($dia = 1; $dia <= $ultimoDiaMes; $dia++) {
-                    $fechaActual = "$anio-$mes-$dia";
-                    $diaSemana = date('N', strtotime($fechaActual));
-                    if ($diaSemana < 6) { // 6 representa el viernes, por lo que los días menores a 6 son de lunes a viernes
-                        $contadorDiasSemana++;
-                    }
-                }
-              
-                $jornada = ($contadorDiasSemana*570)/60; //570 EQUIVA A 9 HORAS 30 MIN JORNADA DE UN MECANICO
-              
-                //echo "dias=".$contadorDiasSemana."-min=".$jornada;
-                
-                $datos="";
+                $cant=0;
+                $mes="";
                 $mecanico="";
-                $colores="";
+                $item="";
                 
                 while($row = mysqli_fetch_array($result))
                 {
-                  if (strlen($datos)<=0)
-                  {
-                    if (($jornada-$row['horas'])<0) $datos=0;
-                    else $datos=$jornada-$row['horas'];
-                  }
-                  else
-                  {
-                    if (($jornada-$row['horas'])<0) $datos=$datos.",0";
-                    else $datos=$datos.",".($jornada-$row['horas']);
-                  }
-                  //$datos=strlen($datos)<=0? ($jornada-$row['horas'])<0?0:($jornada-$row['horas']) : $datos.",". ($jornada-$row['horas'])<0?0:($jornada-$row['horas']);
-                  $mecanico=strlen($mecanico)<=0? "'".$row['emple']."'": $mecanico.",'".$row['emple']."'";
-                  $color = substr(md5(time()), 0, 6);
-                  $colores=strlen($colores)<=0? "'".randomColor()."'" : $colores.",'".randomColor()."'";
-                }
+                    $mecanico=$row['emple'];
+                    $cant=$row['cant'];
+                    $mes=obtenermes('L',0);
 
+                    $item=strlen($item)<=0? "{
+                                              name: '".$mecanico."',
+                                              data: [".$cant."]
+                                            }":$item.",{
+                                                        name: '".$mecanico."',
+                                                        data: [".$cant."]
+                                                      }";
+                }              
+              
                 desconectar($con);
               }
-
-              //echo "Datos=".$datos."-mes".$mes;
                       
               echo "<div class='card'>
                       <div class='card-body'>
-                        <h5 class='card-title'>Tiempo Muerto Mecanicos - ". obtenermes('L',0) ." ". $anioL ."</h5>
+                        <h5 class='card-title'><a href='homexfiltros.php?op=FM'>Cantidad Tareas Finalizadas x Mecanico</a></h5>
 
-                        <div id='barChart52'></div>
+                        <div id='barChart53'></div>
                         <script>
                           document.addEventListener('DOMContentLoaded', () => {
-                            new ApexCharts(document.querySelector('#barChart52'), {
-                              series: [{
-                                      data: [".$datos."]
-                                    }],
-                                      chart: {
-                                      type: 'bar',
-                                      height: 380
-                                    },
-                                    plotOptions: {
-                                      bar: {
-                                        barHeight: '100%',
-                                        distributed: true,
-                                        horizontal: true,
-                                        dataLabels: {
-                                          position: 'bottom'
+                            new ApexCharts(document.querySelector('#barChart53'), {
+                              series: [".$item."],
+                                        chart: {
+                                        type: 'bar',
+                                        height: 350
+                                      },
+                                      plotOptions: {
+                                        bar: {
+                                          horizontal: false,
+                                          columnWidth: '55%',
+                                          borderRadius: 5,
+                                          borderRadiusApplication: 'end'
                                         },
-                                      }
-                                    },
-                                    colors: [".$colores."],
-                                    dataLabels: {
-                                      enabled: true,
-                                      textAnchor: 'start',
-                                      style: {
-                                        colors: ['#fff']
                                       },
-                                      formatter: function (val, opt) {
-                                        return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
+                                      dataLabels: {
+                                        enabled: false
                                       },
-                                      offsetX: 0,
-                                      dropShadow: {
-                                        enabled: true
-                                      }
-                                    },
-                                    stroke: {
-                                      width: 1,
-                                      colors: ['#fff']
-                                    },
-                                    xaxis: {
-                                      categories: [".$mecanico."],
-                                    },
-                                    yaxis: {
-                                      labels: {
-                                        show: false
-                                      }
-                                    },
-                                    title: {
-                                        text: '',
-                                        align: 'center',
-                                        floating: true
-                                    },
-                                    subtitle: {
-                                        text: 'Tiempo Muerto',
-                                        align: 'center',
-                                    },
-                                    tooltip: {
-                                      theme: 'dark',
-                                      x: {
-                                        show: false
+                                      stroke: {
+                                        show: true,
+                                        width: 2,
+                                        colors: ['transparent']
                                       },
-                                      y: {
+                                      xaxis: {
+                                        categories: ['".$mes."'],
+                                      },
+                                      yaxis: {
                                         title: {
-                                          formatter: function () {
-                                            return ''
+                                          text: 'Total Tareas'
+                                        }
+                                      },
+                                      fill: {
+                                        opacity: 1
+                                      },
+                                      tooltip: {
+                                        y: {
+                                          formatter: function (val) {
+                                            return val + ' Tareas'
                                           }
                                         }
                                       }
-                                    }
                               }).render();
                             });
                           </script>
+
                       </div>
                     </div>";
-                    
             ?>
-        </div>
-        <!-- Fin Total Tiempo Muerto x Mecanicos -->
-
-        
-        <!-- Total Services x Modelo -->
-        <div class="col-lg-6">
-          <?php    
-              $sql = "SELECT b.`modelomarca`, COUNT(a.`numorden`) AS cant
-                      FROM numeroorden a INNER JOIN modelos b ON (a.codmodelo=b.codmodelo)
-                      WHERE a.`accion`!='B' AND a.estado!='S' AND a.fecha BETWEEN '".$finimes."' AND '".$ffin."'
-                      GROUP BY b.`modelomarca`
-                      ORDER BY 1;";
-
-            $con=conectar();
-
-            $result = $con->query($sql);
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $con->error);
-            }
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
-              $datos="";
-              $modelos="";
-              $colores="";
-              
-              while($row = mysqli_fetch_array($result))
-              {
-                if ($row['cant']>1)
-                {
-                  $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
-                  $modelos=strlen($modelos)<=0? "'".$row['modelomarca']."'": $modelos.",'".$row['modelomarca']."'";
-                  $colores=strlen($colores)<=0? "'#c388d6'": $colores.",'#c388d6'";
-                }
-              }
-
-              desconectar($con);
-            }
-                    
-            echo "
-                  <div class='card'>
-                    <div class='card-body'>
-                      <h5 class='card-title'>Total Services x Modelo <p>".$finimeseti." al ".$ffineti."</p></h5>
-
-                      <div id='barChart48'></div>
-                      <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                          new ApexCharts(document.querySelector('#barChart48'), {
-                            series: [{
-                                      name: 'Servicios',
-                                      data: [".$datos."]
-                                    }],
-                                      
-                                    chart: {
-                                      height: 350,
-                                      type: 'bar',
-                                    },
-                                    plotOptions: {
-                                      bar: {
-                                        borderRadius: 0,
-                                        columnWidth: '50%',
-                                      }
-                                    },
-                                    dataLabels: {
-                                      enabled: false
-                                    },
-                                    stroke: {
-                                      width: 0
-                                    },
-                                    grid: {
-                                      row: {
-                                        colors: ['#fff', '#f2f2f2']
-                                      }
-                                    },
-                                    xaxis: {
-                                      labels: {
-                                        rotate: -45
-                                      },
-                                      categories: [".$modelos."],
-                                      tickPlacement: 'on'
-                                    },
-                                    colors: [".$colores."],
-                                    yaxis: {
-                                      title: {
-                                        text: 'Servicios',
-                                      },
-                                    },
-                                    fill: {
-                                      type: 'gradient',
-                                      gradient: {
-                                        shade: 'light',
-                                        type: 'horizontal',
-                                        shadeIntensity: 0.25,
-                                        gradientToColors: undefined,
-                                        inverseColors: true,
-                                        opacityFrom: 0.85,
-                                        opacityTo: 0.85,
-                                        stops: [50, 0, 100]
-                                      },
-                                    }
-                            }).render();
-                          });
-                        </script>
-        
-                    </div>
-                  </div>";
-          ?>
-        </div>
-        <!-- Fin Total Services x Modelo -->
-
-        <!-- Origen Conoce gráfico barra-->
-        <!--div class="col-lg-6">
-          <?php
-            /*MODIFICADO 17-06-2025
-            $sql = "SELECT a.`conocio`,COUNT(a.`numorden`) AS cant
-                    FROM numeroorden a
-                    WHERE a.`accion`!='B' AND a.fecha BETWEEN '".$fini."' AND '".$ffin."'
-                    GROUP BY a.`conocio`
-                    ORDER BY 1;";
-            */
-                    /*
-            $sql="SELECT b.`publicacion` as conocio,COUNT(a.`numorden`) AS cant
-                  FROM numeroorden a INNER JOIN publicaciones b ON (a.`idpublicidad`=b.`idpublicacion`)
-                  WHERE a.`accion`!='B' AND a.fecha BETWEEN '".$fini."' AND '".$ffin."'
-                  GROUP BY b.`publicacion`
-                  ORDER BY 1;";
-
-            $con=conectar();
-
-            $result = $con->query($sql);
-
-            if (!$result) 
-            {
-                  die('Invalid query: ' . $con->error);
-            }
-
-            if (!$result) 
-            {
-                  die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
-                $datos="";
-                $origen="";
-                $colores="";
-                while($row = mysqli_fetch_array($result))
-                {
-                  $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
-                  $origen=strlen($dias)<=0? "'".$row['conocio']."'": $origen.",'".$row['conocio']."'";
-                  $colores=strlen($colores)<=0? "'#33b2df'": $colores.",'#33b2df'";
-                }
-
-                desconectar($con);
-            }
-
-            // echo $datos."=".$dias."=".$colores;
-
-            echo "<div class='card'>
-              <div class='card-body'>
-                <h5 class='card-title'>Desde Donde Nos Conoce <p>".$finieti." al ".$ffineti."</p></h5>
-
-                <div id='barChart49'></div>
-                <script>
-                  document.addEventListener('DOMContentLoaded', () => {
-                    new ApexCharts(document.querySelector('#barChart49'), {
-                      series: [{
-                                name: 'Fuentes',
-                                data: [".$datos."]
-                              }],
-                                
-                              chart: {
-                                height: 350,
-                                type: 'bar',
-                              },
-                              plotOptions: {
-                                bar: {
-                                  borderRadius: 0,
-                                  columnWidth: '50%',
-                                }
-                              },
-                              dataLabels: {
-                                enabled: false
-                              },
-                              stroke: {
-                                width: 0
-                              },
-                              grid: {
-                                row: {
-                                  colors: ['#fff', '#f2f2f2']
-                                }
-                              },
-                              xaxis: {
-                                labels: {
-                                  rotate: -45
-                                },
-                                categories: [".$origen."],
-                                tickPlacement: 'on'
-                              },
-                              colors: [".$colores."],
-                              yaxis: {
-                                title: {
-                                  text: 'Fuentes',
-                                },
-                              },
-                              fill: {
-                                type: 'gradient',
-                                gradient: {
-                                  shade: 'light',
-                                  type: 'horizontal',
-                                  shadeIntensity: 0.25,
-                                  gradientToColors: undefined,
-                                  inverseColors: true,
-                                  opacityFrom: 0.85,
-                                  opacityTo: 0.85,
-                                  stops: [50, 0, 100]
-                                },
-                              }
-                      }).render();
-                    });
-                  </script>
-  
-              </div>
-            </div>";
-            */
-          ?>
-        </div-->
-        <!-- Fin Total Services x Modelo -->
-
-        <!-- Origen Conoce gráfico torta-->
-        <div class="col-lg-6">
-          <?php
-            
-            $sql = "SELECT b.`publicacion` as conocio,COUNT(a.`numorden`) AS cant
-                    FROM numeroorden a INNER JOIN publicaciones b ON (a.`idpublicidad`=b.`idpublicacion`)
-                    WHERE a.`accion`!='B' AND a.fecha BETWEEN '".$fini."' AND '".$ffin."'
-                    GROUP BY b.`publicacion`
-                    ORDER BY 1;";
-
-            $con=conectar();
-
-            $result = $con->query($sql);
-
-            if (!$result) 
-            {
-                  die('Invalid query: ' . $con->error);
-            }
-
-            if (!$result) 
-            {
-                  die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
-                $datos="";
-                $origen="";
-                while($row = mysqli_fetch_array($result))
-                {
-                  $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
-                  $origen=strlen($dias)<=0? "'".$row['conocio']."'": $origen.",'".$row['conocio']."'";
-                }
-
-                desconectar($con);
-            }
-
-          // echo $datos."=".$dias."=".$colores;
-
-            echo "<div class='card'>
-              <div class='card-body'>
-                <h5 class='card-title'>Origen Desde Donde Nos Conoce <p>".$finieti." al ".$ffineti."</p></h5>
-
-                <div id='donutChart2'></div>
-                  <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                      new ApexCharts(document.querySelector('#donutChart2'), {
-                        series: [".$datos."],
-                        chart: {
-                          height: 350,
-                          type: 'donut',
-                          toolbar: {
-                            show: true
-                          }
-                        },
-                        labels: [".$origen."],
-                      }).render();
-                    });
-                  </script>
-                </div>
-            </div>";
-          ?>
-        </div>
-        <!-- Fin Origen Conoce -->
-
-        <!-- Total Ordenes Finalizadas x Mecanico -->
-        <div class="col-lg-12">
-          <?php    
-            $sql = "SELECT MONTH(DATE(a.`fecha`))as mes,b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS emple,COUNT(a.`numorden`) AS cant
-                    FROM numeroorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
-                                       INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
-                    WHERE a.`accion`!='B' AND a.`estado`='F' AND MONTH(a.`fecha`)=".$mes." 
-                    GROUP BY 1,2
-                    ORDER BY 2,1;";
-
-            $con=conectar();
-
-            $result = $con->query($sql);
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $con->error);
-            }
-
-            if (!$result) 
-            {
-              die('Invalid query: ' . $mysqli->error);
-            }
-            else
-            {
-              $cant=0;
-              $mes="";
-              $mecanico="";
-              $item="";
-              
-              while($row = mysqli_fetch_array($result))
-              {
-                  $mecanico=$row['emple'];
-                  $cant=$row['cant'];
-                  $mes=obtenermes('L',0);
-
-                  $item=strlen($item)<=0? "{
-                                            name: '".$mecanico."',
-                                            data: [".$cant."]
-                                          }":$item.",{
-                                                      name: '".$mecanico."',
-                                                      data: [".$cant."]
-                                                    }";
-              }              
-            
-              desconectar($con);
-            }
-                    
-            echo "<div class='card'>
-                    <div class='card-body'>
-                      <h5 class='card-title'>Total Ordenes Finalizadas x Mecanico - ". obtenermes('L',0) ." ". $anioL ."</h5>
-
-                      <div id='barChart53'></div>
-                      <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                          new ApexCharts(document.querySelector('#barChart53'), {
-                            series: [".$item."],
-                                      chart: {
-                                      type: 'bar',
-                                      height: 350
-                                    },
-                                    plotOptions: {
-                                      bar: {
-                                        horizontal: false,
-                                        columnWidth: '55%',
-                                        borderRadius: 5,
-                                        borderRadiusApplication: 'end'
-                                      },
-                                    },
-                                    dataLabels: {
-                                      enabled: false
-                                    },
-                                    stroke: {
-                                      show: true,
-                                      width: 2,
-                                      colors: ['transparent']
-                                    },
-                                    xaxis: {
-                                      categories: ['".$mes."'],
-                                    },
-                                    yaxis: {
-                                      title: {
-                                        text: 'Total Ordenes'
-                                      }
-                                    },
-                                    fill: {
-                                      opacity: 1
-                                    },
-                                    tooltip: {
-                                      y: {
-                                        formatter: function (val) {
-                                          return val + ' Ordenes'
-                                        }
-                                      }
-                                    }
-                            }).render();
-                          });
-                        </script>
-
-                    </div>
-                  </div>";
-          ?>
-        </div>
-        <!-- Fin Total Ordenes Finalizadas x Mecanico -->
+          </div>
+        <!-- FIN TOTAL ORDENES FINALIZADAS POR MECANICOS -->
        
       </div>
     </section>

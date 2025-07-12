@@ -20,15 +20,15 @@
             case "I":
                     $fechaaccion=date("Y-m-d H:i:s"); 
                     $estado="D";
+                    $disponible="N";
                     $obs="SE INICIA TAREA";
                     
-                    //ALTA DEL NUEVO PEDIDO DE LA ORDEN VS MECANICO
-                    
-                    $sql="DELETE FROM afectadostareas WHERE numorden=? AND idtarea=?;";
+                    //EL SIGUIENTE TRATAMIENTO SE REALIZA CUANDO LA TAREA CAMBIA DE ESTADO PASA DE ESTAR EN PROCESO A DISPONIBLE    
+                    $sql="UPDATE afectadostareas SET disponible=?,fdejaproceso=? WHERE numorden=? AND idtarea=?;";
 
                     $con=conectar();
                     $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-                    mysqli_stmt_bind_param($sentencia,'ss',$numorden,$idtarea);
+                    mysqli_stmt_bind_param($sentencia,'ssss',$disponible,$fechaaccion,$numorden,$idtarea);
                     $resp=mysqli_stmt_execute($sentencia);
 
                     desconectar($con);
@@ -65,11 +65,14 @@
                     }
             break;
             case "P":
+                  
                     $accion="N";
                     $fechaaccion=date("Y-m-d H:i:s"); 
                     $estado="P";
                     $obs="SE INICIA TAREA";
-                    
+
+                    //echo "SE PONE TAREA EN PROCESO-NUMERO ORDEN=>".$numorden."-IDTAREA=>".$idtarea."-IDMECANICO=>".$idmecanico."-ESTADO=>".$estadocambia."-IDUSUARIO=>".$idusuario;
+
                     //ALTA DEL NUEVO PEDIDO DE LA ORDEN VS MECANICO
                     
                     $sql="INSERT INTO afectadostareas (numorden,idtarea,estado,idempleado,observacion,fechaini)
@@ -112,6 +115,7 @@
                     {
                         echo "1"; //La acción dio error
                     }
+                    
             break;
             case "F":
                     $accion="M";
@@ -122,7 +126,7 @@
                     //ALTA DEL NUEVO PEDIDO DE LA ORDEN VS MECANICO
                     
                     $sql="UPDATE afectadostareas SET estado=?,idempleado=?,observacion=?,fechaobs=?
-                          WHERE numorden=? AND idtarea=?;";
+                          WHERE numorden=? AND idtarea=? AND disponible='S';";
 
                     $con=conectar();
                     $sentencia=mysqli_prepare($con,$sql);//preparo consulta
@@ -273,13 +277,14 @@
                   $abandona="S";
                   $fechaobs=date("Y-m-d H:i:s"); 
                   $obs=$_GET['obs'];
+                  $disponible="S";
                   //BAJA DE UN COLABORADOR A LA TAREA
                   $sql="UPDATE afectadostareas SET observacion=?,fechaobs=?,abandona=?
-                        WHERE (numorden=? AND idtarea=? AND idempleado=?);";
+                        WHERE (numorden=? AND idtarea=? AND idempleado=? AND disponible=?);";
 
                   $con=conectar();
                   $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-                  mysqli_stmt_bind_param($sentencia,'ssssss',$obs,$fechaobs,$abandona,$numorden,$idtarea,$idmecanico);
+                  mysqli_stmt_bind_param($sentencia,'sssssss',$obs,$fechaobs,$abandona,$numorden,$idtarea,$idmecanico,$disponible);
                   $resp=mysqli_stmt_execute($sentencia);
 
                   desconectar($con);

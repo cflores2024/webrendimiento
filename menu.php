@@ -17,6 +17,14 @@ switch ($tipousu)
                                         <span>Metricas</span>
                                       </a>
                                     </li>
+
+                                    <!--li class='nav-item'>
+                                      <a class='nav-link collapsed' href='homexfiltros.php'>
+                                        <i class='bi bi-grid'></i>
+                                        <span>Metrica avanzada</span>
+                                      </a>
+                                    </li--><!-- End Dashboard Nav -->
+
                                     <!--li class='nav-item'>
                                       <a class='nav-link collapsed' href='avancestareas.php'>
                                         <i class='bi bi-grid'></i>
@@ -56,7 +64,6 @@ switch ($tipousu)
                                         </li-->
                                       </ul>
                                     </li><!-- End Tables Nav -->
-
 
                                     <li class='nav-item'>
                                       <a class='nav-link collapsed' data-bs-target='#tables-nav' data-bs-toggle='collapse' href='#'>
@@ -129,23 +136,64 @@ switch ($tipousu)
                                   <span>Metricas</span>
                                 </a>
                               </li>
+
+                              <!--li class='nav-item'>
+                                <a class='nav-link collapsed' href='homexfiltros.php'>
+                                  <i class='bi bi-grid'></i>
+                                  <span>Metrica avanzada</span>
+                                </a>
+                              </li--><!-- End Dashboard Nav -->
+
                               <!--li class='nav-item'>
                                 <a class='nav-link collapsed' href='avancestareas.php'>
                                   <i class='bi bi-grid'></i>
                                   <span>Vista gral tareas</span>
                                 </a>
                               </li--><!-- End Dashboard Nav -->
+                              
+                              <li class='nav-item'>
+                                <a class='nav-link collapsed' data-bs-target='#ordenes-nav' data-bs-toggle='collapse' href='#'>
+                                  <i class='bi bi-layout-text-window-reverse'></i><span>Ordenes</span><i class='bi bi-chevron-down ms-auto'></i>
+                                </a>
+                                <ul id='ordenes-nav' class='nav-content collapse ' data-bs-parent='#sidebar-nav'>
+                                  <li>
+                                    <a href='buscadorordenes.php'>
+                                      <i class='bi bi-circle'></i><span>Gestión Ordenes</span>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a href='atenderordenes.php?ver=P'>
+                                      <i class='bi bi-circle'></i><span>En Proceso</span>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a href='atenderordenes.php?ver=D'>
+                                      <i class='bi bi-circle'></i><span>Disponibles</span>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a href='atenderordenes.php?ver=F'>
+                                      <i class='bi bi-circle'></i><span>Finalizadas</span>
+                                    </a>
+                                  </li>
+                                  <!--li>
+                                    <a href='autorizarpedido.php'>
+                                      <i class='bi bi-circle'></i><span>Autorizar Acceso Orden</span>
+                                    </a>
+                                  </li-->
+                                </ul>
+                              </li><!-- End Tables Nav -->
 
                               <li class='nav-item'>
                                 <a class='nav-link collapsed' data-bs-target='#tables-nav' data-bs-toggle='collapse' href='#'>
                                   <i class='bi bi-layout-text-window-reverse'></i><span>Operaciones</span><i class='bi bi-chevron-down ms-auto'></i>
                                 </a>
                                 <ul id='tables-nav' class='nav-content collapse ' data-bs-parent='#sidebar-nav'>
-                                  <li>
+                                  <!--li>
                                     <a href='buscadorpersonal.php'>
                                       <i class='bi bi-circle'></i><span>Gestión Usuarios</span>
                                     </a>
-                                  </li>
+                                  </li-->
                                   <li>
                                     <a href='buscadorordenes.php'>
                                       <i class='bi bi-circle'></i><span>Gestión Ordenes</span>

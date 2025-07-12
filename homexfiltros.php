@@ -1,0 +1,573 @@
+<?php 
+  session_start(); 
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title><?php echo $_SESSION['nombreapp']; ?></title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <!--link href="https://fonts.gstatic.com" rel="preconnect"-->
+  <link href="assets/font/Open_Sans.css" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+
+  <script>
+    function compararmecanicos()
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      let titulo=document.getElementById("txttitulo").value;
+      let num=document.getElementById("txtnumorden").value;
+      let datosid="";
+      // Obtenemos los checkbox que estan checked de una tabla especifica, en este caso tel que tiene el id="tableOne"
+      document.querySelectorAll('#tablemec input[type=checkbox]').forEach(function(checkElement) {
+          if (checkElement.checked == true) datosid=datosid+"-"+checkElement.value;
+      });
+
+      alert (datosid);
+      
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infocomparamecanicos.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num+'&datosid='+datosid, false);
+        xmlhttp.send();
+      }
+    }
+
+    function limpiar() 
+    {
+      document.getElementById("txtfini").value="";
+      document.getElementById("txtffin").value="";
+      document.getElementById("txttitulo").value="";
+      document.getElementById("txtnumorden").value="";
+      document.getElementById("lsinforme").innerHTML ="<br><div style='text-align: center;'>Complete los filtros y luego presione el botón de buscar</div></br>";
+    }
+
+    function infototalordenes() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      let titulo=document.getElementById("txttitulo").value;
+      let num=document.getElementById("txtnumorden").value;
+           
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+            document.getElementById("lsdetalle").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infototalordenes.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
+        xmlhttp.send();
+      }
+    }
+
+    function infoordenesdemoradas() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      let titulo=document.getElementById("txttitulo").value;
+      let num=document.getElementById("txtnumorden").value;
+     
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infodemoradas.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
+        xmlhttp.send();
+      }
+    }
+
+    function infoordenesterminadas() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      let titulo=document.getElementById("txttitulo").value;
+      let num=document.getElementById("txtnumorden").value;
+     
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infoterminadas.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
+        xmlhttp.send();
+      }
+    }
+
+    function infoordenesenproceso() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      let titulo=document.getElementById("txttitulo").value;
+      let num=document.getElementById("txtnumorden").value;
+     
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infoenproceso.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
+        xmlhttp.send();
+      }
+    }
+
+    function infohistorialmecanico() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      let titulo=document.getElementById("txttitulo").value;
+      let num=document.getElementById("txtnumorden").value;
+      let emp=document.getElementById("txtempleado").value;
+     
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            //alert ('HISTORIAL DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infohistorialmecanico.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num+'&emp='+emp, false);
+        xmlhttp.send();
+      }
+    }
+
+    function deshabilitaRetroceso()
+    {
+      window.location.hash="no-back-button";
+      window.location.hash="Again-No-back-button" //chrome
+      window.onhashchange=function(){window.location.hash="";}
+    }
+
+    function infohorastrabajadasmecanico() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      let titulo=document.getElementById("txttitulo").value;
+      let num=document.getElementById("txtnumorden").value;
+     
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infohorastrabajadasmecanico.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
+        xmlhttp.send();
+      }
+    }
+
+    function infoempleadosociosos() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      let emp=document.getElementById("txtempleado").value;
+      
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infoempleadosociosos.php?fini='+fini+'&ffin='+ffin+'&emp='+emp, false);
+        xmlhttp.send();
+      }
+    }
+
+    function infoatencionordenes() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      let titulo=document.getElementById("txttitulo").value;
+      let num=document.getElementById("txtnumorden").value;
+     
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infoatencionordenes.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
+        xmlhttp.send();
+      }
+    }
+
+    function toggleRows() 
+    {
+      let checkbox = document.getElementById("ocultarFilas");
+      let filas = document.getElementsByClassName("fila");
+
+      for (let i = 0; i < filas.length; i++) {
+        filas[i].style.display = checkbox.checked ? "none" : "table-row";
+      }
+    }
+
+    function vercontenidotarea(num,id) 
+    {
+      alert ('ATENDERTAREA=>se atiende la tarea numero orden='+num+' - idmecanico='+id);
+      
+      if (num<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            alert ('ATENDERTAREA=>se atiende la tarea numero orden='+num+' - idmecanico='+id+' - Respuesta='+this.responseText);
+            
+            document.getElementById("lsdetalle").innerHTML=this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'atendertareas.php?num='+num+'&id='+id+'&mostrar=N', false);
+        xmlhttp.send();
+      }
+    }
+  </script>
+</head>
+
+<body>
+<?php
+  if (isset($_SESSION['id']))
+  {  
+    $id=$_SESSION['id'];
+    $apenomb=$_SESSION['apenomb'];
+    $tipousu=$_SESSION['tipo'];
+    $foto=$_SESSION['foto'];
+    $nombrecorto=$_SESSION['nombrecorto'];
+    $fechahoy=date("Y-m-d");
+    $fechaayer=date("Y-m-d", strtotime($fechahoy. "-1 day")); 
+    $fecha7diasantes=date("Y-m-d", strtotime($fechahoy. "-7 day")); 
+    $anioC=date("y");
+    $anioL=date("Y");
+    $mes=date("m")*1;
+    $mesviejo=date("m", strtotime($fechahoy . "- 3 month"))*1;
+    
+    $lsdias = array("Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sábado");
+    $posdia=date('w');
+    $nombdia=$lsdias[$posdia];
+  }
+  else
+  {
+    echo "<script> window.location.href='index.html'</script>";
+  }   
+?>
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="home.php" class="logo d-flex align-items-center">
+        <!--img src="assets/img/logo.png" alt=""-->
+        <span class="d-none d-lg-block"><?php echo $_SESSION['nombreapp']; ?></span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+    <div class="search-bar">
+      <strong>Gestión</strong>
+    </div><!-- End Search Bar -->
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle " href="#">
+            <i class="bi bi-search"></i>
+          </a>
+        </li><!-- End Search Icon-->
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="assets/img/<?php echo $foto; ?>" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $nombrecorto; ?></span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6><?php echo $apenomb; ?></h6>
+              <span><?php echo $tipousu; ?></span>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="crudpersonal.php?idpersona=<?php echo $id; ?>&accion=M">
+                <i class="bi bi-person"></i>
+                <span>Mi Perfil</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="ayuda.php">
+                <i class="bi bi-question-circle"></i>
+                <span>Ayuda?</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="index.php">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Cerrar Session</span>
+              </a>
+            </li>
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+    <!-- End Header -->
+
+  <!-- ======= Sidebar y Buscador ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <li class='nav-item'>
+        <a class='nav-link ' href='home.php'>
+          <i class='bi bi-reception-4'></i>
+          <span>Metricas</span>
+        </a>
+      </li>
+
+      <li class="nav-heading">Buscador</li>
+
+      <form action="">
+        <li class="nav-item">
+          <label for="txtfini">Fecha inicio</label>
+          <div class="col-sm-10">
+              <input name="txtfini" type="date" class="form-control" id="txtfini" value="">
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <label for="txtffin">Fecha fin</label>
+          <div class="col-sm-10">
+              <input name="txtffin" type="date" class="form-control" id="txtffin" value="">
+        </li>
+
+        <li class="nav-item">
+          <label for="txtempleado">Empleados</label>
+          <div class="col-sm-10">
+              <input name="txtempleado" type="text" class="form-control" id="txtempleado" value="">
+          </div>
+        </li>
+  
+        <li class="nav-item">
+          <label for="txtnumorden">N° Orden</label>
+          <div class="col-sm-10">
+              <input name="txtnumorden" type="text" class="form-control" id="txtnumorden" value="">
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <label for="txttitulo">Titulo Orden o tarea</label>
+          <div class="col-sm-10">
+              <input name="txttitulo" type="text" class="form-control" id="txttitulo" value="">
+          </div>
+        </li>
+                                
+        <li class="nav-item">
+          &nbsp;&nbsp;&nbsp;
+          <input type="button" id="btnLimpiar" class="btn btn-primary" value="Limpiar" onclick="limpiar()">
+          &nbsp;&nbsp;
+          <?php
+              switch($_GET['op'])
+              {
+                case "TO":
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infototalordenes()'>";
+                break;
+                case "DE":
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoordenesdemoradas()'>";
+                break;
+                case "TE":
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoordenesterminadas()'>";
+                break;
+                case "EC":
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoordenesenproceso()'>";
+                break;
+                case "FM":
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infohistorialmecanico()'>";
+                break;
+                case "TI":
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infohorastrabajadasmecanico()'>";
+                break;
+                case "EO":
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoempleadosociosos()'>";
+                break;
+                case "AO":
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoatencionordenes()'>";
+                break;
+              }      
+          ?>
+          
+        </li>
+       
+      </form>
+
+    </ul>
+
+  </aside>
+  <!-- End Sidebar-->
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Metricas <?php echo $titulo; ?></h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+          <?php
+            if (($tipousu=="Administración")||($tipousu=="Gerente")) echo "<a href='home.php'>Home</a>";
+            else 
+            {  
+              echo "<a href='atenderordenes.php?ver=P'>Home</a>";
+              //echo "<a href='avancestareas.php'>Home</a>";
+            }
+          ?>
+          </li>
+          <li class="breadcrumb-item active">Metricas avanzadas</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    
+    <span id="lsdetalle">
+      <section class="section faq">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                <span id="lsinforme">
+                  <br>
+                    <div style="text-align: center;">Complete los filtros y luego presione el botón de buscar</div>
+                  </br>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </section>
+    </span>
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="assets/vendor/echarts/echarts.min.js"></script>
+  <script src="assets/vendor/quill/quill.js"></script>
+  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>

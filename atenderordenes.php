@@ -283,6 +283,8 @@
 
     function aprocesar(num,idtarea,idmecanico) 
     {
+      //alert("VALORES INICIALES=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
+         
       if (num<=0 && idtarea<=0 && idmecanico<=0) {
         return;
       } else {
@@ -290,10 +292,12 @@
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             
-           // alert("VALORES INICIALES=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
+            //alert("VALORES INICIALES=>Orden:"+num+"-tarea:"+idtarea+"-mecanico:"+idmecanico);
             
             let resp=this.responseText;
  
+            //alert ("El valor de respesta fue: "+resp);
+
             if (resp=="0") 
             {
               //alert ("El valor de respesta fue: "+resp);
@@ -305,6 +309,7 @@
         xmlhttp.open('GET', 'gestionartareamecanico.php?estado=P&num='+num+'&idtarea='+idtarea+'&idmecanico='+idmecanico, false);
         xmlhttp.send();
       }
+      
     }
 
     function finalizar(num,idtarea,idmecanico) 
@@ -544,120 +549,10 @@
     $estadoorden="0";
     $color="0";
     $sql="";
-   
-    //ORDENES DE TRABAJOS EN ESTADO DE PROCESO Y ORDENES DISPONIBLES
-    /*
-    $sql = "-- TRAE LAS ORDEN DONDE SOLO FIGURA QUIEN LA PUSO DISPONIBLE
-            SELECT a.`numorden`,b.`tituloorden`,b.patente,
-            b.idpersonadisp AS idempleado,
-              (SELECT xx.urlfoto FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=b.idpersonadisp) AS foto,
-              (SELECT CONCAT(xx.apellido,',',xx.nombre) FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=b.idpersonadisp) AS empleado,
-              'I' AS `estado`,b.fentrega,'DI' AS situacionorden, 
-              (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=b.`numchasis` AND tt.numorden!=b.`numorden`) historial,
-                          b.numchasis  
-            FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-            GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,b.`estado`,b.numchasis,b.patente,b.idpersonadisp,b.fentrega
-            UNION
-            -- ORDENES EN PROCESOS
-            SELECT xx1.`numorden`,xx1.`tituloorden`,xx1.patente,
-            yy1.`idempleado`,
-            zz1.urlfoto AS foto, CONCAT(zz1.`apellido`,', ',zz1.`nombre`) empleado,
-              xx1.`estado`,xx1.`fechaaccion`,'PR' AS situacionorden, 
-              (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx1.`numchasis` AND tt.numorden!=xx1.`numorden`) historial,
-              xx1.numchasis  
-            FROM numeroorden xx1 INNER JOIN afectadostareas yy1 ON (xx1.`numorden`=yy1.`numorden`)
-                INNER JOIN personas zz1 ON (yy1.`idempleado`=zz1.`idpersona` AND zz1.`accion`!='B')
-            WHERE xx1.`accion`!='B' AND xx1.`estado`='P' AND xx1.`numorden` NOT IN  
-            (
-            SELECT aa.`numorden`
-            FROM autorizaraccorden aa 
-            WHERE aa.`accion`!='B'
-            )
-            UNION
-            -- ORDENES DISPONIBLES
-            SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
-
-            xx2.`idpersonadisp` AS idempleado,
-            zz1.urlfoto AS foto, 
-            CONCAT(zz1.`apellido`,', ',zz1.`nombre`) empleado,
-
-            xx2.`estado`,xx2.`fechaaccion`,
-
-            'DI' AS situacionorden, 
-            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,
-            xx2.numchasis
-            FROM numeroorden xx2 INNER JOIN personas zz1 ON (xx2.idpersonadisp=zz1.`idpersona` AND zz1.`accion`!='B')
-            WHERE xx2.accion!='B' AND xx2.estado='D' AND xx2.`numorden` NOT IN  
-            (
-            SELECT aa.`numorden`
-            FROM autorizaraccorden aa
-            WHERE aa.`accion`!='B' AND aa.`estado` IN ('P','A')
-            )
-            UNION
-            -- ORDENES PENDIENTES
-            SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
-
-            yy.idpersona AS idempleado,
-
-            yy.`urlfoto` AS foto, 
-
-            CONCAT(yy.apellido,',',yy.nombre) AS empleado,
-
-            xx2.`estado`,xx2.`fechaaccion`,
-
-            'PE' AS situacionorden, 
-            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,  
-            xx2.numchasis
-            FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
-                  INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
-            WHERE xx2.accion!='B' AND zz.estado='P'
-            UNION
-            -- ORDENES AUTORIZAS
-            SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
-
-            yy.idpersona AS idempleado,
-
-            yy.`urlfoto` AS foto, 
-
-            CONCAT(yy.apellido,',',yy.nombre) AS empleado,
-
-            xx2.`estado`,xx2.`fechaaccion`,
-
-            CASE WHEN xx2.`estado`='F' THEN 'FI' ELSE 'AU' END AS situacionorden, 
-            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,  
-            xx2.numchasis
-            FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
-                  INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
-            WHERE xx2.accion!='B' AND zz.estado='A' AND xx2.estado!='F'
-            ORDER BY 1,4;";
-   */
-
+ 
   switch($filtrar)
   {
     case "D":
-              /*
-              $sql = "-- ORDENES DISPONIBLES
-                      SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
-
-                      xx2.`idpersonadisp` AS idempleado,
-                      zz1.urlfoto AS foto, 
-                      CONCAT(zz1.`apellido`,', ',zz1.`nombre`) empleado,
-
-                      xx2.`estado`,xx2.`fechaaccion`,
-
-                      'DI' AS situacionorden, 
-                      (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,
-                      xx2.numchasis
-                      FROM numeroorden xx2 INNER JOIN personas zz1 ON (xx2.idpersonadisp=zz1.`idpersona` AND zz1.`accion`!='B')
-                      WHERE xx2.accion!='B' AND xx2.estado='D' AND xx2.`numorden` NOT IN  
-                      (
-                      SELECT aa.`numorden`
-                      FROM autorizaraccorden aa
-                      WHERE aa.`accion`!='B' AND aa.`estado` IN ('P','A')
-                      )
-                      ORDER BY 1,4;";
-              */
-            
               $sql = "-- ORDENES DISPONIBLES
                     SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
 
@@ -694,7 +589,7 @@
                                               (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=b.`numchasis` AND tt.numorden!=b.`numorden`) historial,
                                               b.numchasis  
                                         FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                                        WHERE b.`estado`!='F' AND b.`accion`!='B' AND b.`numorden` IN (SELECT yy.`numorden` FROM autorizaraccorden yy WHERE yy.`accion`!='B')
+                                        WHERE b.`estado`!='F' AND a.disponible='S' AND b.`accion`!='B' AND b.`numorden` IN (SELECT yy.`numorden` FROM autorizaraccorden yy WHERE yy.`accion`!='B')
                                         GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,b.`estado`,b.numchasis,b.patente,b.idpersonadisp,b.fentrega
                                         UNION
                                         -- ORDENES EN PROCESOS
@@ -706,7 +601,7 @@
                                               xx1.numchasis  
                                         FROM numeroorden xx1 INNER JOIN afectadostareas yy1 ON (xx1.`numorden`=yy1.`numorden`)
                                         INNER JOIN personas zz1 ON (yy1.`idempleado`=zz1.`idpersona` AND zz1.`accion`!='B')
-                                        WHERE xx1.`accion`!='B' AND xx1.`estado`='P' AND xx1.`numorden` NOT IN  
+                                        WHERE xx1.`accion`!='B' AND yy1.disponible='S' AND xx1.`estado`='P' AND xx1.`numorden` NOT IN  
                                         (
                                         SELECT aa.`numorden`
                                         FROM autorizaraccorden aa 
@@ -737,7 +632,7 @@
                                       (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=b.`numchasis` AND tt.numorden!=b.`numorden`) historial,
                                         b.numchasis  
                                       FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                                      WHERE b.`estado`!='F' AND b.`accion`!='B' AND b.`numorden` IN (SELECT yy.`numorden` FROM autorizaraccorden yy WHERE yy.`accion`!='B' AND yy.`idpersona`=".$idusuario.")
+                                      WHERE b.`estado`!='F' AND a.disponible='S' AND b.`accion`!='B' AND b.`numorden` IN (SELECT yy.`numorden` FROM autorizaraccorden yy WHERE yy.`accion`!='B' AND yy.`idpersona`=".$idusuario.")
                                       GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,b.`estado`,b.numchasis,b.patente,b.idpersonadisp,b.fentrega
                                       UNION
                                       -- ORDENES EN PROCESOS
@@ -749,7 +644,7 @@
                                       xx1.numchasis  
                                       FROM numeroorden xx1 INNER JOIN afectadostareas yy1 ON (xx1.`numorden`=yy1.`numorden`)
                                       INNER JOIN personas zz1 ON (yy1.`idempleado`=zz1.`idpersona` AND zz1.`accion`!='B')
-                                      WHERE xx1.`accion`!='B' AND xx1.`estado`='P' AND xx1.`numorden` NOT IN  
+                                      WHERE xx1.`accion`!='B' AND yy1.disponible='S' AND xx1.`estado`='P' AND xx1.`numorden` NOT IN  
                                       (
                                       SELECT aa.`numorden`
                                       FROM autorizaraccorden aa 
@@ -789,7 +684,7 @@
                                                   b.numchasis,
                                                   'Orden disponible para su tratamiento' AS descripciontarea  
                                           FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                                          WHERE b.`estado`='F' AND b.`accion`!='B' AND b.`numorden` IN (SELECT yy.`numorden` FROM afectadostareas yy WHERE yy.`estado`='F')
+                                          WHERE b.`estado`='F' AND a.disponible='S' AND b.`accion`!='B' AND b.`numorden` IN (SELECT yy.`numorden` FROM afectadostareas yy WHERE yy.`estado`='F' AND yy.disponible='S')
                                           GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,b.`estado`,b.numchasis,b.patente,b.idpersonadisp,b.fentrega
                                           UNION
                                           -- QUIEN PARTICIPARON Y QUE HICIERON
@@ -801,7 +696,7 @@
                                           FROM afectadostareas a INNER JOIN numeroorden b ON (a.numorden=b.numorden AND b.accion!='B')
                                                                 INNER JOIN personas c ON (c.idpersona=a.idempleado AND c.accion!='B') 
                                                                 INNER JOIN tareas d ON (a.`idtarea`=d.`idtarea` AND d.`accion`!='B')
-                                          WHERE b.estado='F' AND a.`numorden` IN (SELECT yy.`numorden` FROM afectadostareas yy WHERE yy.`estado`='F')
+                                          WHERE b.estado='F' AND a.disponible='S' AND a.`numorden` IN (SELECT yy.`numorden` FROM afectadostareas yy WHERE yy.`estado`='F' AND yy.disponible='S')
                                           GROUP BY 1,4
                                           ORDER BY 1,8 ASC;
                                         ";
@@ -818,7 +713,7 @@
                                               b.numchasis,
                                               'Orden disponible para su tratamiento' AS descripciontarea  
                                       FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                                      WHERE b.`estado`='F' AND b.`accion`!='B' AND b.`numorden` IN (SELECT yy.`numorden` FROM afectadostareas yy WHERE yy.`estado`='F' AND yy.`idempleado`=".$idusuario.")
+                                      WHERE b.`estado`='F' AND b.`accion`!='B' AND a.disponible='S' AND b.`numorden` IN (SELECT yy.`numorden` FROM afectadostareas yy WHERE yy.`estado`='F' AND yy.disponible='S' AND yy.`idempleado`=".$idusuario.")
                                       GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,b.`estado`,b.numchasis,b.patente,b.idpersonadisp,b.fentrega
                                       UNION
                                       -- QUIEN PARTICIPARON Y QUE HICIERON
@@ -830,7 +725,7 @@
                                       FROM afectadostareas a INNER JOIN numeroorden b ON (a.numorden=b.numorden AND b.accion!='B')
                                                             INNER JOIN personas c ON (c.idpersona=a.idempleado AND c.accion!='B') 
                                                             INNER JOIN tareas d ON (a.`idtarea`=d.`idtarea` AND d.`accion`!='B')
-                                      WHERE b.estado='F' AND a.`numorden` IN (SELECT yy.`numorden` FROM afectadostareas yy WHERE yy.`estado`='F' AND yy.`idempleado`=".$idusuario.")
+                                      WHERE b.estado='F' AND a.disponible='S' AND a.`numorden` IN (SELECT yy.`numorden` FROM afectadostareas yy WHERE yy.`estado`='F' AND yy.disponible='S' AND yy.`idempleado`=".$idusuario.")
                                       GROUP BY 1,4
                                       ORDER BY 1,8 ASC;
                                     ";
@@ -839,92 +734,6 @@
     break;
   }
 
-   /* 
-            $sql = "-- TRAE LAS ORDEN DONDE SOLO FIGURA QUIEN LA PUSO DISPONIBLE
-            SELECT a.`numorden`,b.`tituloorden`,b.patente,
-            b.idpersonadisp AS idempleado,
-              (SELECT xx.urlfoto FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=b.idpersonadisp) AS foto,
-              (SELECT CONCAT(xx.apellido,',',xx.nombre) FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=b.idpersonadisp) AS empleado,
-              'I' AS `estado`,b.fentrega,'DI' AS situacionorden, 
-              (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=b.`numchasis` AND tt.numorden!=b.`numorden`) historial,
-                          b.numchasis  
-            FROM afectadostareas a INNER JOIN numeroorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-            WHERE b.`estado`!='F' AND b.`accion`!='B'
-            GROUP BY a.`numorden`,b.`tituloorden`,b.`fecha`,b.`fechaaccion`,b.`estado`,b.numchasis,b.patente,b.idpersonadisp,b.fentrega
-            UNION
-            -- ORDENES EN PROCESOS
-            SELECT xx1.`numorden`,xx1.`tituloorden`,xx1.patente,
-            yy1.`idempleado`,
-            zz1.urlfoto AS foto, CONCAT(zz1.`apellido`,', ',zz1.`nombre`) empleado,
-              xx1.`estado`,xx1.`fechaaccion`,'PR' AS situacionorden, 
-              (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx1.`numchasis` AND tt.numorden!=xx1.`numorden`) historial,
-              xx1.numchasis  
-            FROM numeroorden xx1 INNER JOIN afectadostareas yy1 ON (xx1.`numorden`=yy1.`numorden`)
-                INNER JOIN personas zz1 ON (yy1.`idempleado`=zz1.`idpersona` AND zz1.`accion`!='B')
-            WHERE xx1.`accion`!='B' AND xx1.`estado`='P' AND xx1.`numorden` NOT IN  
-            (
-            SELECT aa.`numorden`
-            FROM autorizaraccorden aa 
-            WHERE aa.`accion`!='B'
-            )
-            UNION
-            -- ORDENES DISPONIBLES
-            SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
-
-            xx2.`idpersonadisp` AS idempleado,
-            zz1.urlfoto AS foto, 
-            CONCAT(zz1.`apellido`,', ',zz1.`nombre`) empleado,
-
-            xx2.`estado`,xx2.`fechaaccion`,
-
-            'DI' AS situacionorden, 
-            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,
-            xx2.numchasis
-            FROM numeroorden xx2 INNER JOIN personas zz1 ON (xx2.idpersonadisp=zz1.`idpersona` AND zz1.`accion`!='B')
-            WHERE xx2.accion!='B' AND xx2.estado='D' AND xx2.`numorden` NOT IN  
-            (
-            SELECT aa.`numorden`
-            FROM autorizaraccorden aa
-            WHERE aa.`accion`!='B' AND aa.`estado` IN ('P','A')
-            )
-            UNION
-            -- ORDENES PENDIENTES
-            SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
-
-            yy.idpersona AS idempleado,
-
-            yy.`urlfoto` AS foto, 
-
-            CONCAT(yy.apellido,',',yy.nombre) AS empleado,
-
-            xx2.`estado`,xx2.`fechaaccion`,
-
-            'PE' AS situacionorden, 
-            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,  
-            xx2.numchasis
-            FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
-                  INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
-            WHERE xx2.accion!='B' AND zz.estado='P'
-            UNION
-            -- ORDENES AUTORIZAS
-            SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
-
-            yy.idpersona AS idempleado,
-
-            yy.`urlfoto` AS foto, 
-
-            CONCAT(yy.apellido,',',yy.nombre) AS empleado,
-
-            xx2.`estado`,xx2.`fechaaccion`,
-
-            CASE WHEN xx2.`estado`='F' THEN 'FI' ELSE 'AU' END AS situacionorden, 
-            (SELECT COUNT(tt.numorden) FROM numeroorden tt WHERE tt.accion!='B' AND tt.estado='F' AND tt.numchasis=xx2.`numchasis` AND tt.numorden!=xx2.`numorden`) historial,  
-            xx2.numchasis
-            FROM numeroorden xx2  INNER JOIN autorizaraccorden zz ON (xx2.numorden=zz.numorden AND xx2.accion!='B') 
-                  INNER JOIN personas yy ON (zz.idpersona=yy.idpersona AND yy.accion!='B') 
-            WHERE xx2.accion!='B' AND zz.estado='A' AND xx2.estado!='F'
-            ORDER BY 1,4;";
-*/
     //echo $sql;
 
     $con=conectar();
