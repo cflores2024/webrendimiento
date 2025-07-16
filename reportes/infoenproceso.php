@@ -1,4 +1,8 @@
 <?php
+    session_start(); 
+ 
+    $idusuario=$_SESSION['id'];
+
     include "../configuracion/conexion.php";
 
     $encabezado="<table class='table table-hover'>
@@ -10,7 +14,8 @@
                         <th scope='col'>Estado</th>
                         <th scope='col'>F. Recepción</th>
                         <th scope='col'>F. Entrega</th>
-                        <th scope='col'>Demora (hh)</th>
+                        <th scope='col'>Tiempo Tratamiento (hh)</th>
+                        <th scope='col'>Tiempo Suspendida (hh)</th>
                     </tr>
                     </thead>
                     <tbody>";
@@ -31,12 +36,18 @@
                     CASE WHEN a.`estado`='P' THEN 'En Proceso'
                         ELSE 'Error' END estado,
                     a.`fecha` AS frecepcion,
-                    CONCAT(a.`fentrega`,' 18:59:00') AS festimadaentrega,
-                    CASE WHEN NOW()=a.fechaaccion THEN TIMESTAMPDIFF(HOUR,a.`fecha`,a.`fechaaccion`)
-                    ELSE TIMESTAMPDIFF(HOUR,a.`fecha`,NOW()) END tiempodemora
-            FROM numeroorden a
-            WHERE a.estado='P' AND (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
-            ORDER BY a.fecha;";
+                    a.`fentrega` AS fentrega,
+                    TIMESTAMPDIFF(HOUR,a.`fecha`,a.`fechaaccion`) AS torden,
+                    (SELECT CASE WHEN aa.`ffin` IS NULL THEN 
+                                    TIMESTAMPDIFF(HOUR,MIN(aa.`fini`),NOW()) 
+                            ELSE 
+                                    TIMESTAMPDIFF(HOUR,MIN(aa.`fini`),MAX(aa.`ffin`)) 
+                            END
+                     FROM tareassuspendidas aa 
+                     WHERE aa.`numorden`=a.`numorden`) tsuspendida
+                FROM numeroorden a
+                WHERE a.`accion`!='B' AND a.estado='P' AND (DATE(a.`fentrega`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
+                ORDER BY a.fecha;";
 
             //echo $sql;
         $con=conectar();
@@ -60,12 +71,13 @@
             {
                 $fila=$fila."<tr>
                                 <th scope='row'>".$i."</th>
-                                <td>".$row["numorden"]."</td>
+                                <td><a href='#' onclick='vercontenidotarea(".$row['numorden'].",".$idusuario.")'>#".$row["numorden"]."</a></td>
                                 <td>".$row["tituloorden"]."</td>
                                 <td>".$row["estado"]."</td>
                                 <td>".$row["frecepcion"]."</td>
-                                <td>".$row["festimadaentrega"]."</td>
-                                <td>".$row["tiempodemora"]."</td>
+                                <td>".$row["fentrega"]."</td>
+                                <td>".$row["torden"]."</td>
+                                <td>".$row["tsuspendida"]."</td>
                             </tr>";
                  $i=$i+1;
             }
@@ -74,11 +86,11 @@
         desconectar($con);   
       
         if ($fila!="") echo $encabezado."".$fila."".$pie;
-        else echo $encabezado."<tr><td style='text-align: center;' colspan='7'>Sin datos para mostrar</td></tr>".$pie;
+        else echo $encabezado."<tr><td style='text-align: center;' colspan='8'>Sin datos para mostrar</td></tr>".$pie;
     }
     else
     {
-        echo $encabezado."<tr><td style='text-align: center;' colspan='7'>Falta indicar un rango de fecha a analizar</td></tr>".$pie;
+        echo $encabezado."<tr><td style='text-align: center;' colspan='8'>Falta indicar un rango de fecha a analizar</td></tr>".$pie;
     }
    
 ?>

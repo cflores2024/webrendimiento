@@ -1,4 +1,8 @@
 <?php
+    session_start(); 
+ 
+    $idusuario=$_SESSION['id'];
+
     include "../configuracion/conexion.php";
 
     $encabezado="<table class='table table-hover'>
@@ -36,15 +40,22 @@
                     CASE WHEN c.`idtarea` IS NULL THEN '' ELSE (SELECT yy.descripciontarea FROM tareas yy WHERE yy.accion!='B' AND yy.idtarea=c.idtarea) END tarea,
                     CASE WHEN c.`idtarea` IS NULL THEN '' ELSE c.estado END estadotarea,
                     CASE WHEN c.`idtarea` IS NULL THEN '' ELSE c.`fechaini` END fini,
-                    CASE WHEN c.`idtarea` IS NULL THEN '' ELSE (CASE WHEN c.`fechaobs` IS NULL THEN CONCAT(DATE(NOW()),' 18:59:00') ELSE c.fechaobs END) END ffin,
-                    CASE WHEN c.`idtarea` IS NULL THEN 0 ELSE (CASE WHEN c.`fechaobs` IS NULL THEN ROUND(TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,CONCAT(DATE(NOW()),' 18:59:00'))/60,2) ELSE ROUND(TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,c.`fechaobs`)/60,2) END) END ttiempo,
+                    CASE WHEN c.`idtarea` IS NULL THEN '' ELSE (CASE WHEN c.`fechaobs` IS NULL THEN NOW() ELSE c.fechaobs END) END ffin,
+                    CASE WHEN c.`idtarea` IS NULL THEN 0 ELSE (CASE WHEN c.`fechaobs` IS NULL THEN TIMESTAMPDIFF(HOUR,b.`fechaautoriza`,NOW()) ELSE TIMESTAMPDIFF(HOUR,b.`fechaautoriza`,c.`fechaobs`) END) END ttiempo,
                     a.tituloorden,
                     (SELECT CONCAT(xx.apellido,', ',xx.nombre) FROM personas xx WHERE xx.accion!='B' AND xx.idpersona=b.idpersona) AS apenomb,
-                    CASE WHEN c.`idtarea` IS NULL THEN 0 ELSE (CASE WHEN d.fini IS NULL THEN 0 ELSE ROUND(TIMESTAMPDIFF(MINUTE,d.fini,d.ffin)/60,2) END) END tsuspendida
+                    (SELECT CASE WHEN aa.`ffin` IS NULL THEN 
+                                            TIMESTAMPDIFF(HOUR,MIN(aa.`fini`),NOW()) 
+                                    ELSE 
+                                            TIMESTAMPDIFF(HOUR,MIN(aa.`fini`),MAX(aa.`ffin`)) 
+                                    END
+                            FROM tareassuspendidas aa 
+                            WHERE aa.`numorden`=c.`numorden` AND aa.idtarea=c.`idtarea`) tsuspendida                     
             FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
                                LEFT JOIN afectadostareas c ON (c.`numorden`=a.`numorden` AND c.`idempleado`=b.`idpersona`)
                                LEFT JOIN tareassuspendidas d ON (d.numorden=a.numorden AND d.idtarea=c.idtarea AND d.idempleadofini=c.idempleado) 
             WHERE a.`accion`!='B' AND a.estado!='S' AND (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
+            GROUP BY tarea
             ORDER BY 3,1;";
 
             //echo $sql;
@@ -71,7 +82,7 @@
 
                 $fila=$fila."<tr>
                                 <th scope='row'>".$i."</th>
-                                <td>".$row["numorden"]."</td>
+                                <td><a href='#' onclick='vercontenidotarea(".$row['numorden'].",".$idusuario.")'>#".$row["numorden"]."</a></td>
                                 <td>".$row["tituloorden"]."</td>
                                 <td>".$row["fecha"]."</td>
                                 <td>".$row["apenomb"]."</td>

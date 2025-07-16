@@ -41,6 +41,7 @@
     {
       var desc=document.getElementById("txttitulo" + num).value;
       var dias=document.getElementById("txtdias" + num).value;
+      var hora=document.getElementById("txthora" + num).value;
       
       if ((desc.length === 0)&&(dias<= 0)) 
       {
@@ -49,7 +50,7 @@
       else
       {
         //alert("Se cambia estado orden " + num + " a disponible y con el titulo "+ desc +", dias que llevara la tarea "+ dias);
-        organizartareas(num,'D',desc,dias);
+        organizartareas(num,'D',desc,dias,hora);
       }
     }
 
@@ -57,7 +58,7 @@
     {
       //alert("Sa cambia estado orden " + num + " a no disponible!!!");
 
-      organizartareas(num,'S','',0);
+      organizartareas(num,'S','',0,0);
     }
 
     function vertabla(num)
@@ -136,7 +137,7 @@
       }
     }
 
-    function organizartareas(orden,estado,titulo,dias) 
+    function organizartareas(orden,estado,titulo,dias,hora) 
     {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
@@ -148,7 +149,7 @@
             document.getElementById("lsinfo").innerHTML=this.responseText;
           }
         };
-        xmlhttp.open('GET', 'organizarorden.php?orden='+orden+'&estado='+estado+'&titulo='+titulo+'&dias='+dias+'&mecanico=0', false);
+        xmlhttp.open('GET', 'organizarorden.php?orden='+orden+'&estado='+estado+'&titulo='+titulo+'&dias='+dias+'&hora='+hora+'&mecanico=0', false);
         xmlhttp.send();  
     }
 
@@ -177,7 +178,7 @@
          
             if (resp=="0") 
             {//SE REALIZA LA ACTUALIZACION DE LAS ORDENES NO ELIMINADAS
-              organizartareas(0,'','',0);
+              organizartareas(0,'','',0,0);
             }
             else
             {

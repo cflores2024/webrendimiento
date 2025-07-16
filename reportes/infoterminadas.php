@@ -1,4 +1,8 @@
 <?php
+    session_start(); 
+ 
+    $idusuario=$_SESSION['id'];
+
     include "../configuracion/conexion.php";
 
     $encabezado="<table class='table table-hover'>
@@ -10,7 +14,9 @@
                         <th scope='col'>Estado</th>
                         <th scope='col'>F. Recepción</th>
                         <th scope='col'>F. Entrega</th>
-                        <th scope='col'>Demora (hh)</th>
+                        <th scope='col'>Tiempo Tratamiento (hh)</th>
+                        <th scope='col'>Tiempo Suspendida (hh)</th>
+                        <th scope='col'>Tiempo Invertido (hh)</th>
                     </tr>
                     </thead>
                     <tbody>";
@@ -26,7 +32,7 @@
         $num=$_GET['num'];
         $fila="";
         $i=1;
-  
+  /*
         $sql="SELECT a.`numorden`,a.`tituloorden`,
                     CASE WHEN a.`estado`='F' THEN 'Finalizada'
                         ELSE 'Error' END estado,
@@ -35,7 +41,24 @@
                     CASE WHEN NOW()=a.fechaaccion THEN TIMESTAMPDIFF(HOUR,a.`fecha`,a.`fechaaccion`)
                     ELSE TIMESTAMPDIFF(HOUR,a.`fecha`,NOW()) END tiempodemora
             FROM numeroorden a
-            WHERE a.`accion`!='B' AND a.estado='F' AND (a.`fentrega` BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
+            WHERE a.`accion`!='B' AND a.estado='F' AND (DATE(a.`fentrega`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
+            ORDER BY a.fecha;";
+            */
+        $sql="SELECT a.`numorden`,a.`tituloorden`,
+                    CASE WHEN a.`estado`='F' THEN 'Finalizada'
+                        ELSE 'Error' END estado,
+                    a.`fecha` AS frecepcion,
+                    a.`fechaaccion` AS frealentrega,
+                    TIMESTAMPDIFF(HOUR,a.`fecha`,a.`fechaaccion`) AS torden,
+                    (SELECT CASE WHEN aa.`ffin` IS NULL THEN 
+                                    TIMESTAMPDIFF(HOUR,MIN(aa.`fini`),NOW()) 
+                            ELSE 
+                                    TIMESTAMPDIFF(HOUR,MIN(aa.`fini`),MAX(aa.`ffin`)) 
+                            END
+                     FROM tareassuspendidas aa 
+                     WHERE aa.`numorden`=a.`numorden`) tsuspendida
+            FROM numeroorden a
+            WHERE a.`accion`!='B' AND a.estado='F' AND (DATE(a.`fentrega`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
             ORDER BY a.fecha;";
 
             //echo $sql;
@@ -58,14 +81,17 @@
         {
             while($row = mysqli_fetch_array($result))
             {
+                $tiempo=$row["torden"]-$row["tsuspendida"];
                 $fila=$fila."<tr>
                                 <th scope='row'>".$i."</th>
-                                <td>".$row["numorden"]."</td>
+                                <td><a href='#' onclick='vercontenidotarea(".$row['numorden'].",".$idusuario.")'>#".$row["numorden"]."</a></td>
                                 <td>".$row["tituloorden"]."</td>
                                 <td>".$row["estado"]."</td>
                                 <td>".$row["frecepcion"]."</td>
                                 <td>".$row["frealentrega"]."</td>
-                                <td>".$row["tiempodemora"]."</td>
+                                <td>".$row["torden"]."</td>
+                                <td>".$row["tsuspendida"]."</td>
+                                <td>".$tiempo."</td>
                             </tr>";
                  $i=$i+1;
             }
@@ -74,11 +100,11 @@
         desconectar($con);   
       
         if ($fila!="") echo $encabezado."".$fila."".$pie;
-        else echo $encabezado."<tr><td style='text-align: center;' colspan='7'>Sin datos para mostrar</td></tr>".$pie;
+        else echo $encabezado."<tr><td style='text-align: center;' colspan='9'>Sin datos para mostrar</td></tr>".$pie;
     }
     else
     {
-        echo $encabezado."<tr><td style='text-align: center;' colspan='7'>Falta indicar un rango de fecha a analizar</td></tr>".$pie;
+        echo $encabezado."<tr><td style='text-align: center;' colspan='9'>Falta indicar un rango de fecha a analizar</td></tr>".$pie;
     }
    
 ?>

@@ -1,4 +1,8 @@
 <?php
+    session_start(); 
+ 
+    $idusuario=$_SESSION['id'];
+
     include "../configuracion/conexion.php";
 
     $encabezado="<table class='table table-hover'>
@@ -26,18 +30,30 @@
         $num=$_GET['num'];
         $fila="";
         $i=1;
-  
+  /*
         $sql="SELECT a.`numorden`,a.`tituloorden`,
                     CASE WHEN a.`estado`='S' THEN 'No Disponible'
                         WHEN a.`estado`='D' THEN 'Disponible'
                         WHEN a.`estado`='P' THEN 'En Proceso'
                         ELSE 'Error' END estado,
                     a.`fecha` AS frecepcion,
-                    CONCAT(a.`fentrega`,' 18:59:00') AS festimadaentrega,
+                    a.`fentrega` AS festimadaentrega,
                     CASE WHEN NOW()=a.fentrega THEN TIMESTAMPDIFF(HOUR,a.`fecha`,a.`fechaaccion`)
                     ELSE TIMESTAMPDIFF(HOUR,a.`fecha`,NOW()) END tiempodemora
             FROM numeroorden a
-            WHERE a.`accion`!='B' AND a.`estado`='F' AND DATE(a.`fentrega`)<DATE(a.`fechaaccion`) AND  (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
+            WHERE a.`accion`!='B' AND a.`estado`!='F' AND DATE(a.`fentrega`)<DATE(a.`fechaaccion`) AND  (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
+            ORDER BY a.fecha;";
+            */
+        $sql="SELECT a.`numorden`,a.`tituloorden`,a.estado,
+                    CASE WHEN a.`estado`='S' THEN 'No Disponible'
+                        WHEN a.`estado`='D' THEN 'Disponible'
+                        WHEN a.`estado`='P' THEN 'En Proceso'
+                        ELSE 'Error' END estado,
+                    a.`fecha` AS frecepcion,
+                    a.`fentrega` AS festimadaentrega,
+                    TIMESTAMPDIFF(HOUR,a.`fecha`,NOW()) AS tiempodemora
+            FROM numeroorden a
+            WHERE a.`accion`!='B' AND a.`estado`!='F' AND DATE(a.`fentrega`)<DATE(a.`fechaaccion`) AND  (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
             ORDER BY a.fecha;";
 
             //echo $sql;
@@ -62,7 +78,7 @@
             {
                 $fila=$fila."<tr>
                                 <th scope='row'>".$i."</th>
-                                <td>".$row["numorden"]."</td>
+                                <td><a href='#' onclick='vercontenidotarea(".$row['numorden'].",".$idusuario.")'>#".$row["numorden"]."</a></td>
                                 <td>".$row["tituloorden"]."</td>
                                 <td>".$row["estado"]."</td>
                                 <td>".$row["frecepcion"]."</td>

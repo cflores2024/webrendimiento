@@ -66,8 +66,14 @@
 
     function limpiar() 
     {
-      document.getElementById("txtfini").value="";
-      document.getElementById("txtffin").value="";
+      const fechaInput = document.getElementById('txtfini');
+      const hoy = new Date();
+      
+      //alert(hoy);
+
+      fechaInput.valueAsDate = hoy;
+      //document.getElementById("txtfini").valueAsDate = hoy;
+      document.getElementById("txtffin").value=factual;
       document.getElementById("txttitulo").value="";
       document.getElementById("txtnumorden").value="";
       document.getElementById("lsinforme").innerHTML ="<br><div style='text-align: center;'>Complete los filtros y luego presione el botón de buscar</div></br>";
@@ -87,7 +93,7 @@
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             
-            alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+            //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
             document.getElementById("lsdetalle").innerHTML =this.responseText;
           }
         };
@@ -112,7 +118,7 @@
             
             //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
       
-            document.getElementById("lsinforme").innerHTML =this.responseText;
+            document.getElementById("lsdetalle").innerHTML =this.responseText;
           }
         };
         xmlhttp.open('GET', 'reportes/infodemoradas.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
@@ -134,9 +140,9 @@
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             
-            //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+            //alert ('INFOTERMINADAS-DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
       
-            document.getElementById("lsinforme").innerHTML =this.responseText;
+            document.getElementById("lsdetalle").innerHTML =this.responseText;
           }
         };
         xmlhttp.open('GET', 'reportes/infoterminadas.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
@@ -160,7 +166,7 @@
             
             //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
       
-            document.getElementById("lsinforme").innerHTML =this.responseText;
+            document.getElementById("lsdetalle").innerHTML =this.responseText;
           }
         };
         xmlhttp.open('GET', 'reportes/infoenproceso.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
@@ -185,7 +191,7 @@
             
             //alert ('HISTORIAL DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
       
-            document.getElementById("lsinforme").innerHTML =this.responseText;
+            document.getElementById("lsdetalle").innerHTML =this.responseText;
           }
         };
         xmlhttp.open('GET', 'reportes/infohistorialmecanico.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num+'&emp='+emp, false);
@@ -216,7 +222,7 @@
             
             //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
       
-            document.getElementById("lsinforme").innerHTML =this.responseText;
+            document.getElementById("lsdetalle").innerHTML =this.responseText;
           }
         };
         xmlhttp.open('GET', 'reportes/infohorastrabajadasmecanico.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
@@ -237,7 +243,7 @@
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             
-            alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+            //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
       
             document.getElementById("lsinforme").innerHTML =this.responseText;
           }
@@ -263,7 +269,7 @@
             
             //alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
       
-            document.getElementById("lsinforme").innerHTML =this.responseText;
+            document.getElementById("lsdetalle").innerHTML =this.responseText;
           }
         };
         xmlhttp.open('GET', 'reportes/infoatencionordenes.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
@@ -281,9 +287,9 @@
       }
     }
 
-    function vercontenidotarea(num,id) 
+    function vercontenidotarea(num,id,idtareahizo) 
     {
-      alert ('ATENDERTAREA=>se atiende la tarea numero orden='+num+' - idmecanico='+id);
+      //alert ('ATENDERTAREA=>se atiende la tarea numero orden='+num+' - idmecanico='+id);
       
       if (num<=0) {
         return;
@@ -292,12 +298,12 @@
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             
-            alert ('ATENDERTAREA=>se atiende la tarea numero orden='+num+' - idmecanico='+id+' - Respuesta='+this.responseText);
+            //alert ('ATENDERTAREA=>se atiende la tarea numero orden='+num+' - idmecanico='+id+' - Respuesta='+this.responseText);
             
             document.getElementById("lsdetalle").innerHTML=this.responseText;
           }
         };
-        xmlhttp.open('GET', 'atendertareas.php?num='+num+'&id='+id+'&mostrar=N', false);
+        xmlhttp.open('GET', 'atendertareas.php?num='+num+'&id='+id+'&mostrar=N&idtareah='+idtareahizo, false);
         xmlhttp.send();
       }
     }
@@ -424,14 +430,14 @@
         <li class="nav-item">
           <label for="txtfini">Fecha inicio</label>
           <div class="col-sm-10">
-              <input name="txtfini" type="date" class="form-control" id="txtfini" value="">
+              <input name="txtfini" type="date" class="form-control" id="txtfini" value="<?php echo date("Y-m-d");  ?>">
           </div>
         </li>
 
         <li class="nav-item">
           <label for="txtffin">Fecha fin</label>
           <div class="col-sm-10">
-              <input name="txtffin" type="date" class="form-control" id="txtffin" value="">
+              <input name="txtffin" type="date" class="form-control" id="txtffin" value="<?php echo date("Y-m-d");  ?>">
         </li>
 
         <li class="nav-item">
@@ -460,30 +466,40 @@
           <input type="button" id="btnLimpiar" class="btn btn-primary" value="Limpiar" onclick="limpiar()">
           &nbsp;&nbsp;
           <?php
+            $titulo="";
+
               switch($_GET['op'])
               {
-                case "TO":
+                case "TO"://TOTAL DE ORDENES
+                          $titulo="Total de ordenes";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infototalordenes()'>";
                 break;
-                case "DE":
+                case "DE"://ORDENES DEMORADAS
+                          $titulo="Total de ordenes demoradas";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoordenesdemoradas()'>";
                 break;
-                case "TE":
+                case "TE"://ORDENES TERMINADAS/FINALIZADAS
+                          $titulo="Total de ordenes finalizadas";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoordenesterminadas()'>";
                 break;
-                case "EC":
+                case "EC"://ORDENES EN PROCESOS
+                          $titulo="Ordenes en proceso";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoordenesenproceso()'>";
                 break;
-                case "FM":
+                case "FM"://ORDENES TERMINADAS POR MECANICOS
+                          $titulo="Cantidad de tareas terminadas por mecanicos";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infohistorialmecanico()'>";
                 break;
-                case "TI":
+                case "TI"://HORAS TRABAJADAS POR MECANICOS
+                          $titulo="Horas trabajadas de mecanicos por tareas";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infohorastrabajadasmecanico()'>";
                 break;
-                case "EO":
+                case "EO"://EMPLEADOS OCIOSOS O QUE NO HICIERON NADA DE NADA
+                          $titulo="Empleados sin tareas";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoempleadosociosos()'>";
                 break;
-                case "AO":
+                case "AO"://ATENCIO DE ORDENES
+                          $titulo="Tiempo de atencion de ordenes";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoatencionordenes()'>";
                 break;
               }      
@@ -501,7 +517,7 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Metricas <?php echo $titulo; ?></h1>
+      <h1><?php echo $titulo; ?></h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
@@ -514,7 +530,39 @@
             }
           ?>
           </li>
-          <li class="breadcrumb-item active">Metricas avanzadas</li>
+          <li class="breadcrumb-item active">
+          <?php
+            $titulo="";
+
+              switch($_GET['op'])
+              {
+                case "TO"://TOTAL DE ORDENES
+                          echo "<a href='#' onclick='infototalordenes()'>Metricas avanzadas</a> ";
+                break;
+                case "DE"://ORDENES DEMORADAS
+                          echo "<a href='#' onclick='infoordenesdemoradas()'>Metricas avanzadas</a> ";
+                break;
+                case "TE"://ORDENES TERMINADAS/FINALIZADAS
+                          echo "<a href='#' onclick='infoordenesterminadas()'>Metricas avanzadas</a> ";
+                break;
+                case "EC"://ORDENES EN PROCESOS
+                          echo "<a href='#' onclick='infoordenesenproceso()'>Metricas avanzadas</a> ";
+                break;
+                case "FM"://ORDENES TERMINADAS POR MECANICOS
+                          echo "<a href='#' onclick='infohistorialmecanico()'>Metricas avanzadas</a> ";
+                break;
+                case "TI"://HORAS TRABAJADAS POR MECANICOS
+                          echo "<a href='#' onclick='infohorastrabajadasmecanico()'>Metricas avanzadas</a> ";
+                break;
+                case "EO"://EMPLEADOS OCIOSOS O QUE NO HICIERON NADA DE NADA
+                          echo "<a href='#' onclick='infoempleadosociosos()'>Metricas avanzadas</a> ";
+                break;
+                case "AO"://ATENCIO DE ORDENES
+                          echo "<a href='#' onclick='infoatencionordenes()'>Metricas avanzadas</a> ";
+                break;
+              }      
+          ?>
+          </li>
         </ol>
       </nav>
     </div><!-- End Page Title -->

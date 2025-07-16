@@ -42,20 +42,4 @@ function conectar()
 
         return $estado;
     }
-/*
-    function ejecutarsqlselect($sql)
-    {
-        global $cnx;
-
-        $cnx=conectar();
-
-        $result = $cnx->query($sql);
-
-        if (!$result) {
-            die('Invalid query: ' . $cnx->error);
-        }
-        
-        return $result;
-    }
-        */
 ?>

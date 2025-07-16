@@ -112,8 +112,8 @@
     }
     else
     {
-      $txtfini=date("Y-m-d",strtotime($ffin . "-5 days"));
-      $txtffin=date("Y-m-d");
+      //$txtfini=date("Y-m-d",strtotime($ffin . "-5 days"));
+      $txtfini=$txtffin=date("Y-m-d");
     }
 
     $ffin=$txtffin;// date("Y-m-d H:i:s");
@@ -346,7 +346,7 @@
                 
                   $sql = "SELECT COUNT(a.`numorden`) AS demoradaact
                           FROM numeroorden a
-                          WHERE a.`accion`!='B' AND a.`estado`='F' AND DATE(a.`fentrega`)<DATE(a.`fechaaccion`) AND DATE(a.`fecha`) BETWEEN '".$finimes."' AND '".$ffin."';";
+                          WHERE a.`accion`!='B' AND a.`estado`!='F' AND DATE(a.`fentrega`)<DATE(a.`fechaaccion`) AND DATE(a.`fecha`) BETWEEN '".$finimes."' AND '".$ffin."';";
                  
                   $con=conectar();
 
@@ -458,7 +458,7 @@
 
                 $sql = "SELECT COUNT(a.`numorden`) AS act
                         FROM numeroorden a
-                        WHERE a.`accion`!='B' AND a.estado='P' AND DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."';";
+                        WHERE a.`accion`!='B' AND a.estado='P' AND DATE(a.`fentrega`) BETWEEN '".$txtfini."' AND '".$txtffin."';";
 
                 $con=conectar();
 
@@ -506,10 +506,25 @@
               <?php
                 $ttiempo=0;
                 
+                /*
                 $sql = "SELECT ROUND(SUM(CASE WHEN c.`fechaobs` IS NULL THEN TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,CONCAT(DATE(NOW()),' 18:59:00'))/60 ELSE TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,c.`fechaobs`)/60 END),2) ttiempo
                         FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
                                            LEFT JOIN afectadostareas c ON (c.`numorden`=a.`numorden` AND c.`idempleado`=b.`idpersona`)
                         WHERE a.`accion`!='B' AND a.estado!='S' AND DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."';";
+*/
+                $sql="SELECT c.idtarea,CASE WHEN c.`idtarea` IS NULL THEN 0 ELSE (CASE WHEN c.`fechaobs` IS NULL THEN TIMESTAMPDIFF(HOUR,b.`fechaautoriza`,NOW()) ELSE TIMESTAMPDIFF(HOUR,b.`fechaautoriza`,c.`fechaobs`) END) END ttiempo,
+                            (SELECT CASE WHEN aa.`ffin` IS NULL THEN 
+                                                          TIMESTAMPDIFF(HOUR,MIN(aa.`fini`),NOW()) 
+                                                  ELSE 
+                                                          TIMESTAMPDIFF(HOUR,MIN(aa.`fini`),MAX(aa.`ffin`)) 
+                                                  END
+                                          FROM tareassuspendidas aa 
+                                          WHERE aa.`numorden`=c.`numorden` AND aa.idtarea=c.`idtarea`) tsuspendida
+                      FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
+                              LEFT JOIN afectadostareas c ON (c.`numorden`=a.`numorden` AND c.`idempleado`=b.`idpersona`)
+                              LEFT JOIN tareassuspendidas d ON (d.numorden=a.numorden AND d.idtarea=c.idtarea AND d.idempleadofini=c.idempleado) 
+                      WHERE a.`accion`!='B' AND a.estado!='S' AND DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."'
+                      GROUP BY c.idtarea;";
 
                 $con=conectar();
 
@@ -528,7 +543,7 @@
                 {
                   while($row = mysqli_fetch_array($result))
                   {
-                      $ttiempo=$row['ttiempo'];
+                      $ttiempo=$ttiempo+($row['ttiempo']-$row['tsuspendida']);
                   }
                 }
 
@@ -1728,7 +1743,7 @@
               $sql = "SELECT MONTH(a.fentrega) AS mes,b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS emple,COUNT(b.`idtarea`) AS cant
                       FROM numeroorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
                                   INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
-                      WHERE a.`accion`!='B' AND a.`estado`='F' AND a.fentrega BETWEEN '".$fini."' AND '".$ffin."'
+                      WHERE a.`accion`!='B' AND b.`estado`='F' AND a.fentrega BETWEEN '".$fini."' AND '".$ffin."'
                       GROUP BY 1,2,3
                       ORDER BY 1,2;";
 

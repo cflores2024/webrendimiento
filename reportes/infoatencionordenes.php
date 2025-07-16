@@ -1,4 +1,8 @@
 <?php
+    session_start(); 
+ 
+    $idusuario=$_SESSION['id'];
+
     include "../configuracion/conexion.php";
 
     $encabezado="<table class='table table-hover'>
@@ -27,9 +31,9 @@
         $fila="";
         $i=1;
   
-        $sql="SELECT a.`numorden`,a.`tituloorden`,a.estado,a.`fecha`,b.`fechaautoriza`,ROUND(TIMESTAMPDIFF(MINUTE,a.`fecha`,b.`fechaautoriza`)/60,2) AS ttiempo
+        $sql="SELECT a.`numorden`,a.`tituloorden`,a.estado,a.`fecha`,b.`fechaautoriza`,TIMESTAMPDIFF(HOUR,a.fecha,b.`fechaautoriza`) AS ttiempo
                 FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
-                WHERE a.`accion`!='B' AND a.`estado`='F' AND (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
+                WHERE a.`accion`!='B' AND a.`estado`!='S' AND (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
                 ORDER BY 3;";
 
             //echo $sql;
@@ -54,7 +58,7 @@
             {
                 $fila=$fila."<tr>
                                 <th scope='row'>".$i."</th>
-                                <td>".$row["numorden"]."</td>
+                                <td><a href='#' onclick='vercontenidotarea(".$row['numorden'].",".$idusuario.")'>#".$row["numorden"]."</a></td>
                                 <td>".$row["tituloorden"]."</td>
                                 <td>".$row["estado"]."</td>
                                 <td>".$row["fecha"]."</td>

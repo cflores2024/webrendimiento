@@ -14,6 +14,7 @@
     $estado=$_GET['estado'];
     $titulo=$_GET['titulo'];
     $dias=$_GET['dias'];
+    $hora=$_GET['hora'].":00";
     $mecanico=$_GET['mecanico'];
     $msn="";
     $idmecanico="1";
@@ -29,13 +30,26 @@
       $accion="M";
       $fechaaccion=date("Y-m-d H:i:s");
       //PONE ORDEN EN DISPONIBLE
-      $sql="UPDATE numeroorden SET tituloorden=?,fentrega=DATE_ADD(fecha, INTERVAL ? DAY),estado=?,idpersonadisp=?,accion=?,idempleadoaccion=?,fechaaccion=?
-            WHERE numorden=?;";
-
-      $con=conectar();
-      $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-      mysqli_stmt_bind_param($sentencia,'ssssssss',$titulo,$dias,$estado,$idmecanico,$accion,$id,$fechaaccion,$numorden);
-      $resp2=mysqli_stmt_execute($sentencia);
+      if ($dias=="0")
+      {
+        $sql="UPDATE numeroorden SET tituloorden=?,fentrega=CONCAT(DATE(NOW()),' ',?),estado=?,idpersonadisp=?,accion=?,idempleadoaccion=?,fechaaccion=?
+              WHERE numorden=?;";
+      
+        $con=conectar();
+        $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+        mysqli_stmt_bind_param($sentencia,'ssssssss',$titulo,$hora,$estado,$idmecanico,$accion,$id,$fechaaccion,$numorden);
+        $resp2=mysqli_stmt_execute($sentencia);
+      }
+      else
+      {
+        $sql="UPDATE numeroorden SET tituloorden=?,fentrega=DATE_ADD(CONCAT(DATE(fecha),' ',?), INTERVAL ? DAY),estado=?,idpersonadisp=?,accion=?,idempleadoaccion=?,fechaaccion=?
+              WHERE numorden=?;";
+      
+        $con=conectar();
+        $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+        mysqli_stmt_bind_param($sentencia,'sssssssss',$titulo,$hora,$dias,$estado,$idmecanico,$accion,$id,$fechaaccion,$numorden);
+        $resp2=mysqli_stmt_execute($sentencia);
+      }
       
       desconectar($con);
         
@@ -177,7 +191,7 @@
                                         <input name='txttitulo' type='text' class='form-control' id='txttitulo".$numorden."' placeholder='Ingrese un titulo para esta orden' value=''>
                                       </div>
                                       <p></p>
-                                      <label for='txtdias' class='col-md-4 col-lg-3 col-form-label'>Tiempo:</label>
+                                      <label for='txtdias' class='col-md-4 col-lg-3 col-form-label'>Dia/s:</label>
                                       <div class='col-md-8 col-lg-9'>
                                          
                                         <div class='form-floating mb-3'>
@@ -193,7 +207,11 @@
                                           <label for='txtdias".$numorden."'>Duración de la tarea</label>
                                         </div>
                                       </div>
-                                      
+                                      <p></p>
+                                      <label for='txthora' class='col-md-4 col-lg-3 col-form-label'>Hora Fin</label>
+                                      <div class='col-md-8 col-lg-9'>
+                                        <input name='txthora' type='time' class='form-control' id='txthora".$numorden."' placeholder='Ingrese hora estimada'>
+                                      </div> 
                                     </div>
                                   </form>
                             </div>

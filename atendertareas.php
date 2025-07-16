@@ -7,7 +7,8 @@
   if (isset($_SESSION['id']))
   {  
     $id=$_SESSION['id'];
-  
+    $idtareah=0;
+
     if (isset($_GET['id']))
     {  
       $idusuario=$_GET['id'];
@@ -16,8 +17,10 @@
       if (isset($_GET["num"]))
       {  
         $numorden=$_GET["num"];
-        $mostrar=$_GET["mostrar"];
+        $mostrar=$_GET["mostrar"]; 
       
+        if (isset($_GET["idtareah"])) $idtareah=$_GET["idtareah"]; //SE RECUPERA IDTAREA PARA RESALTAR LA TAREA QUE REALIZO LA PERSONA SI VIENE DESDE UN INFORME METRICA
+       
         $sql = "SELECT a.`numorden`, a.`tituloorden`, a.`fventa`, a.`kilometraje`, b.`modelomarca` AS modelo
                 FROM numeroorden a INNER JOIN modelos b ON (a.`codmodelo`=b.`codmodelo`)
                 WHERE a.`accion`!='B' AND a.`numorden`=".$numorden;
@@ -131,7 +134,6 @@
                                       
               $datos=$datos ."
                                 <div class='alert alert-danger alert-dismissible fade show' role='alert'>
-                                ". $row['descripciontarea'] ."
                                 <p>
                                   <code>Usuario: ". $row['nombrecortousu'] ." <br/> ". $row['fechaautoriza'] ."</code>
                                 </p>
@@ -418,7 +420,12 @@
                     $idtarea=$row['idtarea'];
                     $datos=$datos ."<a href='#' data-bs-toggle='tooltip' data-bs-placement='top' title='". $row['observacion'] ."'>
                                         <div class='alert alert-info alert-dismissible fade show' role='alert'>
-                                        ". $row['descripciontarea'] ."
+                                        "; 
+                                        
+                                        if($idtarea==$idtareah) $datos=$datos."(*) ".$row['descripciontarea']; 
+                                        else $datos=$datos."".$row['descripciontarea'];
+              
+                    $datos=$datos ."
                                         <p>
                                           <code>Inicio: ". $row['fini'] ." <br/> Fin: ". $row['ffin'] ."</code>
                                         </p>

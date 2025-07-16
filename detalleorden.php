@@ -147,6 +147,36 @@
                     //=========================SI PRESENTA TAREAS A EXPORTAR SIGUE CON EL PROCESO DE LO CONTRARIO EMITE MENSAJE
                         if(count($datos)>0)
                         {
+                            //CHEQUEO SI EXISTE EL CLIENTE EN LA TABLA
+                            //RECUPERO ID DEL CLIENTE SI EXISTE
+                            $idcliente=0;
+                            
+                            $sql = "SELECT a.`idpersona` FROM personas a WHERE a.`accion`!='B' AND a.dni='".$dni."';";
+                        
+                            $con=conectar();
+
+                            $result = $cnx->query($sql);
+
+                            if (!$result) 
+                            {
+                                die('Invalid query: ' . $cnx->error);
+                            }
+
+                            if (!$result) 
+                            {
+                                die('Invalid query: ' . $mysqli->error);
+                            }
+                            else
+                            {
+                                while($row = mysqli_fetch_array($result))
+                                {
+                                    $idcliente=$row['idpersona'];
+                                }
+                            }
+
+                            desconectar($con);
+                            //FIN CHEQUEO DE CLIENTE EN TABLA
+
                             //CLIENTE NO EXISTE SE LO DA DE ALTA
                             if ($idcliente<=0)
                             {

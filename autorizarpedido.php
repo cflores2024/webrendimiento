@@ -525,68 +525,7 @@
                 <?php 
                 echo $filaspend; 
                 ?>
-                  <!--tr>
-                    <th scope='row'><a href='#'>#1234</a></th>
-                    <td>Servis por 10.000 Kms</td>
-                    <td><img src='./assets/img/team-2.jpg' alt='Profile' class='rounded-circle' width='30' height='30'></td>
-                    <td><span class='badge bg-warning'>Disponible</span></td>
-                    <td>10/02/2025 12:00:00</td>
-                    <td>
-                        <a href='#'>
-                          <img src='assets/img/ingresar.png' alt='Autorizar Participación'>
-                        </a>
-                    </td>
-                    <td> 
-                        <a href='#'>
-                          <img src='assets/img/noingresar.png' alt='No Autorizar Participación'>
-                        </a>
-                    </td>
-                    <td>
-                      <a href='#'>
-                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente'>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope='row'><a href='#'>#12534</a></th>
-                    <td>Servis por 20.000 Kms</td>
-                    <td><img src='./assets/img/team-3.jpg' alt='Profile' class='rounded-circle' width='30' height='30'></td>
-                    <td><span class='badge bg-warning'>Disponible</span></td>
-                    <td>12/02/2025 12:12:00</td>
-                    <td>
-                        <a href='#'>
-                          <img src='assets/img/ingresar.png' alt='Autorizar Participación'>
-                        </a>
-                    </td>
-                    <td> 
-                        <a href='#'>
-                          <img src='assets/img/noingresar.png' alt='No Autorizar Participación'>
-                        </a>
-                    </td>
-                    <td>
-                      <a href='#'>
-                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente'>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope='row'><a href='#'>#12334</a></th>
-                    <td>Servis por 40.000 Kms</td>
-                    <td><img src='./assets/img/team-4.jpg' alt='Profile' class='rounded-circle' width='30' height='30'></td>
-                    <td><span class='badge bg-success'>En proceso</span></td>
-                    <td>20/02/2025 13:12:00</td>
-                    <td>
-                        <a href='#'>
-                          <img src='assets/img/ingresar.png' alt='Autorizar Participación'>
-                        </a>
-                    </td>
-                    <td> 
-                        <a href='#'>
-                          <img src='assets/img/noingresar.png' alt='No Autorizar Participación'>
-                        </a>
-                    </td>
-                    <td>&nbsp;</td>
-                  </tr-->
+                  
                 </tbody>
               </table>
               <!-- End Table with stripped rows -->
@@ -596,67 +535,7 @@
         </div>
       </div>
     </section>
-    
-    <!--section class="section">
-      <div class="row">
-        <div class="col-lg-12">
-
-          <div class="card">
-            <div class="card-body">
-            <h5 class="card-title">Movimientos de Ordenes de Trabajos Autorizadas</h5>
-              <table class="table datatable">
-                <thead>
-                  <tr>
-                    <th scope='col'>N° Orden</th>
-                    <th scope='col'>Titulo Orden</th>
-                    <th scope='col'>Afectados</th>
-                    <th scope='col'>Autorizado</th>
-                    <th scope='col'>Inicio Pedido</th>
-                    <th scope='col'>Fin Pedido</th>
-                    <th scope='col'>&nbsp;</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php //echo $filasap; ?>
-                  <tr>
-                    <th scope='row'><a href='#'>#1234</a></th>
-                    <td>Servis por 10.000 Kms</td>
-                    <td>
-                      <img src='./assets/img/team-4.jpg' alt='Profile' class='rounded-circle' width='30' height='30'>
-                    </td>
-                    <td>Si</td>
-                    <td>10/02/2025 12:00:00</td>
-                    <td>10/02/2025 13:00:01</td>
-                    <td>
-                      <a href='#'>
-                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente'>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope='row'><a href='#'>#14234</a></th>
-                    <td>Servis por 20.000 Kms</td>
-                    <td>
-                      <img src='./assets/img/team-2.jpg' alt='Profile' class='rounded-circle' width='30' height='30'>
-                    </td>
-                    <td>No</td>
-                    <td>10/02/2025 12:00:00</td>
-                    <td>10/02/2025 13:00:01</td>
-                    <td>
-                      <a href='#'>
-                        <img src='assets/img/tarea_historia.png' alt='Ver Historial Patente'>
-                      </a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section-->
-    
+       
     <input id="lsinfo" name="lsinfo" type="hidden" value="0" />
      
     </span>

@@ -44,12 +44,13 @@
       let num=document.getElementById('txtnumorden').value;; //RECUPERO NUMERO ORDEN
       let titulo=document.getElementById("txttitulo").value; //RECUPERO TITULO ORDEN
       let dias=document.getElementById("txtdias").value; //RECUPERO DIAS DURA TRATAR ORDEN
+      let hora=document.getElementById("txthora").value; //RECUPERO DIAS DURA TRATAR ORDEN
       let resp="";
 
       //alert ("Numero de orden ingresado="+num+"-Titulo ingresado="+titulo+"-Dias dura tarea="+dias);
         
-      if ((num=="")||(titulo=="")||(dias=="")) {
-        document.getElementById("lblproceso").innerHTML="<p style='text-align: center;'>Se requiere de un número de orden, un titulo y un número de dias que dura tratar la orden!!!</p>";
+      if ((num=="")||(titulo=="")||(dias=="")||(hora=="")) {
+        document.getElementById("lblproceso").innerHTML="<p style='text-align: center;'>Se requiere de un número de orden, un titulo, un número de dias y hora que dura tratar la orden!!!</p>";
         return;
       } else {
         document.getElementById("lblproceso").innerHTML="<p style='text-align: center;'>Procesando...</p>";
@@ -62,7 +63,7 @@
             if (resp=="OK") 
             {
               //alert ('1ERA EXPORTARORDEN=>LA RESPUESTA RECIBIDA ES='+resp);
-              organizartareas(num,'D',titulo,dias); //EXPORTACION OK SE PONE DISPONIBLE TAREA CON TITULO INDICADO Y DIAS
+              organizartareas(num,'D',titulo,dias,hora); //EXPORTACION OK SE PONE DISPONIBLE TAREA CON TITULO INDICADO Y DIAS
            }
             else document.getElementById("lblproceso").innerHTML=resp; //SE GENERO ERROR EN LA EXPORTACIÓN
           }
@@ -72,7 +73,7 @@
       }
     }
    
-    function organizartareas(orden,estado,titulo,dias) 
+    function organizartareas(orden,estado,titulo,dias,hora) 
     {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
@@ -81,14 +82,14 @@
             
             //alert("Cambiaron a disponible ("+resp+"). Se envia la orden numero=>"+orden+" y se lo pasa al estado de =>"+estado+", con el titulo "+titulo);
             
-            //console.log(this.responseText);
+            console.log(this.responseText);
             
             document.getElementById("lblproceso").innerHTML="";
 
             vermovimientostareasvsempledos();
           }
         };
-        xmlhttp.open('GET', 'organizarorden.php?orden='+orden+'&estado='+estado+'&titulo='+titulo+'&dias='+dias+'&mecanico=1', false);
+        xmlhttp.open('GET', 'organizarorden.php?orden='+orden+'&estado='+estado+'&titulo='+titulo+'&dias='+dias+'&hora='+hora+'&mecanico=1', false);
         xmlhttp.send();
     }
 
@@ -1392,7 +1393,7 @@
                 <input name='txttitulo' type='text' class='form-control' id='txttitulo' placeholder='Ingrese un titulo'>
               </div>
               <p></p>
-              <label for="txtdias" class="col-sm-2 col-form-label">Tiempo:</label>
+              <label for="txtdias" class="col-sm-2 col-form-label">Dia/s:</label>
               <div class='col-sm-10'>
                   <div class="form-floating mb-3">
                     <select class="form-select" id="txtdias" aria-label="State">
@@ -1408,6 +1409,11 @@
                     </select>
                     <label for="txtdias">Duración de la tarea</label>
                   </div>
+              </div>
+              <p></p>
+              <label class='col-sm-2 col-form-label'>Hora Fin</label>
+              <div class='col-sm-10'>
+                <input name='txthora' type='time' class='form-control' id='txthora' placeholder='Ingrese hora estimada'>
               </div>
             </div>
           </div>
