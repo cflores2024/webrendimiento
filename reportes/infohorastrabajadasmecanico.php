@@ -5,7 +5,17 @@
 
     include "../configuracion/conexion.php";
 
-    $encabezado="<table class='table table-hover'>
+    if ((isset($_GET['fini']))&&(isset($_GET['ffin']))&&(isset($_GET['num']))&&(isset($_GET['titulo']))&&(isset($_GET['emp'])))
+    {
+        $fini=$_GET['fini'];
+        $ffin=$_GET['ffin'];
+        $titulo=$_GET['titulo'];
+        $num=$_GET['num'];
+        $emp=$_GET['emp'];
+        //$filameca="";
+        //$tmecanicos="";
+
+        $encabezado="<table class='table table-hover'>
                     <thead>
                     <tr>
                         <th scope='col'>#</th>
@@ -24,21 +34,20 @@
                     </thead>
                     <tbody>";
 
-    $pie="</tbody>
-            </table>";
+        $pie="</tbody>
+                </table>";
 
-    if ((isset($_GET['fini']))&&(isset($_GET['ffin']))&&(isset($_GET['num']))&&(isset($_GET['titulo'])))
-    {
-        $fini=$_GET['fini'];
-        $ffin=$_GET['ffin'];
-        $titulo=$_GET['titulo'];
-        $num=$_GET['num'];
-        $fila="";
-        $i=1;
-  
-        $sql="SELECT a.`numorden`,a.`estado`,a.fecha,b.`idpersona`,
+        $sql="SELECT a.`numorden`,
+        a.`estado`,
+        a.fecha,b.`idpersona`,
                     CASE WHEN c.`idtarea` IS NULL THEN '' ELSE (SELECT yy.descripciontarea FROM tareas yy WHERE yy.accion!='B' AND yy.idtarea=c.idtarea) END tarea,
-                    CASE WHEN c.`idtarea` IS NULL THEN '' ELSE c.estado END estadotarea,
+                    CASE WHEN c.`idtarea` IS NULL THEN '' 
+                    ELSE 
+                        CASE WHEN c.`estado`='F' THEN 'Finalizada'
+                            WHEN c.`estado`='D' THEN 'Disponible'
+                            WHEN c.`estado`='P' THEN 'En Proceso'
+                            ELSE 'Error' END 
+                    END estadotarea,
                     CASE WHEN c.`idtarea` IS NULL THEN '' ELSE c.`fechaini` END fini,
                     CASE WHEN c.`idtarea` IS NULL THEN '' ELSE (CASE WHEN c.`fechaobs` IS NULL THEN NOW() ELSE c.fechaobs END) END ffin,
                     CASE WHEN c.`idtarea` IS NULL THEN 0 ELSE (CASE WHEN c.`fechaobs` IS NULL THEN TIMESTAMPDIFF(HOUR,b.`fechaautoriza`,NOW()) ELSE TIMESTAMPDIFF(HOUR,b.`fechaautoriza`,c.`fechaobs`) END) END ttiempo,
@@ -54,7 +63,7 @@
             FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
                                LEFT JOIN afectadostareas c ON (c.`numorden`=a.`numorden` AND c.`idempleado`=b.`idpersona`)
                                LEFT JOIN tareassuspendidas d ON (d.numorden=a.numorden AND d.idtarea=c.idtarea AND d.idempleadofini=c.idempleado) 
-            WHERE a.`accion`!='B' AND a.estado!='S' AND (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
+            WHERE a.`accion`!='B' AND a.estado!='S' AND (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%')
             GROUP BY tarea
             ORDER BY 3,1;";
 
@@ -105,6 +114,6 @@
     }
     else
     {
-        echo $encabezado."<tr><td style='text-align: center;' colspan='12'>Falta indicar un rango de fecha a analizar</td></tr>".$pie;
+        echo $encabezado."<tr><td style='text-align: center;' colspan='10'>Falta indicar un rango de fecha a analizar</td></tr>".$pie;
     }
 ?>

@@ -23,7 +23,7 @@
     $pie="</tbody>
             </table>";
 
-    if ((isset($_GET['fini']))&&(isset($_GET['ffin']))&&(isset($_GET['num']))&&(isset($_GET['titulo'])))
+    if ((isset($_GET['fini']))&&(isset($_GET['ffin']))&&(isset($_GET['num']))&&(isset($_GET['titulo']))&&(isset($_GET['emp'])))
     {
         $fini=$_GET['fini'];
         $ffin=$_GET['ffin'];

@@ -212,6 +212,7 @@
       let ffin=document.getElementById("txtffin").value;
       let titulo=document.getElementById("txttitulo").value;
       let num=document.getElementById("txtnumorden").value;
+      let emp=document.getElementById("txtempleado").value;
      
       if ((fini<=0)&&(ffin<=0)) {
         return;
@@ -225,7 +226,7 @@
             document.getElementById("lsdetalle").innerHTML =this.responseText;
           }
         };
-        xmlhttp.open('GET', 'reportes/infohorastrabajadasmecanico.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
+        xmlhttp.open('GET', 'reportes/infohorastrabajadasmecanico.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num+'&emp='+emp, false);
         xmlhttp.send();
       }
     }
@@ -277,16 +278,6 @@
       }
     }
 
-    function toggleRows() 
-    {
-      let checkbox = document.getElementById("ocultarFilas");
-      let filas = document.getElementsByClassName("fila");
-
-      for (let i = 0; i < filas.length; i++) {
-        filas[i].style.display = checkbox.checked ? "none" : "table-row";
-      }
-    }
-
     function vercontenidotarea(num,id,idtareahizo) 
     {
       //alert ('ATENDERTAREA=>se atiende la tarea numero orden='+num+' - idmecanico='+id);
@@ -307,6 +298,42 @@
         xmlhttp.send();
       }
     }
+
+    function acciondivdetallemeca()
+    {
+      var x = document.getElementById("lsdetameca");
+
+      if (x.style.display === "none") 
+      {
+        //alert ("Mostrar detalle mecanico");
+        x.style.display = "block";
+      } 
+      else 
+      {
+        //alert ("Ocultar detalle mecanico");
+        x.style.display = "none";
+      }
+    }
+
+    function ampliardetallemecanico(orden)
+    {
+      if (orden<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            //alert ('DESDE JS SE RECIBIERON LOS DATOS ORDEN '+orden);
+            //document.getElementById("lsdetameca").innerHTML ='DESDE JS SE RECIBIERON LOS DATOS ORDEN '+orden;
+            document.getElementById("lsdetameca").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infoampliardetallemecanico.php?orden='+orden, false);
+        xmlhttp.send();    
+      }
+    }
+
   </script>
 </head>
 
@@ -584,6 +611,7 @@
         </div>
         
       </section>
+
     </span>
   </main><!-- End #main -->
 

@@ -284,9 +284,11 @@
         <div class="col-lg-3">
           <div class="card info-card sales-card">
               <?php
-                $sql = "SELECT COUNT(a.`numorden`) AS act
-                         FROM numeroorden a
-                         WHERE a.`accion`!='B' AND a.estado!='S' AND DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."';";
+                $cantact=0;
+                $sql = "SELECT a.`numorden`,COUNT(a.`numorden`) AS act
+                         FROM numeroorden a INNER JOIN afectadostareas b ON (a.numorden=b.numorden)
+                         WHERE a.`accion`!='B' AND a.estado!='S' AND DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."'
+                         GROUP BY 1;";
 
                 $con=conectar();
 
@@ -303,9 +305,10 @@
                 }
                 else
                 {
+
                   while($row = mysqli_fetch_array($result))
                   {
-                      $cantact=$row['act'];
+                      $cantact=$cantact+1;
                   }
                 }
 
