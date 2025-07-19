@@ -131,9 +131,10 @@
             
               if ($mostrar=="S") $datos=$datos ."<a href='#' data-bs-toggle='tooltip' data-bs-placement='top' title='Da entrada a la tarea para su atención.' onclick='aprocesar(\"$numorden\",\"$idtarea\",\"$idusuario\")'>";
               else $datos=$datos ."<a href='#' data-bs-toggle='tooltip' data-bs-placement='top' title='Da entrada a la tarea para su atención.'>";
-                                      
+            
               $datos=$datos ."
                                 <div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                                ". $row['descripciontarea'] ."
                                 <p>
                                   <code>Usuario: ". $row['nombrecortousu'] ." <br/> ". $row['fechaautoriza'] ."</code>
                                 </p>

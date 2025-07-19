@@ -39,13 +39,13 @@
   * F => TAREA TERMINADA
   ======================================================== -->
   <script>
-    function exportarorden()
+    function exportarorden(idmecanico)
     {
       let num=document.getElementById('txtnumorden').value;; //RECUPERO NUMERO ORDEN
       let titulo=document.getElementById("txttitulo").value; //RECUPERO TITULO ORDEN
       let dias=document.getElementById("txtdias").value; //RECUPERO DIAS DURA TRATAR ORDEN
       let hora=document.getElementById("txthora").value; //RECUPERO DIAS DURA TRATAR ORDEN
-      let resp="";
+      let eresp="";
 
       //alert ("Numero de orden ingresado="+num+"-Titulo ingresado="+titulo+"-Dias dura tarea="+dias);
         
@@ -58,14 +58,14 @@
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            resp=this.responseText;
+            eresp=this.responseText;
             
-            if (resp=="OK") 
+            if (eresp=="OK") 
             {
-              //alert ('1ERA EXPORTARORDEN=>LA RESPUESTA RECIBIDA ES='+resp);
-              organizartareas(num,'D',titulo,dias,hora); //EXPORTACION OK SE PONE DISPONIBLE TAREA CON TITULO INDICADO Y DIAS
+              //alert ('1ERA EXPORTARORDEN=>LA RESPUESTA RECIBIDA ES='+eresp);
+              organizartareas(num,'D',titulo,dias,hora,num,idmecanico); //EXPORTACION OK SE PONE DISPONIBLE TAREA CON TITULO INDICADO Y DIAS
            }
-            else document.getElementById("lblproceso").innerHTML=resp; //SE GENERO ERROR EN LA EXPORTACIÓN
+            else document.getElementById("lblproceso").innerHTML=eresp; //SE GENERO ERROR EN LA EXPORTACIÓN
           }
         };
         xmlhttp.open('GET', 'detalleorden.php?num='+num+'&mecanico=1', true);
@@ -73,20 +73,32 @@
       }
     }
    
-    function organizartareas(orden,estado,titulo,dias,hora) 
+    function organizartareas(orden,estado,titulo,dias,hora,num,idmecanico) 
     {
+        let resp="";
+
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            let resp=this.responseText;
             
-            //alert("Cambiaron a disponible ("+resp+"). Se envia la orden numero=>"+orden+" y se lo pasa al estado de =>"+estado+", con el titulo "+titulo);
+            resp=this.responseText;
+
+            //alert("Cambiaron a disponible ("+resp+"). Se envia la orden numero=>"+orden+" y se lo pasa al estado de =>"+estado+", con el titulo "+titulo+" y es para el mecanico="+idmecanico);
             
-            console.log(this.responseText);
+            //console.log(resp);
             
             document.getElementById("lblproceso").innerHTML="";
-
-            vermovimientostareasvsempledos();
+ 
+            //SE VINCULA ORDEN AL MECANICO QUE LA EXPORTO
+            if (resp) 
+            {
+              vincularordentrabajo(num,idmecanico);
+            }
+            else 
+            {
+              //alert ("recarga desde fn organizartareas");
+              vermovimientostareasvsempledos();
+            }
           }
         };
         xmlhttp.open('GET', 'organizarorden.php?orden='+orden+'&estado='+estado+'&titulo='+titulo+'&dias='+dias+'&hora='+hora+'&mecanico=1', false);
@@ -346,24 +358,29 @@
 
     function vincularordentrabajo(num,id) 
     {
+      let vresp="";
+
       if (num<=0) {
         return;
       } else {
         let xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            //alert ('1-FUNCION VINCULAR=>vincular numero orden='+num+" con idempleado="+id);
             
-            let resp=this.responseText;
+            //alert ('1-FUNCION VINCULAR=>vincular numero orden='+num+" con idempleado="+id);
+           
+            vresp=this.responseText;//0=SE REALIZO VINCULACION. 1= ERROR EN LA VINCULACION
             //var bandera=this.responseText;
      
-            if (resp=="0") 
+            if (vresp=="0") 
             {
               autoriza(num,id);
             
-              //alert ('3-FUNCION VINCULAR=>Se realizo la autorización de lo pedido por el mecanico sobre la orden='+num+" y idempleado="+id+". Con respuesta igual=>"+resp);
+              //vresp=document.getElementById("lsinfo").innerHTML;
+
+              //alert ('3-FUNCION VINCULAR=>Se realizo la autorización de lo pedido por el mecanico sobre la orden='+num+" y idempleado="+id+". Con respuesta igual=>"+vresp);
            
-              if (resp=="0") 
+              if (vresp==="0") 
               {
                 vermovimientostareasvsempledos();
               }
@@ -493,7 +510,7 @@
           if (this.readyState == 4 && this.status == 200) {
              //alert ('2-AUTORIZA=>se atiende la tarea numero orden='+num+' - idmecanico='+id+' - respuesta='+this.responseText);
      
-            document.getElementById("lsinfo").innerHTML =this.responseText;
+            document.getElementById("lsinfo").innerHTML =this.responseText; //0=AUTORIZADA-1=NO AUTORIZADA
           }
         };
         xmlhttp.open('GET', 'autoriza.php?num='+num+'&id='+id, false);
@@ -553,7 +570,7 @@
  
   switch($filtrar)
   {
-    case "D":
+    case "D"://ORDENES DISPONIBLES
               $sql = "-- ORDENES DISPONIBLES
                     SELECT xx2.`numorden`,xx2.`tituloorden`,xx2.`patente`,
 
@@ -575,7 +592,7 @@
                     )
                     ORDER BY 1,4;";
     break;
-    case "P":
+    case "P"://ORDENES EN PROCESO
             switch ($tipousu)
             {
               case "Administración":
@@ -669,7 +686,7 @@
               break;
             }
     break; 
-    case "F":
+    case "F"://ORDENES FINALIZADAS/TERMINADAS
             switch ($tipousu)
             {
               case "Administración":
@@ -1419,7 +1436,7 @@
           </div>
           <div class='modal-footer'>
             <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
-            <?php echo "<button type='button' class='btn btn-primary' onclick='exportarorden()' data-bs-dismiss='modal'>Buscar</button>"; ?>
+            <?php echo "<button type='button' class='btn btn-primary' onclick='exportarorden(".$id.")' data-bs-dismiss='modal'>Buscar</button>"; ?>
           </div>
         </div>
       </div>

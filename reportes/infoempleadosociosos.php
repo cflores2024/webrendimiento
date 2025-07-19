@@ -7,6 +7,8 @@
                         <th scope='col'>#</th>
                         <th scope='col'>Apellido</th>
                         <th scope='col'>Nombre</th>
+                        <th scope='col'>Tipo de usuario</th>
+                        <th scope='col'>Foto</th>
                     </tr>
                     </thead>
                     <tbody>";
@@ -22,9 +24,9 @@
         $fila="";
         $i=1;
 
-        $sql="SELECT xx.`idpersona`,xx.`apellido`,xx.`nombre`
-                FROM personas xx
-                WHERE xx.`accion`!='B' AND (CONCAT(xx.`apellido`,',',xx.`nombre`) LIKE '%".$emp."%') AND xx.`idtipopersona`=4 
+        $sql="SELECT xx.`idpersona`,xx.`apellido`,xx.`nombre`,b.`tipopersona`,xx.`urlfoto`
+                FROM personas xx INNER JOIN tipopersona b ON (xx.`idtipopersona`=b.`idtipopersona`)
+                WHERE xx.`accion`!='B'  AND  b.`idtipopersona`>3 AND (CONCAT(xx.`apellido`,',',xx.`nombre`) LIKE '%".$emp."%') 
                     AND xx.`idpersona` NOT IN (SELECT a.`idempleado`
                                                 FROM afectadostareas a
                                                 WHERE (DATE(a.`fechaini`) BETWEEN '".$fini."' AND '".$ffin."')
@@ -56,6 +58,8 @@
                                 <th scope='row'>".$i."</th>
                                 <td>".$row['apellido']."</td>
                                 <td>".$row['nombre']."</td>
+                                <td>".$row['tipopersona']."</td>
+                                <td><img src='assets/img/".$row['urlfoto']."' alt='Profile'  width='48' height='60'></td>
                             </tr>";
                 $i=$i+1;
             }
@@ -64,11 +68,11 @@
         desconectar($con);   
       
         if ($fila!="") echo $encabezado."".$fila."".$pie;
-        else echo $encabezado."<tr><td style='text-align: center;' colspan='3'>Sin datos para mostrar</td></tr>".$pie;
+        else echo $encabezado."<tr><td style='text-align: center;' colspan='5'>Sin datos para mostrar</td></tr>".$pie;
     }
     else
     {
-        echo $encabezado."<tr><td style='text-align: center;' colspan='3'>Falta indicar un rango de fecha a analizar</td></tr>".$pie;
+        echo $encabezado."<tr><td style='text-align: center;' colspan='5'>Falta indicar un rango de fecha a analizar</td></tr>".$pie;
     }
    
 ?>

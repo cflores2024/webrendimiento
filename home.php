@@ -508,13 +508,7 @@
             <div class="card info-card customers-card">
               <?php
                 $ttiempo=0;
-                
-                /*
-                $sql = "SELECT ROUND(SUM(CASE WHEN c.`fechaobs` IS NULL THEN TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,CONCAT(DATE(NOW()),' 18:59:00'))/60 ELSE TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,c.`fechaobs`)/60 END),2) ttiempo
-                        FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden`)
-                                           LEFT JOIN afectadostareas c ON (c.`numorden`=a.`numorden` AND c.`idempleado`=b.`idpersona`)
-                        WHERE a.`accion`!='B' AND a.estado!='S' AND DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."';";
-*/
+    
                 $sql="SELECT c.idtarea,CASE WHEN c.`idtarea` IS NULL THEN 0 ELSE (CASE WHEN c.`fechaobs` IS NULL THEN TIMESTAMPDIFF(HOUR,b.`fechaautoriza`,NOW()) ELSE TIMESTAMPDIFF(HOUR,b.`fechaautoriza`,c.`fechaobs`) END) END ttiempo,
                             (SELECT CASE WHEN aa.`ffin` IS NULL THEN 
                                                           TIMESTAMPDIFF(HOUR,MIN(aa.`fini`),NOW()) 
@@ -976,7 +970,7 @@
                       
               echo "<div class='card'>
                         <div class='card-body'>
-                          <h5 class='card-title'>Tareas Realizadas</h5>
+                          <h5 class='card-title'><a href='homexfiltros.php?op=TR'>Tareas Realizadas</a></h5>
 
                           <div id='barChart47'></div>
                           <script>
@@ -1194,329 +1188,6 @@
             ?>
           </div>
         <!-- FIN TOTAL DE REVISITAS -->
-
-        <!-- HORAS/MINUTOS TRABAJADOS POR MECANICOS -->
-          <!--div class="col-lg-6">
-            <?php    
-            
-              /*
-              $sql = "SELECT b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS emple ,COUNT(b.`idtarea`) AS cant
-                                  FROM autorizaraccorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
-                                                          INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
-                                  WHERE a.`estado`='A' AND b.`estado`='F' AND DATE(a.fechaautoriza) BETWEEN '".$finimes."' AND '".$ffin."'
-                                  GROUP BY 1
-                                  ORDER BY 1;";
-            */ 
-            /*
-              $fecha = date("Y-m-d");
-              $anio = date('Y', strtotime($fecha)); 
-              $mes = date('m', strtotime($fecha));
-
-
-              $sql="SELECT a.`numorden`,
-                            CONCAT(d.`apellido`,', ',d.`nombre`) AS emple,
-                            CASE WHEN c.idtarea IS NULL THEN 0 ELSE (SELECT hh.`descripciontarea` FROM tareas hh WHERE hh.accion!='B' AND hh.idtarea=c.idtarea) END idtarea,c.fechaini,c.fechaobs,
-                            CASE WHEN c.idtarea IS NULL THEN 0 ELSE TIMESTAMPDIFF(MINUTE,c.fechaini,c.fechaobs) END minutos
-                    FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                          LEFT JOIN afectadostareas c ON (a.numorden=c.numorden AND b.idpersona=c.idempleado)
-                          INNER JOIN personas d ON (d.`idpersona`=b.`idpersona` AND d.`accion`!='B')
-                    WHERE a.`accion`!='B' AND a.`estado`='F' AND DATE(a.fecha) BETWEEN '".$finimes."' AND '".$ffin."'
-                    GROUP BY 1,2,3
-                    ORDER BY 4;";
-
-              $con=conectar();
-
-              $result = $con->query($sql);
-
-              if (!$result) 
-              {
-                die('Invalid query: ' . $con->error);
-              }
-
-              if (!$result) 
-              {
-                die('Invalid query: ' . $mysqli->error);
-              }
-              else
-              {
-                $datos="";
-                $mecanico="";
-                $colores="";
-                global $mesActual; // Obtiene el número del mes actual
-                //$anioActual = date('Y'); // Obtiene el número del mes actual
-                
-                while($row = mysqli_fetch_array($result))
-                {
-                  $datos=strlen($datos)<=0? $row['minutos']: $datos.",".$row['minutos'];
-                  $mecanico=strlen($mecanico)<=0? "'".$row['emple']."/".$row['numorden']."/".$row['idtarea']."'": $mecanico.",'".$row['emple']."/".$row['numorden']."/".$row['idtarea']."'";
-                  $color = substr(md5(time()), 0, 6);
-                  $colores=strlen($colores)<=0? "'".randomColor()."'" : $colores.",'".randomColor()."'";
-                }
-
-                desconectar($con);
-              }
-                  
-              //echo " ". $anioC ." ". obtenermes('L',0);
-              
-              echo "<div class='card'>
-                <div class='card-body'>
-                  <h5 class='card-title'>Minutos Trabajados Por Mecanicos</h5>
-
-                  <div id='barChart51'></div>
-                  <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                      new ApexCharts(document.querySelector('#barChart51'), {
-                        series: [{
-                                data: [".$datos."]
-                              }],
-                                chart: {
-                                type: 'bar',
-                                height: 380
-                              },
-                              plotOptions: {
-                                bar: {
-                                  barHeight: '100%',
-                                  distributed: true,
-                                  horizontal: true,
-                                  dataLabels: {
-                                    position: 'bottom'
-                                  },
-                                }
-                              },
-                              colors: [".$colores."],
-                              dataLabels: {
-                                enabled: true,
-                                textAnchor: 'start',
-                                style: {
-                                  colors: ['#fff']
-                                },
-                                formatter: function (val, opt) {
-                                  return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
-                                },
-                                offsetX: 0,
-                                dropShadow: {
-                                  enabled: true
-                                }
-                              },
-                              stroke: {
-                                width: 1,
-                                colors: ['#fff']
-                              },
-                              xaxis: {
-                                categories: [".$mecanico."],
-                              },
-                              yaxis: {
-                                labels: {
-                                  show: false
-                                }
-                              },
-                              title: {
-                                  text: '',
-                                  align: 'center',
-                                  floating: true
-                              },
-                              subtitle: {
-                                  text: 'Minutos Trabajados',
-                                  align: 'center',
-                              },
-                              tooltip: {
-                                theme: 'dark',
-                                x: {
-                                  show: false
-                                },
-                                y: {
-                                  title: {
-                                    formatter: function () {
-                                      return ''
-                                    }
-                                  }
-                                }
-                              }
-                        }).render();
-                      });
-                    </script>
-                </div>
-              </div>";
-
-              function randomColor(){
-                $str = "#";
-                for($i = 0 ; $i < 6 ; $i++){
-                $randNum = rand(0, 15);
-                switch ($randNum) {
-                case 10: $randNum = "A"; 
-                break;
-                case 11: $randNum = "B"; 
-                break;
-                case 12: $randNum = "C"; 
-                break;
-                case 13: $randNum = "D"; 
-                break;
-                case 14: $randNum = "E"; 
-                break;
-                case 15: $randNum = "F"; 
-                break; 
-                }
-                $str .= $randNum;
-                }
-                return $str;
-              }
-                */
-            ?>
-          </div-->
-        <!-- FIN MINUTOS TRABAJADOS POR MECANICOS -->
-
-        <!-- Total Tiempo Muerto x Mecanicos -->
-          <!--div class="col-lg-6">
-            <?php   
-            /*
-                $ultimoDiaMes = date('t', strtotime($fecha));
-                $contadorDiasSemana = 0;
-
-                $sql = "SELECT b.`idpersona`,CONCAT(d.`apellido`,', ',d.`nombre`) AS emple,ROUND(SUM(TIMESTAMPDIFF(MINUTE,b.`fechaautoriza`,c.`fechaobs`))/60,0) AS horas
-                        FROM numeroorden a INNER JOIN autorizaraccorden b ON (a.`numorden`=b.`numorden` AND b.`accion`!='B')
-                                          INNER JOIN afectadostareas c ON (b.`numorden`=c.`numorden` AND b.`idpersona`=c.`idempleado`)
-                                          INNER JOIN personas d ON (d.`idpersona`=b.`idpersona` AND d.`accion`!='B')
-                        WHERE a.`accion`!='B' AND a.`estado`='F' AND MONTH(b.`fechaautoriza`)=".$mes." 
-                        GROUP BY 1
-                        ORDER BY 1;";
-
-                $con=conectar();
-
-                $result = $con->query($sql);
-
-                if (!$result) 
-                {
-                  die('Invalid query: ' . $con->error);
-                }
-
-                if (!$result) 
-                {
-                  die('Invalid query: ' . $mysqli->error);
-                }
-                else
-                {
-                  for ($dia = 1; $dia <= $ultimoDiaMes; $dia++) {
-                      $fechaActual = "$anio-$mes-$dia";
-                      $diaSemana = date('N', strtotime($fechaActual));
-                      if ($diaSemana < 6) { // 6 representa el viernes, por lo que los días menores a 6 son de lunes a viernes
-                          $contadorDiasSemana++;
-                      }
-                  }
-                
-                  $jornada = ($contadorDiasSemana*570)/60; //570 EQUIVA A 9 HORAS 30 MIN JORNADA DE UN MECANICO
-                
-                  //echo "dias=".$contadorDiasSemana."-min=".$jornada;
-                  
-                  $datos="";
-                  $mecanico="";
-                  $colores="";
-                  
-                  while($row = mysqli_fetch_array($result))
-                  {
-                    if (strlen($datos)<=0)
-                    {
-                      if (($jornada-$row['horas'])<0) $datos=0;
-                      else $datos=$jornada-$row['horas'];
-                    }
-                    else
-                    {
-                      if (($jornada-$row['horas'])<0) $datos=$datos.",0";
-                      else $datos=$datos.",".($jornada-$row['horas']);
-                    }
-                    //$datos=strlen($datos)<=0? ($jornada-$row['horas'])<0?0:($jornada-$row['horas']) : $datos.",". ($jornada-$row['horas'])<0?0:($jornada-$row['horas']);
-                    $mecanico=strlen($mecanico)<=0? "'".$row['emple']."'": $mecanico.",'".$row['emple']."'";
-                    $color = substr(md5(time()), 0, 6);
-                    $colores=strlen($colores)<=0? "'".randomColor()."'" : $colores.",'".randomColor()."'";
-                  }
-
-                  desconectar($con);
-                }
-
-                //echo "Datos=".$datos."-mes".$mes;
-                        
-                echo "<div class='card'>
-                        <div class='card-body'>
-                          <h5 class='card-title'>Tiempo Muerto Mecanicos - ". obtenermes('L',0) ." ". $anioL ."</h5>
-
-                          <div id='barChart52'></div>
-                          <script>
-                            document.addEventListener('DOMContentLoaded', () => {
-                              new ApexCharts(document.querySelector('#barChart52'), {
-                                series: [{
-                                        data: [".$datos."]
-                                      }],
-                                        chart: {
-                                        type: 'bar',
-                                        height: 380
-                                      },
-                                      plotOptions: {
-                                        bar: {
-                                          barHeight: '100%',
-                                          distributed: true,
-                                          horizontal: true,
-                                          dataLabels: {
-                                            position: 'bottom'
-                                          },
-                                        }
-                                      },
-                                      colors: [".$colores."],
-                                      dataLabels: {
-                                        enabled: true,
-                                        textAnchor: 'start',
-                                        style: {
-                                          colors: ['#fff']
-                                        },
-                                        formatter: function (val, opt) {
-                                          return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
-                                        },
-                                        offsetX: 0,
-                                        dropShadow: {
-                                          enabled: true
-                                        }
-                                      },
-                                      stroke: {
-                                        width: 1,
-                                        colors: ['#fff']
-                                      },
-                                      xaxis: {
-                                        categories: [".$mecanico."],
-                                      },
-                                      yaxis: {
-                                        labels: {
-                                          show: false
-                                        }
-                                      },
-                                      title: {
-                                          text: '',
-                                          align: 'center',
-                                          floating: true
-                                      },
-                                      subtitle: {
-                                          text: 'Tiempo Muerto',
-                                          align: 'center',
-                                      },
-                                      tooltip: {
-                                        theme: 'dark',
-                                        x: {
-                                          show: false
-                                        },
-                                        y: {
-                                          title: {
-                                            formatter: function () {
-                                              return ''
-                                            }
-                                          }
-                                        }
-                                      }
-                                }).render();
-                              });
-                            </script>
-                        </div>
-                      </div>";
-                      */
-              ?>
-          </div-->
-        <!-- Fin Total Tiempo Muerto x Mecanicos -->
         
         <!-- TOTAL SERVICIOS POR MODELO -->
           <div class="col-lg-6">
@@ -1563,7 +1234,7 @@
               echo "
                     <div class='card'>
                       <div class='card-body'>
-                        <h5 class='card-title'>Total Services x Modelo</h5>
+                        <h5 class='card-title'><a href='homexfiltros.php?op=TS'>Total Services x Modelo</a></h5>
 
                         <div id='barChart48'></div>
                         <script>
@@ -1673,7 +1344,7 @@
 
               echo "<div class='card'>
                       <div class='card-body'>
-                        <h5 class='card-title'>Desde Donde Nos Conoce</h5>
+                        <h5 class='card-title'><a href='homexfiltros.php?op=DC'>Desde Donde Nos Conoce</a></h5>
 
                         <div id='barChart49'></div>
                         <script>

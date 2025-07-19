@@ -254,6 +254,72 @@
       }
     }
 
+    function infotareasrealizadas() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+           // alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infotareasrealizadas.php?fini='+fini+'&ffin='+ffin, false);
+        xmlhttp.send();
+      }
+    }
+
+    function infoserviciosrealizados() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+           // alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infoserviciosrealizados.php?fini='+fini+'&ffin='+ffin, false);
+        xmlhttp.send();
+      }
+    }
+    
+    function infodondenosconocen() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+           // alert ('DESDE JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+            document.getElementById("lsinforme").innerHTML =this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/infodondenosconocen.php?fini='+fini+'&ffin='+ffin, false);
+        xmlhttp.send();
+      }
+    }
+
     function infoatencionordenes() 
     {
       let fini=document.getElementById("txtfini").value;
@@ -528,6 +594,18 @@
                 case "AO"://ATENCIO DE ORDENES
                           $titulo="Tiempo de atencion de ordenes";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoatencionordenes()'>";
+                break;
+                case "TR"://TAREAS REALIZADAS
+                          $titulo="Listado de tareas realizadas";
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infotareasrealizadas()'>";
+                break;
+                case "TS"://TOTAL SERVICIOS POR MODELOS REALIZADOS
+                          $titulo="Listado de servicios realizados";
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoserviciosrealizados()'>";
+                break;
+                case "DC"://CANTIDAD TOTAL REFERIDOS O DESDE DONDE NOS CONOCEN
+                          $titulo="Publidad vs Cantidad de personas";
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infodondenosconocen()'>";
                 break;
               }      
           ?>

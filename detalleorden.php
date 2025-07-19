@@ -12,33 +12,33 @@
     if (isset($num))
     {
         //CHEQUEO SI ORDEN DE TRABAJO YA FUE EXPORTADA DE ORACLE A MYSQL
-        $sql = "SELECT count(a.`numorden`) as cant FROM numeroorden a where a.`numorden`='".$num."';";
+            $sql = "SELECT count(a.`numorden`) as cant FROM numeroorden a where a.`numorden`='".$num."';";
 
-        $con=conectar();
+            $con=conectar();
 
-        $result = $cnx->query($sql);
+            $result = $cnx->query($sql);
 
-        if (!$result) 
-        {
-        die('Invalid query: ' . $cnx->error);
-        }
-
-        if (!$result) 
-        {
-        die('Invalid query: ' . $mysqli->error);
-        }
-        else
-        {
-            $existe=0;
-
-            //MUESTRA DETALLE DEL CLIENTE Y LA ORDEN DE TRABAJO
-            while($row = mysqli_fetch_array($result))
+            if (!$result) 
             {
-                $existe= $row['cant'];
+            die('Invalid query: ' . $cnx->error);
             }
 
-            desconectar($con);
-        }
+            if (!$result) 
+            {
+            die('Invalid query: ' . $mysqli->error);
+            }
+            else
+            {
+                $existe=0;
+
+                //MUESTRA DETALLE DEL CLIENTE Y LA ORDEN DE TRABAJO
+                while($row = mysqli_fetch_array($result))
+                {
+                    $existe= $row['cant'];
+                }
+
+                desconectar($con);
+            }
         //=============================================================FIN CHEQUEO EXISTENCIA ORDEN
         
         if ($existe!=0)
@@ -147,65 +147,12 @@
                     //=========================SI PRESENTA TAREAS A EXPORTAR SIGUE CON EL PROCESO DE LO CONTRARIO EMITE MENSAJE
                         if(count($datos)>0)
                         {
-                            //CHEQUEO SI EXISTE EL CLIENTE EN LA TABLA
-                            //RECUPERO ID DEL CLIENTE SI EXISTE
-                            $idcliente=0;
-                            
-                            $sql = "SELECT a.`idpersona` FROM personas a WHERE a.`accion`!='B' AND a.dni='".$dni."';";
-                        
-                            $con=conectar();
-
-                            $result = $cnx->query($sql);
-
-                            if (!$result) 
-                            {
-                                die('Invalid query: ' . $cnx->error);
-                            }
-
-                            if (!$result) 
-                            {
-                                die('Invalid query: ' . $mysqli->error);
-                            }
-                            else
-                            {
-                                while($row = mysqli_fetch_array($result))
-                                {
-                                    $idcliente=$row['idpersona'];
-                                }
-                            }
-
-                            desconectar($con);
-                            //FIN CHEQUEO DE CLIENTE EN TABLA
-
-                            //CLIENTE NO EXISTE SE LO DA DE ALTA
-                            if ($idcliente<=0)
-                            {
-                                $txtapellido="";
-                                $txtnombre=$cliente;
-                                $txtdni=$dni;
-                                $txttel=$tel;
-                                $txtemail=$email;
-                                $accion="N";
-                                $fechaaccion=date("Y-m-d H:i:s"); 
-                                $idtipoper="2";
-                                $idarea="2";
-
-                                $sql="INSERT INTO personas (apellido,nombre,dni,idtipopersona,emailusuario,tel,idoficina,accion,idempleadoaccion,fechaaccion)
-                                        VALUES (?,?,?,?,?,?,?,?,?,?);";
-
-                                $con=conectar();
-                                $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-                                mysqli_stmt_bind_param($sentencia,'ssssssssss',$txtapellido,$txtnombre,$txtdni,$idtipoper,$txtemail,$txttel,$idarea,$accion,$id,$fechaaccion);
-                                $respsoc=mysqli_stmt_execute($sentencia);
+                            //TRATAMIENTO SOBRE EL CLIENTE EN LA TABLA
+                                //RECUPERO ID DEL CLIENTE SI EXISTE
+                                    $idcliente=0;
                                     
-                                desconectar($con);
-                                                            
-                                if ($respsoc)  
-                                {
-                                    //RECUPERO ID DEL NUEVO CLIENTE
-                                    $sql = "SELECT a.`idpersona` FROM personas a WHERE a.`accion`!='B' AND a.dni='".$txtdni."';";
-                                    $respact="";
-
+                                    $sql = "SELECT a.`idpersona` FROM personas a WHERE a.`accion`!='B' AND a.dni='".$dni."';";
+                                
                                     $con=conectar();
 
                                     $result = $cnx->query($sql);
@@ -228,22 +175,78 @@
                                     }
 
                                     desconectar($con);
-                                    
-                                    //ALTA COMO CLIENTE VS DISCIPLINAS
-                                    $sql="INSERT INTO personasvsdisciplinas (idpersona,iddisciplina,accion,idempleadoaccion,fechaaccion)
-                                        VALUES (?,?,?,?,?);";
+                                //FIN CHEQUEO DE CLIENTE EN TABLA
 
-                                    $con=conectar();
-                                    $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-                                    mysqli_stmt_bind_param($sentencia,'sssss',$idcliente,$idtipoper,$accion,$id,$fechaaccion);
-                                    $respact=mysqli_stmt_execute($sentencia);
-                                    desconectar($con);
-                            
-                                    if (!$respact) $idcliente=0;
-                                }
-                                else $idcliente=0;
-                            }
-                            //======================================================================FIN TABLA CLIENTES MYSQL
+                                //CLIENTE NO EXISTE SE LO DA DE ALTA
+                                    if ($idcliente<=0)
+                                    {
+                                        $txtapellido="";
+                                        $txtnombre=$cliente;
+                                        $txtdni=$dni;
+                                        $txttel=$tel;
+                                        $txtemail=$email;
+                                        $accion="N";
+                                        $fechaaccion=date("Y-m-d H:i:s"); 
+                                        $idtipoper="2";
+                                        $idarea="2";
+
+                                        $sql="INSERT INTO personas (apellido,nombre,dni,idtipopersona,emailusuario,tel,idoficina,accion,idempleadoaccion,fechaaccion)
+                                                VALUES (?,?,?,?,?,?,?,?,?,?);";
+
+                                        $con=conectar();
+                                        $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+                                        mysqli_stmt_bind_param($sentencia,'ssssssssss',$txtapellido,$txtnombre,$txtdni,$idtipoper,$txtemail,$txttel,$idarea,$accion,$id,$fechaaccion);
+                                        $respsoc=mysqli_stmt_execute($sentencia);
+                                            
+                                        desconectar($con);
+                                                                    
+                                        if ($respsoc)  
+                                        {
+                                            //RECUPERO ID DEL NUEVO CLIENTE
+                                                $sql = "SELECT a.`idpersona` FROM personas a WHERE a.`accion`!='B' AND a.dni='".$txtdni."';";
+                                                $respact="";
+
+                                                $con=conectar();
+
+                                                $result = $cnx->query($sql);
+
+                                                if (!$result) 
+                                                {
+                                                    die('Invalid query: ' . $cnx->error);
+                                                }
+
+                                                if (!$result) 
+                                                {
+                                                    die('Invalid query: ' . $mysqli->error);
+                                                }
+                                                else
+                                                {
+                                                    while($row = mysqli_fetch_array($result))
+                                                    {
+                                                        $idcliente=$row['idpersona'];
+                                                    }
+                                                }
+
+                                                desconectar($con);
+                                            
+                                                //ALTA COMO CLIENTE VS DISCIPLINAS
+                                                    $sql="INSERT INTO personasvsdisciplinas (idpersona,iddisciplina,accion,idempleadoaccion,fechaaccion)
+                                                        VALUES (?,?,?,?,?);";
+
+                                                    $con=conectar();
+                                                    $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+                                                    mysqli_stmt_bind_param($sentencia,'sssss',$idcliente,$idtipoper,$accion,$id,$fechaaccion);
+                                                    $respact=mysqli_stmt_execute($sentencia);
+                                                    desconectar($con);
+                                            
+                                                    if (!$respact) $idcliente=0;
+                                                //FIN ALTA COMO CLIENTE VS DISCIPLINAS
+                                            //FIN RECUPERO ID DEL NUEVO CLIENTE
+                                        }
+                                        else $idcliente=0;
+                                    }
+                                //FIN TABLA CLIENTES MYSQL
+                            //FIN TRATAMIENTO SOBRE EL CLIENTE EN LA TABLA
 
                             //echo "Cliente=>". $idcliente;
                             if ($idcliente>0)
@@ -251,67 +254,21 @@
                                 //=======================================================================REALIZA ALTA DETALLE ORDEN
                                 //echo "Total elementos=>". count($datos);      
                                 
-                                //======================SE CONTROLA QUE TAREA EXISTA Y LUEGO ALTA EN ORDEN
+                                //TRATAMIENTO DE TAREAS Y ORDEN DE TRABAJO
                                     for ($i=0;$i<count($datos);$i++) 
                                     { 
-                                        //BUSCO DATOS DE LA TAREA EN LA CORRESPONDIENTE TABLA TAREAS EN MYSQL
-                                        $idtarea=0;
-                                        $datotarea=ltrim($datos[$i]);
+                                        //VERIFICO SI TAREA EXISTE EN MYSQL
+                                            $idtarea=0;
+                                            $datotarea=ltrim($datos[$i]);
 
-                                        $sql = "SELECT a.idtarea
-                                                from tareas a
-                                                where a.`accion`!='B' and a.`descripciontarea`='". $datotarea ."';";
-
-                                        $con=conectar();
-
-                                        $result = $cnx->query($sql);
-                                    
-                                        if (!$result) 
-                                        {
-                                            die('Invalid query: ' . $cnx->error);
-                                        }
-
-                                        if (!$result) 
-                                        {
-                                            die('Invalid query: ' . $mysqli->error);
-                                        }
-                                        else
-                                        {
-                                            while($row = mysqli_fetch_array($result))
-                                            {
-                                                $idtarea=$row['idtarea']; //SI EXISTE TAREA SE RECUPERO ID
-                                            }
-                                        }
-
-                                        desconectar($con);
-
-                                        if ($idtarea<=0)
-                                        {
-                                            //DOY DE ALTA LA TAREA
-                                            $accion="N";
-                                            $tiempo=0;
-                                            $fechaaccion=date("Y-m-d H:i:s"); 
-
-                                            $sql="INSERT INTO tareas (descripciontarea,tiempotarea,accion,fechaaccion,idempleadoaccion)
-                                                VALUES (?,?,?,?,?);";
-
-                                            $con=conectar();
-                                            $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-                                            mysqli_stmt_bind_param($sentencia,'sssss',$datotarea,$tiempo,$accion,$fechaaccion,$id);
-                                            $resp=mysqli_stmt_execute($sentencia);
-                                                
-                                            desconectar($con);
-                                            //===================================================================FIN ALTA TAREA
-
-                                            //RECUPERO ID DE LA NUEVA TAREA EN MYSQL
                                             $sql = "SELECT a.idtarea
-                                                    FROM tareas a
-                                                    WHERE a.`descripciontarea`='". $datotarea ."';";
+                                                    from tareas a
+                                                    where a.`accion`!='B' and a.`descripciontarea`='". $datotarea ."';";
 
                                             $con=conectar();
 
                                             $result = $cnx->query($sql);
-
+                                        
                                             if (!$result) 
                                             {
                                                 die('Invalid query: ' . $cnx->error);
@@ -323,7 +280,6 @@
                                             }
                                             else
                                             {
-                                                $idtarea=0;
                                                 while($row = mysqli_fetch_array($result))
                                                 {
                                                     $idtarea=$row['idtarea']; //SI EXISTE TAREA SE RECUPERO ID
@@ -331,29 +287,79 @@
                                             }
 
                                             desconectar($con);
+                                        //FIN VERIFICO SI TAREA EXISTE EN MYSQL
+
+                                        if ($idtarea<=0)
+                                        {
+                                            //ALTA LA TAREA
+                                                $accion="N";
+                                                $tiempo=0;
+                                                $fechaaccion=date("Y-m-d H:i:s"); 
+
+                                                $sql="INSERT INTO tareas (descripciontarea,tiempotarea,accion,fechaaccion,idempleadoaccion)
+                                                    VALUES (?,?,?,?,?);";
+
+                                                $con=conectar();
+                                                $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+                                                mysqli_stmt_bind_param($sentencia,'sssss',$datotarea,$tiempo,$accion,$fechaaccion,$id);
+                                                $resp=mysqli_stmt_execute($sentencia);
+                                                    
+                                                desconectar($con);
+                                            //FIN ALTA TAREA
+
+                                            //RECUPERO ID DE LA NUEVA TAREA EN MYSQL
+                                                $sql = "SELECT a.idtarea
+                                                        FROM tareas a
+                                                        WHERE a.`descripciontarea`='". $datotarea ."';";
+
+                                                $con=conectar();
+
+                                                $result = $cnx->query($sql);
+
+                                                if (!$result) 
+                                                {
+                                                    die('Invalid query: ' . $cnx->error);
+                                                }
+
+                                                if (!$result) 
+                                                {
+                                                    die('Invalid query: ' . $mysqli->error);
+                                                }
+                                                else
+                                                {
+                                                    $idtarea=0;
+                                                    while($row = mysqli_fetch_array($result))
+                                                    {
+                                                        $idtarea=$row['idtarea']; //SI EXISTE TAREA SE RECUPERO ID
+                                                    }
+                                                }
+
+                                                desconectar($con);
+                                            //FIN RECUPERO ID DE LA NUEVA TAREA EN MYSQL
                                         }
 
                                         //echo $sql."-IDTAREA=".$idtarea."</br>";
                                     
-                                        //DOY DE ALTA TAREA EN EL DETALLE DE LA ORDEN
-                                        $accion="N";
-                                        $tiempotarea="0";
-                                        $fechaaccion=date("Y-m-d H:i:s"); 
-                                        $sql="INSERT INTO detalleorden (numeroorden,idtarea,accion,idempleadoaccion,fechaaccion)
-                                            VALUES (?,?,?,?,?);";
+                                        //ALTA TAREA EN EL DETALLE DE LA ORDEN
+                                            $accion="N";
+                                            $tiempotarea="0";
+                                            $fechaaccion=date("Y-m-d H:i:s"); 
+                                            $sql="INSERT INTO detalleorden (numeroorden,idtarea,accion,idempleadoaccion,fechaaccion)
+                                                VALUES (?,?,?,?,?);";
 
-                                        $con=conectar();
-                                        $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-                                        mysqli_stmt_bind_param($sentencia,'sssss',$numorden,$idtarea,$accion,$id,$fechaaccion);
-                                        $resp=mysqli_stmt_execute($sentencia);
-                                            
-                                        desconectar($con);
-
+                                            $con=conectar();
+                                            $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+                                            mysqli_stmt_bind_param($sentencia,'sssss',$numorden,$idtarea,$accion,$id,$fechaaccion);
+                                            $resp=mysqli_stmt_execute($sentencia);
+                                                
+                                            desconectar($con);
+                                        //FIN ALTA TAREA EN EL DETALLE DE LA ORDEN
+                                        
                                         //echo "IdTarea=". $idtarea ."-Tarea=". $datotarea ."-Numorden=". $numorden ."</br>";
                                     }
-                                //============================================FIN ALTA DETALLE DE LA ORDEN
+                                //FIN TRATAMIENTO DE TAREAS Y ORDEN DE TRABAJO
                                                
-                                //===========CHEQUEO SI EXISTE NOMBRE PUBLICIDAD EN MYSQL Y RECUPERO ID
+                                //TRATAMIENTO DEL DATO PUBLICIDAD EN MYSQL
                                     $sql = "SELECT a.`idpublicacion` FROM publicaciones a WHERE a.`publicacion`='". $conocio ."';";
 
                                     $con=conectar();
@@ -416,7 +422,7 @@
 
                                         desconectar($con);
                                     }
-                                //===========FIN CHEQUEO DE PUBLIDAD
+                                //FIN TRATAMIENTO DEL DATO PUBLICIDAD EN MYSQL
 
                                     if ($idpublicacion>0)
                                     {
@@ -424,46 +430,9 @@
                                     // echo "</br>idpublicidad=".$idpublicacion;
                                     // echo "</br>codmodelo=".$codmodelo;
 
-                                        //===============================================CHEQUEO SI EXISTE MARCA-MODELO
-                                        $sql = "SELECT a.`codmodelo` FROM modelos a WHERE a.`codmodelo`='". $codmodelo ."';";
-                                        $idmodelo=0;
-
-                                        $con=conectar();
-
-                                        $result = $cnx->query($sql);
-                                    
-                                        if (!$result) 
-                                        {
-                                            die('Invalid query: ' . $cnx->error);
-                                        }
-
-                                        if (!$result) 
-                                        {
-                                            die('Invalid query: ' . $mysqli->error);
-                                        }
-                                        else
-                                        {
-                                            while($row = mysqli_fetch_array($result))
-                                            {
-                                                $idmodelo=$row['codmodelo']; //SI EXISTE marca-modelo SE RECUPERO ID
-                                            }
-                                        }
-
-                                        desconectar($con);
-                                        
-                                        if ($idmodelo<=0)
-                                        {
-                                            //DOY DE ALTA LA MARCA Y MODELO DEL AUTO
-                                            $sql="INSERT INTO modelos (codmodelo,modelomarca) VALUES (?,?);";
-
-                                            $con=conectar();
-                                            $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-                                            mysqli_stmt_bind_param($sentencia,'ss',$codmodelo,$marcamodelo);
-                                            $resp=mysqli_stmt_execute($sentencia);
-                                                
-                                            desconectar($con);
-
+                                        //CHEQUEO SI EXISTE MARCA-MODELO
                                             $sql = "SELECT a.`codmodelo` FROM modelos a WHERE a.`codmodelo`='". $codmodelo ."';";
+                                            $idmodelo=0;
 
                                             $con=conectar();
 
@@ -482,19 +451,55 @@
                                             {
                                                 while($row = mysqli_fetch_array($result))
                                                 {
-                                                    $idmodelo=$row['codmodelo']; //SI EXISTE modelo-marca SE RECUPERO ID
+                                                    $idmodelo=$row['codmodelo']; //SI EXISTE marca-modelo SE RECUPERO ID
                                                 }
                                             }
 
                                             desconectar($con);
-                                        }
-                                        //================================================FIN CHEQUEO MARCA-MODELO    
+                                            
+                                            if ($idmodelo<=0)
+                                            {
+                                                //ALTA LA MARCA Y MODELO DEL AUTO
+                                                    $sql="INSERT INTO modelos (codmodelo,modelomarca) VALUES (?,?);";
+
+                                                    $con=conectar();
+                                                    $sentencia=mysqli_prepare($con,$sql);//preparo consulta
+                                                    mysqli_stmt_bind_param($sentencia,'ss',$codmodelo,$marcamodelo);
+                                                    $resp=mysqli_stmt_execute($sentencia);
+                                                        
+                                                    desconectar($con);
+
+                                                    $sql = "SELECT a.`codmodelo` FROM modelos a WHERE a.`codmodelo`='". $codmodelo ."';";
+
+                                                    $con=conectar();
+
+                                                    $result = $cnx->query($sql);
+                                                
+                                                    if (!$result) 
+                                                    {
+                                                        die('Invalid query: ' . $cnx->error);
+                                                    }
+
+                                                    if (!$result) 
+                                                    {
+                                                        die('Invalid query: ' . $mysqli->error);
+                                                    }
+                                                    else
+                                                    {
+                                                        while($row = mysqli_fetch_array($result))
+                                                        {
+                                                            $idmodelo=$row['codmodelo']; //SI EXISTE modelo-marca SE RECUPERO ID
+                                                        }
+                                                    }
+
+                                                    desconectar($con);
+                                                //FIN ALTA LA MARCA Y MODELO DEL AUTO
+                                            }
+                                        //FIN CHEQUEO MARCA-MODELO    
                                         
                                         if ($idmodelo>0)
                                         {
-                                            //===================================================================ALTA ORDEN DE TRABAJO
-                                    
-                                                //NUMERO DE ORDEN DE TRABAJO NO EXISTE SE LA DA DE ALTA
+                                            //TRATAMIENTO DE ORDEN DE TRABAJO
                                                 $accion="N";
                                                 $fechaaccion=date("Y-m-d H:i:s"); 
                                                 $sql="INSERT INTO numeroorden (numorden,fecha,fventa,idcliente,numchasis,patente,kilometraje,conocio,idpublicidad,codmodelo,accion,fechaaccion,idempleadoaccion)
@@ -511,9 +516,9 @@
                                                 else $numorden=0;
                                                 
                                                 //echo "Fecha carga=". $fcarga ."-idcliente=". $idcliente ."-Numorden=". $numorden ."</br>";
-                                            //===================================================================FIN ALTA ORDEN DE TRABAJO
+                                            //FIN TRATAMIENTO DE ORDEN DE TRABAJO
 
-                                            //========================================================MUESTRO RESULTADOS ORDEN DE TRABAJO QUE SE EXPORTO DESDE ORACLE A MYSQL
+                                            //CHEQUEA EXISTENCIA DE ORDEN EXPORTADA ORACLE A MYSQL
                                                 $sql = "SELECT CONCAT(a.`apellido`,', ', a.`nombre`) AS cliente, a.`domicilio`,d.modelomarca,b.`numchasis`,b.`patente`,b.`kilometraje`,b.`fventa`,c.publicacion
                                                         FROM personas a INNER JOIN numeroorden b ON (a.`idpersona`=b.`idcliente` AND b.`accion`!='B')
                                                                         INNER JOIN publicaciones c ON (b.idpublicidad=c.idpublicacion)
@@ -538,72 +543,72 @@
                                                     $info="";
 
                                                     //MUESTRA DETALLE DEL CLIENTE Y LA ORDEN DE TRABAJO
-                                                    while($row = mysqli_fetch_array($result))
-                                                    {
-                                                        $info= "
-                                                            <section class='section'>
-                                                                <div class='row'>
-                                                                    <div class='col-lg-6'>
-                                                                        <div class='card'>
-                                                                        <div class='card-body'>
-                                                                            <h5 class='card-title'>Datos Cliente</h5>
-                                                                            <!-- General Form Elements -->
-                                                                            <form>
-                                                                            <div class='row mb-3'>
-                                                                                <label for='inputText' class='col-sm-3 col-form-label'>Cliente</label>
-                                                                                <div class='col-sm-9'>
-                                                                                <input type='text' class='form-control' value='".$row['cliente']."'>
+                                                        while($row = mysqli_fetch_array($result))
+                                                        {
+                                                            $info= "
+                                                                <section class='section'>
+                                                                    <div class='row'>
+                                                                        <div class='col-lg-6'>
+                                                                            <div class='card'>
+                                                                            <div class='card-body'>
+                                                                                <h5 class='card-title'>Datos Cliente</h5>
+                                                                                <!-- General Form Elements -->
+                                                                                <form>
+                                                                                <div class='row mb-3'>
+                                                                                    <label for='inputText' class='col-sm-3 col-form-label'>Cliente</label>
+                                                                                    <div class='col-sm-9'>
+                                                                                    <input type='text' class='form-control' value='".$row['cliente']."'>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div class='row mb-3'>
-                                                                                <label for='inputEmail' class='col-sm-3 col-form-label'>Domicilio</label>
-                                                                                <div class='col-sm-9'>
-                                                                                <input type='text' class='form-control' value='".$row['domicilio']."'>
+                                                                                <div class='row mb-3'>
+                                                                                    <label for='inputEmail' class='col-sm-3 col-form-label'>Domicilio</label>
+                                                                                    <div class='col-sm-9'>
+                                                                                    <input type='text' class='form-control' value='".$row['domicilio']."'>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div class='row mb-3'>
-                                                                                <label for='inputPassword' class='col-sm-3 col-form-label'>Modelo</label>
-                                                                                <div class='col-sm-9'>
-                                                                                <input type='text' class='form-control' value='".$row['modelomarca']."'>
+                                                                                <div class='row mb-3'>
+                                                                                    <label for='inputPassword' class='col-sm-3 col-form-label'>Modelo</label>
+                                                                                    <div class='col-sm-9'>
+                                                                                    <input type='text' class='form-control' value='".$row['modelomarca']."'>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div class='row mb-3'>
-                                                                                <label for='inputNumber' class='col-sm-3 col-form-label'>N° Chasis</label>
-                                                                                <div class='col-sm-9'>
-                                                                                <input type='text' class='form-control' value='".$row['numchasis']."'>
+                                                                                <div class='row mb-3'>
+                                                                                    <label for='inputNumber' class='col-sm-3 col-form-label'>N° Chasis</label>
+                                                                                    <div class='col-sm-9'>
+                                                                                    <input type='text' class='form-control' value='".$row['numchasis']."'>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div class='row mb-3'>
-                                                                                <label for='inputNumber' class='col-sm-3 col-form-label'>Patente</label>
-                                                                                <div class='col-sm-9'>
-                                                                                <input type='text' class='form-control' value='".$row['patente']."'>
+                                                                                <div class='row mb-3'>
+                                                                                    <label for='inputNumber' class='col-sm-3 col-form-label'>Patente</label>
+                                                                                    <div class='col-sm-9'>
+                                                                                    <input type='text' class='form-control' value='".$row['patente']."'>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div class='row mb-3'>
-                                                                                <label for='inputNumber' class='col-sm-3 col-form-label'>Kilometraje</label>
-                                                                                <div class='col-sm-9'>
-                                                                                <input type='text' class='form-control' value='".$row['kilometraje']."'>
+                                                                                <div class='row mb-3'>
+                                                                                    <label for='inputNumber' class='col-sm-3 col-form-label'>Kilometraje</label>
+                                                                                    <div class='col-sm-9'>
+                                                                                    <input type='text' class='form-control' value='".$row['kilometraje']."'>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div class='row mb-3'>
-                                                                                <label for='inputNumber' class='col-sm-3 col-form-label'>F. Venta</label>
-                                                                                <div class='col-sm-9'>
-                                                                                <input type='text' class='form-control' value='".$row['fventa']."'>
+                                                                                <div class='row mb-3'>
+                                                                                    <label for='inputNumber' class='col-sm-3 col-form-label'>F. Venta</label>
+                                                                                    <div class='col-sm-9'>
+                                                                                    <input type='text' class='form-control' value='".$row['fventa']."'>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div class='row mb-3'>
-                                                                                <label for='inputNumber' class='col-sm-3 col-form-label'>Conocio Por</label>
-                                                                                <div class='col-sm-9'>
-                                                                                <input type='text' class='form-control' value='".$row['publicacion']."'>
+                                                                                <div class='row mb-3'>
+                                                                                    <label for='inputNumber' class='col-sm-3 col-form-label'>Conocio Por</label>
+                                                                                    <div class='col-sm-9'>
+                                                                                    <input type='text' class='form-control' value='".$row['publicacion']."'>
+                                                                                    </div>
                                                                                 </div>
+                                                                                </form>
+                                                                                <!-- End General Form Elements -->
                                                                             </div>
-                                                                            </form>
-                                                                            <!-- End General Form Elements -->
                                                                         </div>
-                                                                    </div>
-                                                                </div>";
-                                                                
-                                                    }
+                                                                    </div>";
+                                                        }
+                                                    //FIN MUESTRA DETALLE DEL CLIENTE Y LA ORDEN DE TRABAJO
                                                 }
 
                                                 desconectar($con);
@@ -689,7 +694,7 @@
 
                                                 if ($mecanico==0) echo $info."".$infoencabezado."".$infofilas."".$infopie;
                                                 if ($mecanico==1) echo "OK";
-                                            //========================================================FIN MUESTRO RESULTADOS ORDEN DE TRABAJO
+                                            //FIN MUESTRO RESULTADOS ORDEN DE TRABAJO
                                         }
                                         else $numorden=0;    
                                     }

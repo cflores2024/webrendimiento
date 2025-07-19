@@ -31,7 +31,7 @@
       $fechaaccion=date("Y-m-d H:i:s");
       //PONE ORDEN EN DISPONIBLE
       if ($dias=="0")
-      {
+      {//SE ENTREGA EN EL DIA DE HOY
         $sql="UPDATE numeroorden SET tituloorden=?,fentrega=CONCAT(DATE(NOW()),' ',?),estado=?,idpersonadisp=?,accion=?,idempleadoaccion=?,fechaaccion=?
               WHERE numorden=?;";
       
@@ -41,7 +41,7 @@
         $resp2=mysqli_stmt_execute($sentencia);
       }
       else
-      {
+      {//SE CALCULA Y SE ENTREGA EN X CANTIDAD DE DIAS
         $sql="UPDATE numeroorden SET tituloorden=?,fentrega=DATE_ADD(CONCAT(DATE(fecha),' ',?), INTERVAL ? DAY),estado=?,idpersonadisp=?,accion=?,idempleadoaccion=?,fechaaccion=?
               WHERE numorden=?;";
       

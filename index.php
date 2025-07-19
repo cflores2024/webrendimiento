@@ -132,7 +132,7 @@ else
 
               //FIN DEL PROCESO DE TRAER LA ORDEN DE ORACLE A MYSQL PARA SU TRATAMIENTO
 
-              if ($tipousu=="Gerente") 
+              if (($tipousu=="Gerente")||($tipousu=="Administración"))
               {
                 echo "<script> window.location.href='home.php'</script>";
               }
