@@ -406,7 +406,7 @@
 
                     $sql = "SELECT COUNT(a.`numorden`) AS act
                             FROM numeroorden a
-                            WHERE a.`accion`!='B' AND a.estado='F' AND a.`fentrega` BETWEEN '".$txtfini."' AND '".$txtffin."';";
+                            WHERE a.`accion`!='B' AND a.estado='F' AND DATE(a.`fentrega`) BETWEEN '".$txtfini."' AND '".$txtffin."';";
 
                     $con=conectar();
 
@@ -1451,7 +1451,7 @@
               $sql = "SELECT MONTH(a.fentrega) AS mes,b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS emple,COUNT(b.`idtarea`) AS cant
                       FROM numeroorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
                                   INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
-                      WHERE a.`accion`!='B' AND b.`estado`='F' AND a.fentrega BETWEEN '".$fini."' AND '".$ffin."'
+                      WHERE a.`accion`!='B' AND b.`estado`='F' AND DATE(a.`fentrega`) BETWEEN '".$fini."' AND '".$ffin."'
                       GROUP BY 1,2,3
                       ORDER BY 1,2;";
 
