@@ -320,6 +320,71 @@
       }
     }
 
+    function inforevisitachasis() 
+    {
+      let fini=document.getElementById("txtfini").value;
+      let ffin=document.getElementById("txtffin").value;
+      let titulo=document.getElementById("txttitulo").value;
+      let num=document.getElementById("txtnumorden").value;
+      let emp=document.getElementById("txtempleado").value;
+
+      //alert ('JS SE RECIBIERON LOS DATOS FINI '+fini+' Y LA FFIN '+ffin);
+      
+      if ((fini<=0)&&(ffin<=0)) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            let datos=this.responseText;
+
+            //alert (datos);
+          
+            document.getElementById("lsinforme").innerHTML =datos;
+          }
+        };
+        xmlhttp.open('GET', 'reportes/inforevisitas.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num+'&emp='+emp, false);
+        xmlhttp.send();
+      }
+    }
+
+    function historial(num) 
+    {
+      if (num<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            alert ('numero chasis='+num);
+            document.getElementById("lsinforme").innerHTML=this.responseText;
+          }
+        };
+        xmlhttp.open('GET', './historialorden.php?num='+num+"&ver=R", false);
+        xmlhttp.send();
+      }
+    }
+
+    function vertabla(num)
+    {
+      //alert("Se muestra historial de la orden " + num);
+
+      if (num<=0) {
+        return;
+      } else {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert ('numero orden='+num);
+            document.getElementById("tbldetalleorden").innerHTML=this.responseText;
+          }
+        };
+        xmlhttp.open('GET', 'vertablatareas.php?num='+num, false);
+        xmlhttp.send();
+      }
+    }
+
     function infoatencionordenes() 
     {
       let fini=document.getElementById("txtfini").value;
@@ -606,6 +671,10 @@
                 case "DC"://CANTIDAD TOTAL REFERIDOS O DESDE DONDE NOS CONOCEN
                           $titulo="Publidad vs Cantidad de personas";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infodondenosconocen()'>";
+                break;
+                case "RE"://TOTAL DE REVISITAS QUE TUVO UN CHASIS POR PARTE DE MECANICOS
+                          $titulo="Revisitas vs Empleados";
+                          echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='inforevisitachasis()'>";
                 break;
               }      
           ?>

@@ -1040,27 +1040,37 @@
       
         <!-- TOTAL DE REVISITAS -->
           <div class="col-lg-6">
-            <?php    
-                $sql = "SELECT MONTH(DATE(a.`fecha`)) AS mes,
-                                CASE MONTH(DATE(a.`fecha`))
-                                  WHEN 1 THEN 'Enero'
-                                  WHEN 2 THEN 'Febrero'
-                                  WHEN 3 THEN 'Marzo'
-                                  WHEN 4 THEN 'Abril'
-                                  WHEN 5 THEN 'Mayo'
-                                  WHEN 6 THEN 'Junio'
-                                  WHEN 7 THEN 'Julio'
-                                  WHEN 8 THEN 'Agosto'
-                                  WHEN 9 THEN 'Septiembre'
-                                  WHEN 10 THEN 'Octubre'
-                                  WHEN 11 THEN 'Noviembre'
-                                  WHEN 12 THEN 'Diciembre'
-                                ELSE 'ERROR'END AS mesnomb,
-                              COUNT(a.numchasis) AS cant
-                        FROM numeroorden a
-                        WHERE a.`accion`!='B' AND a.estado!='S' AND DATE(a.`fecha`) BETWEEN '".$finimes."' AND '".$ffin."'
-                        GROUP BY 1
-                        ORDER BY 1,3;";
+            <?php 
+                $ffin30dias = strtotime('-1 day', strtotime($txtfini));
+                $ffin30dias = date('Y-m-j', $ffin30dias);
+                
+                $fini30dias = strtotime('-30 day', strtotime($ffin30dias));
+                $fini30dias = date('Y-m-j', $fini30dias);
+                
+                $sql = "SELECT CASE MONTH(DATE(a.`fecha`))
+                              WHEN 1 THEN 'Enero'
+                              WHEN 2 THEN 'Febrero'
+                              WHEN 3 THEN 'Marzo'
+                              WHEN 4 THEN 'Abril'
+                              WHEN 5 THEN 'Mayo'
+                              WHEN 6 THEN 'Junio'
+                              WHEN 7 THEN 'Julio'
+                              WHEN 8 THEN 'Agosto'
+                              WHEN 9 THEN 'Septiembre'
+                              WHEN 10 THEN 'Octubre'
+                              WHEN 11 THEN 'Noviembre'
+                              WHEN 12 THEN 'Diciembre'
+                            ELSE 'ERROR'END AS mesnomb,
+                                  a.`numchasis`,b.idtarea,
+                            (
+                              SELECT CASE WHEN COUNT(xx.`numchasis`)<=0 THEN 'N' ELSE 'S' END
+                              FROM numeroorden xx INNER JOIN afectadostareas yy ON (xx.`numorden`=yy.`numorden`)
+                              WHERE xx.accion!='B' AND xx.estado='F' AND xx.numchasis=a.`numchasis` AND yy.idtarea=b.`idtarea` AND (DATE(xx.`fecha`) BETWEEN '".$fini30dias."' AND '".$ffin30dias."')
+                            ) revisita
+                        FROM numeroorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
+                        WHERE a.`accion`!='B' AND a.`estado`!='S' AND (DATE(a.`fecha`) BETWEEN '".$txtfini."' AND '".$txtffin."')
+                        GROUP BY 1,2
+                        ORDER BY 1,4 DESC;";
 
               $con=conectar();
 
@@ -1080,23 +1090,47 @@
                 $datos="";
                 $meses="";
                 $colores="";
-                
-                while($row = mysqli_fetch_array($result))
+                $m="";
+                $cant=0;
+                $salir=false;
+
+                while(($row = mysqli_fetch_array($result))&&($salir==false))
                 {
-                  if ($row['cant']>1)
+                  if ($row['revisita']=="S")
                   {
-                    $datos=strlen($datos)<=0? $row['cant']: $datos.",".$row['cant'];
-                    $meses=strlen($meses)<=0? "'".$row['mesnomb']."'": $meses.",'".$row['mesnomb']."'";
-                    $colores=strlen($colores)<=0? "'#c388d6'": $colores.",'#c388d6'";
+                    if (strlen($m)<=0) $m=$row['mesnomb'];
+
+
+                    if ($m==$row['mesnomb']) $cant++;
+                    else
+                      {
+                        $datos=strlen($datos)<=0? $cant: $datos.",".$cant;
+                        $meses=strlen($meses)<=0? "'".$m."'": $meses.",'".$m."'";
+                        $colores=strlen($colores)<=0? "'#c388d6'": $colores.",'#c388d6'";
+            
+                        $m=$row['mesnomb'];
+                        $cant=1;
+                      } 
                   }
-                }
+                  else
+                  {
+                    $salir=true;
+                  }
+               }
 
                 desconectar($con);
               }
-                      
+              
+              if (strlen($m)>0)
+              {
+                $datos=strlen($datos)<=0? $cant: $datos.",".$cant;
+                $meses=strlen($meses)<=0? "'".$m."'": $meses.",'".$m."'";
+                $colores=strlen($colores)<=0? "'#c388d6'": $colores.",'#c388d6'";
+              }
+
               echo "<div class='card'>
                       <div class='card-body'>
-                        <h5 class='card-title'>Total Revisitas</h5>
+                        <h5 class='card-title'><a href='homexfiltros.php?op=RE'>Total Revisitas</a></h5>
 
                         <div id='barChart50'></div>
                         <script>

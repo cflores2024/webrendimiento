@@ -69,18 +69,7 @@
 
       desconectar($con);
     }
-    /*
-    $sql="INSERT INTO tareassuspendidas (numorden,idtarea,idempleado,suspendida,fechaaccion,observacion)
-         VALUES (?,?,?,?,?,?);";
     
-    $con=conectar();
-
-    $sentencia=mysqli_prepare($con,$sql);//preparo consulta
-    mysqli_stmt_bind_param($sentencia,'ssssssss',$numorden,$idtarea,$idempleado,$estado,$fechaaccion,$obs,$fechaaccion,$idempleado);
-    $resp=mysqli_stmt_execute($sentencia);
-
-    desconectar($con);
-    */
     if ($resp)  
     {
         $sql="UPDATE afectadostareas SET suspendida=?

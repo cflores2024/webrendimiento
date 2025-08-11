@@ -16,7 +16,15 @@
       }
       else
       {
-        $verbtn=""; 
+        if ($verbtn=="R") 
+        {
+          $verbtn="&nbsp;&nbsp;&nbsp;<a href='#' onclick='inforevisitachasis()'>
+                  <img src='./assets/img/volver.png' alt='Volver'></a>";
+        }
+        else
+        {
+          $verbtn=""; 
+        } 
       }
     }
     
