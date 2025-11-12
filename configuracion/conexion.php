@@ -4,6 +4,7 @@ $server="localhost";
 $usu="root";
 $pass="123456a$";
 $base="dbrendimiento";
+$puerto="3306";
 
 function conectar()
     {
@@ -12,7 +13,7 @@ function conectar()
         try 
         {
             //$cnx = mysqli_connect($server, $usu, $pass, $base);
-            $cnx = new mysqli($server, $usu, $pass, $base);
+            $cnx = new mysqli($server, $usu, $pass, $base, $puerto);
 
             if ($cnx->connect_error) 
             {

@@ -1448,13 +1448,20 @@
         <!-- TOTAL ORDENES FINALIZADAS POR MECANICOS -->
           <div class="col-lg-12">
             <?php    
+            /*
               $sql = "SELECT MONTH(a.fentrega) AS mes,b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS emple,COUNT(b.`idtarea`) AS cant
                       FROM numeroorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
                                   INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
                       WHERE a.`accion`!='B' AND b.`estado`='F' AND DATE(a.`fentrega`) BETWEEN '".$fini."' AND '".$ffin."'
                       GROUP BY 1,2,3
                       ORDER BY 1,2;";
-
+                      */
+              $sql="SELECT MONTH(xx.fentrega) AS mes,yy.`idempleado`,CONCAT(zz.`apellido`,', ',zz.`nombre`) AS emple,COUNT(DISTINCT xx.numorden) AS cant
+                    FROM numeroorden xx INNER JOIN afectadostareas yy ON (xx.`numorden`=yy.`numorden`)
+                                        INNER JOIN personas zz ON (zz.`idpersona`=yy.`idempleado` AND zz.`accion`!='B')
+                    WHERE xx.`accion`!='B' AND yy.`estado`='F' AND DATE(xx.`fentrega`) BETWEEN '".$fini."' AND '".$ffin."'
+                    GROUP BY 1,2
+                    ORDER BY yy.`idempleado`;";
               $con=conectar();
 
               $result = $con->query($sql);
@@ -1495,7 +1502,7 @@
                       
               echo "<div class='card'>
                       <div class='card-body'>
-                        <h5 class='card-title'><a href='homexfiltros.php?op=FM'>Cantidad Tareas Finalizadas x Mecanico</a></h5>
+                        <h5 class='card-title'><a href='homexfiltros.php?op=FM'>Cantidad Ordenes Finalizadas x Mecanico</a></h5>
 
                         <div id='barChart53'></div>
                         <script>
@@ -1527,7 +1534,7 @@
                                       },
                                       yaxis: {
                                         title: {
-                                          text: 'Total Tareas'
+                                          text: 'Total Ordenes'
                                         }
                                       },
                                       fill: {
@@ -1536,7 +1543,7 @@
                                       tooltip: {
                                         y: {
                                           formatter: function (val) {
-                                            return val + ' Tareas'
+                                            return val + ' Ordenes'
                                           }
                                         }
                                       }

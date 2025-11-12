@@ -1,0 +1,48 @@
+-- PARA CORREGIR ORDENES QUE SE MUESTRAN EN ESTADO DE PENDIENTES EN LUGAR DE FINALIZADAS
+SELECT * FROM detalleorden tt WHERE tt.`idtarea`=0;
+
+DELETE FROM detalleorden tt WHERE tt.`idtarea`=0;
+
+
+DROP TABLE lstareasvsordenes;
+
+CREATE TEMPORARY TABLE lstareasvsordenes
+SELECT DISTINCT b.`idtarea`,b.`numorden` 
+FROM afectadostareas b 
+WHERE b.`estado`='F'-- and b.`numorden`='171532'
+ORDER BY b.numorden;
+
+SELECT * FROM lstareasvsordenes;
+
+DROP TABLE lscanttareasordenes;
+
+CREATE TEMPORARY TABLE lscanttareasordenes
+SELECT c.`numorden`,COUNT(c.`idtarea`) AS cant 
+FROM lstareasvsordenes c 
+-- WHERE c.`numorden`='171532'
+GROUP BY c.`numorden`
+ORDER BY c.`numorden`;
+
+SELECT d.* 
+FROM lscanttareasordenes d   
+WHERE d.`numorden`='171532';
+
+
+DROP TABLE lscandidatos;
+
+CREATE TEMPORARY TABLE lscandidatos
+SELECT yy.`numorden`,COUNT(xx.`idtarea`) AS cant
+FROM detalleorden xx INNER JOIN numeroorden yy ON (xx.numeroorden=yy.numorden AND xx.accion!='B')
+WHERE yy.estado!='F'
+GROUP BY yy.numorden
+ORDER BY yy.numorden;
+
+
+SELECT d.`numorden`,d.cant
+FROM lscandidatos d
+WHERE d.`numorden`='171532';
+
+UPDATE numeroorden SET estado='F' WHERE numorden IN (
+SELECT a.numorden
+FROM lscandidatos a INNER JOIN lscanttareasordenes b ON (a.numorden=b.numorden)
+WHERE a.cant=b.cant)

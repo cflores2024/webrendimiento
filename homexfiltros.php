@@ -85,7 +85,8 @@
       let ffin=document.getElementById("txtffin").value;
       let titulo=document.getElementById("txttitulo").value;
       let num=document.getElementById("txtnumorden").value;
-           
+      let emp=document.getElementById("txtempleado").value;
+          
       if ((fini<=0)&&(ffin<=0)) {
         return;
       } else {
@@ -97,7 +98,7 @@
             document.getElementById("lsdetalle").innerHTML =this.responseText;
           }
         };
-        xmlhttp.open('GET', 'reportes/infototalordenes.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num, false);
+        xmlhttp.open('GET', 'reportes/infototalordenes.php?fini='+fini+'&ffin='+ffin+'&titulo='+titulo+'&num='+num+'&emp='+emp, false);
         xmlhttp.send();
       }
     }
@@ -357,7 +358,7 @@
         let xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            alert ('numero chasis='+num);
+            //alert ('numero chasis='+num);
             document.getElementById("lsinforme").innerHTML=this.responseText;
           }
         };
@@ -645,7 +646,7 @@
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infoordenesenproceso()'>";
                 break;
                 case "FM"://ORDENES TERMINADAS POR MECANICOS
-                          $titulo="Cantidad de tareas terminadas por mecanicos";
+                          $titulo="Cantidad de ordenes terminadas por mecanicos";
                           echo "<input type='button' id='btnBuscar' class='btn btn-primary' value='Buscar' onclick='infohistorialmecanico()'>";
                 break;
                 case "TI"://HORAS TRABAJADAS POR MECANICOS

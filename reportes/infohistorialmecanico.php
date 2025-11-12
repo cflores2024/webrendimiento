@@ -12,7 +12,7 @@
                         <th scope='col'>#</th>
                         <th scope='col'>Mecanico</th>
                         <th scope='col'>Orden</th>
-                        <th scope='col'>Tarea</th>
+                        <th scope='col'>Titulo Orden</th>
                         <th scope='col'>F. Inicio</th>
                         <th scope='col'>F. Fin</th>
                         <th scope='col'>Tiempo (hh:mm)</th>
@@ -33,7 +33,7 @@
         $fila="";
         $filameca="";
         $i=1;
-
+        /*
             $sql="-- LISTADO DE TAREAS REALIZADAS
                     SELECT b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS mecanico,a.`numorden`,
                     b.`idtarea`,d.`descripciontarea`,b.`fechaini`,b.`fechaobs`,
@@ -46,7 +46,20 @@
                         AND (CONCAT(c.`apellido`,',',c.`nombre`) LIKE '%".$emp."%')
                     GROUP BY 1,2,3,4,5,6,7
                     ORDER BY 1;";
-
+                    */
+            $sql="
+                -- LISTADO DE ORDENES REALIZADAS Y FINALIZADAS
+                SELECT b.`idempleado`,CONCAT(c.`apellido`,', ',c.`nombre`) AS mecanico,a.`numorden`,a.`tituloorden`,
+	                   MIN(b.`fechaini`) AS fechaini,MAX(b.`fechaobs`) AS fechaobs,
+	                   ROUND(TIMESTAMPDIFF(MINUTE,MIN(b.`fechaini`),MAX(b.`fechaobs`))/60,2) AS ttiempo
+                FROM numeroorden a INNER JOIN afectadostareas b ON (a.`numorden`=b.`numorden`)
+		                           INNER JOIN personas c ON (c.`idpersona`=b.`idempleado` AND c.`accion`!='B')
+                WHERE a.`accion`!='B' AND b.`estado`='F' AND (DATE(a.fentrega) BETWEEN '".$fini."' AND '".$ffin."') AND 
+                        (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%') 
+                        AND (CONCAT(c.`apellido`,',',c.`nombre`) LIKE '%".$emp."%')
+                    GROUP BY 1,2,3,4
+                    ORDER BY 1;
+                 ";
                 //echo $sql;
             $con=conectar();
 
@@ -73,7 +86,7 @@
                                         <th scope='row'>".$i."</th>
                                         <td>".$row['mecanico']."</td>
                                         <td><a href='#' onclick='vercontenidotarea(".$row['numorden'].",".$idusuario.",".$row['idtarea'].")'>#".$row['numorden']."</a></td>
-                                        <td>".$row['descripciontarea']."</td>
+                                        <td>".$row['tituloorden']."</td>
                                         <td>".$row['fechaini']."</td>
                                         <td>".$row['fechaobs']."</td>
                                         <td>".$row['ttiempo']."</td>

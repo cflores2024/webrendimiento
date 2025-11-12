@@ -25,12 +25,13 @@
     $pie="</tbody>
             </table>";
 
-    if ((isset($_GET['fini']))&&(isset($_GET['ffin']))&&(isset($_GET['num']))&&(isset($_GET['titulo'])))
+    if ((isset($_GET['fini']))&&(isset($_GET['ffin']))&&(isset($_GET['num']))&&(isset($_GET['titulo']))&&(isset($_GET['emp'])))
     {
         $fini=$_GET['fini'];
         $ffin=$_GET['ffin'];
         $titulo=$_GET['titulo'];
         $num=$_GET['num'];
+        $emp=$_GET['emp'];
         $fila="";
         $i=1;
         $ttareas="";
@@ -53,7 +54,8 @@
                         FROM tareassuspendidas aa 
                         WHERE aa.`numorden`=a.`numorden`) tsuspendida
                 FROM numeroorden a INNER JOIN afectadostareas b ON (a.numorden=b.numorden)
-                WHERE a.`accion`!='B' AND a.estado!='S' AND (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%')
+                                   INNER JOIN personas c ON (b.idempleado=c.idpersona AND c.accion!='B') 
+                WHERE a.`accion`!='B' AND a.estado!='S' AND (DATE(a.`fecha`) BETWEEN '".$fini."' AND '".$ffin."') AND (a.`numorden` LIKE '%".$num."%') AND (a.`tituloorden` LIKE '%".$titulo."%') AND ((c.apellido LIKE '%".$emp."%') OR (c.nombre LIKE '%".$emp."%'))
                 GROUP BY 1
                 ORDER BY a.fecha;";
 
